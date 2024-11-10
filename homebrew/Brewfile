@@ -1,0 +1,33 @@
+tap "homebrew/bundle"
+tap "gitguardian/tap"
+
+brew "git"
+brew "grep"
+brew "htop"
+brew "tldr"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
+brew "xcodegen"
+brew "python"
+brew "swiftformat"
+brew "xcodes"
+brew "ansible"
+brew "go"
+brew "mas" # Mac App Store manager
+
+# Apps
+cask "mitmproxy"
+cask "iterm2"
+cask "fork"
+cask "raycast"
+cask "postman"
+cask "fork"
+cask "sublime-text"
+cask "swiftformat-for-xcode"
+cask "xcodes"
+cask "docker"
+cask "google-chrome"
+
+# Mac App Store
+mas "Swift Playgrounds", id: 1496833156
+mas "Xcode", id: 497799835

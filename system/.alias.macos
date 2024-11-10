@@ -1,0 +1,36 @@
+# Copy pwd to clipboard
+
+alias cpwd="pwd|tr -d '\n'|pbcopy"
+
+
+# Reload native apps
+
+alias killfinder="killall Finder"
+alias killdock="killall Dock"
+alias killmenubar="killall SystemUIServer NotificationCenter"
+alias killos="killfinder && killdock && killmenubar"
+
+# Show system information
+
+alias displays="system_profiler SPDisplaysDataType"
+alias cpu="sysctl -n machdep.cpu.brand_string"
+alias ram="top -l 1 -s 0 | grep PhysMem"
+
+
+# List all files colorized in long format
+# shellcheck disable=SC2139
+alias l="ls -lhF ${colorflag}"
+
+# List all files colorized in long format, including dot files
+# shellcheck disable=SC2139
+alias la="ls -lahF ${colorflag}"
+
+
+# List only directories
+# shellcheck disable=SC2139
+alias lsd="ls -lhF ${colorflag} | grep --color=never '^d'"
+
+# Show/hide hidden files in Finder
+# As of macOS Sierra (10.12) and later, you can simply press Cmd + Shift + . (period) while in Finder to toggle the visibility of hidden files.
+alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
