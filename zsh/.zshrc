@@ -3,6 +3,8 @@ source ~/.alias
 source ~/.alias.macos
 source ~/.functions
 
+export PATH=/opt/homebrew/bin:$PATH
+
 #Go
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/development/go

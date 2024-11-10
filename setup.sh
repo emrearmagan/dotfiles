@@ -16,6 +16,7 @@ files=(
     system/.functions
     homebrew/Brewfile
     git/.gitconfig
+    git/.gitignore_global
 )
 
 # change to the dotfiles directory
