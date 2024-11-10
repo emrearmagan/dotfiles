@@ -15,6 +15,7 @@ files=(
     system/.alias.macos
     system/.functions
     homebrew/Brewfile
+    git/.gitconfig
 )
 
 # change to the dotfiles directory
