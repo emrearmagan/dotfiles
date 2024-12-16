@@ -3,7 +3,11 @@ source ~/.alias
 source ~/.alias.macos
 source ~/.functions
 
+#Brew
 export PATH=/opt/homebrew/bin:$PATH
+
+#Prompt
+export PS1='%n@%m (%1~) %# '
 
 #Go
 export GOROOT=/usr/local/go
