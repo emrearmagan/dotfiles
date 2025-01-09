@@ -13,6 +13,7 @@ brew "swiftformat"
 brew "xcodes"
 brew "ansible"
 brew "go"
+brew "bat"
 brew "mas" # Mac App Store manager
 
 # Apps
@@ -27,6 +28,7 @@ cask "swiftformat-for-xcode"
 cask "xcodes"
 cask "docker"
 cask "google-chrome"
+cask "termius"
 
 # Mac App Store
 mas "Swift Playgrounds", id: 1496833156

@@ -12,7 +12,6 @@ alias dl="cd ~/Downloads"
 alias g="git"
 alias h="history"
 
-
 # ios dev
 alias simulator="open -a Simulator"
 alias spm-validate="if swift package describe > /dev/null ; then echo \"✓ Manifest is valid.\" ; fi"
@@ -28,6 +27,7 @@ fi
 
 # Always enable colored `grep` output
 alias grep='grep --color=auto '
+alias cat=bat
 
 # Get week number
 alias week='date +%V'
