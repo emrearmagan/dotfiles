@@ -4,6 +4,8 @@ tap "gitguardian/tap"
 brew "git"
 brew "grep"
 brew "htop"
+brew "curl"
+brew "wget"
 brew "tldr"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
@@ -15,6 +17,7 @@ brew "ansible"
 brew "go"
 brew "bat"
 brew "mas" # Mac App Store manager
+brew "neovim" #yeah i know..
 
 # Apps
 cask "mitmproxy"
