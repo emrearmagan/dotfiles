@@ -17,14 +17,6 @@ alias simulator="open -a Simulator"
 alias spm-validate="if swift package describe > /dev/null ; then echo \"✓ Manifest is valid.\" ; fi"
 alias xcode-clean="rm -rf ~/Library/Developer/Xcode/DerivedData && rm -rf ~/Library/Caches/org.swift.swiftpm && echo \"✓ Cache cleared\""
 
-
-# Detect which `ls` flavor is in use
-if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
-else # OS X `ls`
-	colorflag="-G"
-fi
-
 # Always enable colored `grep` output
 alias grep='grep --color=auto '
 

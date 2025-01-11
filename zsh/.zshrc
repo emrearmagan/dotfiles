@@ -7,7 +7,7 @@ source ~/.functions
 export PATH=/opt/homebrew/bin:$PATH
 
 #Prompt
-export PS1='%n@%m (%1~) %# '
+export PS1='%n:(%1~) %# '
 
 #Go
 export GOROOT=/usr/local/go
