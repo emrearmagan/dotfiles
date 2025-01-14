@@ -18,6 +18,7 @@ brew "go"
 brew "bat"
 brew "mas" # Mac App Store manager
 brew "neovim" #yeah i know..
+brew "lazygit"
 
 # Apps
 cask "mitmproxy"
