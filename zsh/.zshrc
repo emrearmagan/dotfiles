@@ -2,6 +2,7 @@ source ~/.env
 source ~/.alias
 source ~/.alias.macos
 source ~/.functions
+source <(fzf --zsh)
 
 #Brew
 export PATH=/opt/homebrew/bin:$PATH
