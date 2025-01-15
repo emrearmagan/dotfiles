@@ -31,4 +31,6 @@ alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
+
 alias f=fzf
+alias fzf=fzf --tmux center
