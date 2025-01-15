@@ -33,4 +33,6 @@ alias ppaste=pbpaste
 alias v=nvim
 
 alias f=fzf
-alias fzf=fzf --tmux center --preview "bat --style=numbers --color=always {}" | xargs -I {} nvim "{}"
+alias f="fzf --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
+alias fo=fzfo
+alias fzfo='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
