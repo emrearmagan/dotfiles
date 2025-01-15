@@ -25,6 +25,7 @@ files=(
     git/.gitignore_global
     tmux/.tmux.conf
     neovim/.config/nvim # make sure to give nvim. We dont want to override everything inside .config
+    bat/.config/bat # make sure to give nvim. We dont want to override everything inside .config
 )
 
 # change to the dotfiles directory
