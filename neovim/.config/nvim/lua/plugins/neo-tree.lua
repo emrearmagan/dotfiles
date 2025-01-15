@@ -31,6 +31,8 @@ return {
             ["P"] = "toggle_preview", -- Toggle preview window
             ["h"] = "close_node", -- Collapse folder
             ["<Tab>"] = "toggle_preview", -- Toggle preview window
+	    ["<space>"] = false,
+	    ["/"] = "noop",
           },
         },
       })

@@ -33,4 +33,4 @@ alias ppaste=pbpaste
 alias v=nvim
 
 alias f=fzf
-alias fzf=fzf --tmux center
+alias fzf=fzf --tmux center --preview "bat --style=numbers --color=always {}" | xargs -I {} nvim "{}"
