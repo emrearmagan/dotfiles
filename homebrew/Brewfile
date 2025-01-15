@@ -22,6 +22,11 @@ brew "lazygit"
 brew "httpie"
 brew "fzf"
 
+# -- formatter used in neovim plugin
+brew "prettier"
+brew "swiftformat"
+brew "shfmt"
+
 # Apps
 cask "mitmproxy"
 cask "iterm2"
