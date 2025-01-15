@@ -4905,8 +4905,14 @@
 				<dict>
 					<key>Action</key>
 					<integer>11</integer>
+					<key>Apply Mode</key>
+					<integer>1</integer>
+					<key>Escaping</key>
+					<integer>1</integer>
 					<key>Text</key>
-					<string>0x1f</string>
+					<string>7C</string>
+					<key>Version</key>
+					<integer>2</integer>
 				</dict>
 				<key>0x38-0x40000</key>
 				<dict>
@@ -5161,6 +5167,8 @@
 					<string>[1;5F</string>
 				</dict>
 			</dict>
+			<key>Left Option Key Changeable</key>
+			<false/>
 			<key>Link Color</key>
 			<dict>
 				<key>Alpha Component</key>
