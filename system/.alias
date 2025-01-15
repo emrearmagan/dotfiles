@@ -30,4 +30,5 @@ alias cat=bat
 alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
-alias vim=nvim
+alias v=nvim
+alias f=fzf
