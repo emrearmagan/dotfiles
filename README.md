@@ -6,7 +6,7 @@
 
 ### **1. Clone the Repository**
 ```sh
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
+git clone https://github.com/emrearmagan/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
