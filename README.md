@@ -20,7 +20,7 @@ This script will:
 - Set up **iTerm2 preferences** (if installed).
 - Install **Homebrew packages** from the `Brewfile`.
 
-You will also want a Nerd Font.
+You will also want a [Nerd Font](https://www.nerdfonts.com/).
 ---
 
 ## **Folder Structure**
