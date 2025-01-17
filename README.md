@@ -1,7 +1,8 @@
 # Emre`s dotfiles
 
 ## Installation
-⚠ **Warning:** Before using these dotfiles, you should **fork this repository**, review the code, and remove anything you **don’t want or need**.  
+> **⚠️ Caution**  
+> ⚠ **Warning:** Before using these dotfiles, you should **fork this repository**, review the code, and remove anything you **don’t want or need**.  
 **Use at your own risk!**
 
 ### **1. Clone the Repository**
