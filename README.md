@@ -21,6 +21,7 @@ This script will:
 - Install **Homebrew packages** from the `Brewfile`.
 
 You will also want a [Nerd Font](https://www.nerdfonts.com/).
+
 ---
 
 ## **Folder Structure**
