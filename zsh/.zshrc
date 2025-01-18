@@ -20,3 +20,6 @@ export PATH=$PATH:$GOPATH/bin
 # zsh-autosuggestions and highlighting
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# use vim motions
+set -o vi
