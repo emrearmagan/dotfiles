@@ -41,6 +41,7 @@ cask "docker"
 cask "google-chrome"
 cask "termius"
 cask "notion"
+cask "sourcetree"
 
 # Mac App Store
 mas "Swift Playgrounds", id: 1496833156
