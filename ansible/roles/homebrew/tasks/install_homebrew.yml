@@ -1,0 +1,13 @@
+- name: Check if Homebrew is installed
+  command: brew --version
+  register: homebrew_installed
+  ignore_errors: true
+  changed_when: false
+  failed_when: false
+
+- name: Install Homebrew if not installed
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    creates: /opt/homebrew/bin/brew
+  when: homebrew_installed.rc != 0
+  become: true

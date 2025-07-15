@@ -1,0 +1,36 @@
+---
+
+- name: Check and install Homebrew if not installed
+  include_tasks: install_homebrew.yml
+
+- name: Update Homebrew
+  homebrew:
+    update_homebrew: true
+
+- name: Install Homebrew packages
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ homebrew_packages }}"
+  when: homebrew_packages | length > 0
+
+- name: Ensure Brewfile exists
+  stat:
+    path: "{{ ansible_env.HOME }}/Brewfile"
+  register: brewfile
+
+- name: Run brew bundle install
+  shell: brew bundle --file={{ ansible_env.HOME }}/Brewfile
+  when: brewfile.stat.exists
+  ignore_errors: true
+  register: brew_bundle_result
+
+- name: Show brew bundle failure (if any)
+  debug:
+    var: brew_bundle_result.stderr_lines
+  when: brew_bundle_result is failed
+
+- name: Upgrade all Homebrew packages
+  homebrew:
+    upgrade_all: true
+  ignore_errors: true
