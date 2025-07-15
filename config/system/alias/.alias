@@ -1,5 +1,5 @@
 alias reload='source ~/.zshrc'
-alias tmux-reload="tmux source-file ~/.tmux.conf"
+alias tmux-reload="tmux source-file ~/.config/tmux/tmux.conf"
 
 alias cls='clear'
 
@@ -30,11 +30,6 @@ alias dl="cd ~/Downloads"
 alias g="git"
 alias h="history"
 
-# ios dev
-alias simulator="open -a Simulator"
-alias spm-validate="if swift package describe > /dev/null ; then echo \"✓ Manifest is valid.\" ; fi"
-alias xcode-clean="rm -rf ~/Library/Developer/Xcode/DerivedData && rm -rf ~/Library/Caches/org.swift.swiftpm && echo \"✓ Cache cleared\""
-
 # Always enable colored `grep` output
 alias grep='grep --color=auto '
 
@@ -54,7 +49,9 @@ alias v=nvim
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
 
 alias f="fzf --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
-alias fd='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
+# alias fd='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
+# Search only directories
+alias fd='cd "$(find . -type d -print | fzf --preview "ls -la --color=always {} | bat --style=numbers --color=always --paging=never" --preview-window=right:60%)"'
 
 # Docker
 # Remove the last container (running or stopped)

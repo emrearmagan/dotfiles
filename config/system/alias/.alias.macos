@@ -15,3 +15,9 @@ alias ram="top -l 1 -s 0 | grep PhysMem"
 # As of macOS Sierra (10.12) and later, you can simply press Cmd + Shift + . (period) while in Finder to toggle the visibility of hidden files.
 alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
 alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+
+# ios dev
+alias simulator="open -a Simulator"
+alias spm-validate="if swift package describe > /dev/null ; then echo \"✓ Manifest is valid.\" ; fi"
+alias xcode-clean="rm -rf ~/Library/Developer/Xcode/DerivedData && rm -rf ~/Library/Caches/org.swift.swiftpm && echo \"✓ Cache cleared\""
