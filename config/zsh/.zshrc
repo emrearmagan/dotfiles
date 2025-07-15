@@ -8,7 +8,7 @@ source ~/.alias/.functions
 export PATH=/opt/homebrew/bin:$PATH
 
 #Prompt
-export PS1='%F{green}%n@%m: (%~)%f '
+export PS1='%F{green}%n: (%~)%f '
 
 #Go
 export GOROOT=/usr/local/go
