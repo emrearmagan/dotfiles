@@ -33,7 +33,7 @@ files_to_symlink=(
 
     ["config/tmux/.tmux.conf"]="$HOME/.tmux.conf"
     ["config/neovim/nvim"]="$HOME/.config/nvim"
-    ["config/bat/config"]="$HOME/.config/bat/config"
+    ["config/bat"]="$HOME/.config/bat"
 )
 
 # change to the dotfiles directory
