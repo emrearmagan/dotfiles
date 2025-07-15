@@ -1,0 +1,11 @@
+---
+
+- name: Set up iTerm2 preferences (macOS only)
+  when: ansible_facts['os_family'] == 'Darwin'
+  block:
+    - name: Set iTerm2 preferences folder
+      command: >
+        defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string '{{ playbook_dir }}/../config/iterm'
+    - name: Enable loading iTerm2 preferences from custom folder
+      command: >
+        defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
