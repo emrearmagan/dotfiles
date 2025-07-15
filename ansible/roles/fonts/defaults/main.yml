@@ -1,0 +1,12 @@
+---
+# Default font to install
+font_name: "JetBrainsMono"
+font_url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/{{ font_name }}.zip"
+font_glob: "{{ nf_fonts_dir }}/{{ font_name }}*Nerd*Font*" 
+
+# Replace this with the name of the user the font(s) will be installed for.
+user: "emrearmagan"
+# Font installation directory for Linux.
+nf_linux_fonts_dir: "/home/{{ user }}/.local/share/fonts/NerdFonts"
+# Font installation directory for macOS.
+nf_macos_fonts_dir: "/Users/{{ user }}/Library/Fonts"

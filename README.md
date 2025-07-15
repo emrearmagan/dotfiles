@@ -1,10 +1,14 @@
 # Emre`s dotfiles
 
-## Installation
 > **⚠️ Caution**  
 >  Before using these dotfiles, you should **fork this repository**, review the code, and remove anything you **don’t want or need**.  
 ⚠ **Use at your own risk!** ⚠
 
+
+> **⚠️ This repository's `setup.sh` script is no longer maintained.**
+> **For a reliable and up-to-date setup, use the Ansible playbook provided in the `ansible/` directory.**
+
+## Installation (Legacy)
 ### **1. Clone the Repository**
 ```sh
 git clone https://github.com/emrearmagan/dotfiles.git ~/.dotfiles
@@ -24,6 +28,25 @@ You will also want a [Nerd Font](https://www.nerdfonts.com/).
 
 ---
 
+## Ansible Setup (Recommended)
+
+This repository includes an Ansible playbook for automated setup. **This is the recommended way to install and manage your dotfiles.**
+
+
+### 🔧 Running the Playbook
+
+To apply the dotfiles to your system:
+
+```bash
+ansible-playbook ansible/playbook.yml --ask-become-pass
+```
+
+### Testing with `ansible/test.sh`
+
+The script `ansible/test.sh` allows you to test your Ansible playbook within a Docker container. This is useful for verifying your playbook works as expected before running it on your actual system.
+
+---
+
 ## **Folder Structure**
 ```
 dotfiles/
@@ -37,26 +60,6 @@ dotfiles/
 │── zsh/          # Zsh config files (.zshrc, .zprofile)
 │── setup.sh      # Setup script to symlink files and install dependencies
 ```
-
----
-
-## **What `setup.sh` Does**
-- **Creates symlinks** for:
-  - `.zshrc`, `.zprofile` (Zsh configuration)
-  - `.alias`, `.functions` (System-wide aliases)
-  - `.gitconfig`, `.gitignore_global`
-  - `.tmux.conf`
-  - **Neovim & bat configurations** (inside `~/.config/`)
-- **Sets up iTerm2 preferences** (if iTerm2 is installed).
-- **Runs the Homebrew installation script**.
-
----
-
-## **Customization**
-If you want to customize your setup:
-- Modify **`setup.sh`** to add/remove symlinks.
-- Edit the **Brewfile** to include/exclude Homebrew packages.
-- Change **Neovim, Zsh, Git, or Tmux configs** as needed.
 
 ---
 
