@@ -56,3 +56,15 @@ alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=>
 alias f="fzf --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
 alias fd='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
 
+# Docker
+# Remove the last container (running or stopped)
+alias docker-rm-last='docker rm -f $(docker ps -alq)'
+
+# Remove the first container in the list
+alias docker-rm-first='docker rm -f $(docker ps -aq | head -n 1)'
+
+# Remove all containers
+alias docker-rm-all='docker rm -f $(docker ps -aq)'
+
+# Start a bash shell in the first container
+alias docker-bash-first='docker exec -it $(docker ps -aq | head -n 1) bash'
