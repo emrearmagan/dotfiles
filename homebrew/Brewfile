@@ -7,6 +7,7 @@ brew "zsh-syntax-highlighting"
 brew "tmux"
 brew "fzf"
 brew "htop"
+brew "fx"
 brew "bat"            # better `cat`
 brew "tldr"           # simplified man pages
 brew "grep"           # text searching
