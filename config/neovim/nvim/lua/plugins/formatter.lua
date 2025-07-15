@@ -13,7 +13,7 @@ return {
         },
         format_on_save = {
           enabled = true, -- Enable auto-formatting on save
-	  lsp_fallback = true, --- Use LSP formatting if not formtter is defined
+	        lsp_fallback = true, --- Use LSP formatting if not formtter is defined
         },
       })
     end,

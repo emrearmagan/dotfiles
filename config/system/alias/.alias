@@ -1,4 +1,6 @@
 alias reload='source ~/.zshrc'
+alias tmux-reload="tmux source-file ~/.tmux.conf"
+
 alias cls='clear'
 
 # Easier navigation: .., ..., ...., ....., ~ and -
@@ -6,6 +8,22 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
+
+alias l="ls -lhF ${colorflag}"
+alias la="ls -lahF ${colorflag}"
+alias lsd="ls -lhF ${colorflag} | grep --color=never '^d'"
+alias ls='ls ${colorflag}'
+
+# Copy pwd to clipboard
+alias cpwd="pwd|tr -d '\n'|pbcopy"
+
+# Folder color
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+	colorflag="--color"
+else # OS X `ls`
+	colorflag="-G"
+fi
 
 # Shortcuts
 alias dl="cd ~/Downloads"
@@ -32,8 +50,9 @@ alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
 
-alias f=fzf
+# Copy public key to clipboard
+alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
+
 alias f="fzf --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
 alias fd='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
 
-alias tmux-reload="tmux source-file ~/.tmux.conf"

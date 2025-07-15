@@ -1,7 +1,3 @@
-# Copy pwd to clipboard
-alias cpwd="pwd|tr -d '\n'|pbcopy"
-
-
 # Reload native apps
 
 alias killfinder="killall Finder"
@@ -14,20 +10,6 @@ alias killos="killfinder && killdock && killmenubar"
 alias displays="system_profiler SPDisplaysDataType"
 alias cpu="sysctl -n machdep.cpu.brand_string"
 alias ram="top -l 1 -s 0 | grep PhysMem"
-
-
-# Folder color
-# Detect which `ls` flavor is in use
-if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
-else # OS X `ls`
-	colorflag="-G"
-fi
-
-alias l="ls -lhF ${colorflag}"
-alias la="ls -lahF ${colorflag}"
-alias lsd="ls -lhF ${colorflag} | grep --color=never '^d'"
-alias ls='ls ${colorflag}'
 
 # Show/hide hidden files in Finder
 # As of macOS Sierra (10.12) and later, you can simply press Cmd + Shift + . (period) while in Finder to toggle the visibility of hidden files.

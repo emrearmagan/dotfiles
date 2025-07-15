@@ -1,8 +1,8 @@
 source ~/.env
-source ~/.alias
-source ~/.alias.macos
-source ~/.functions
-source <(fzf --zsh)
+source ~/.alias/.alias
+source ~/.alias/.custom
+source ~/.alias/.macos
+source ~/.alias/.functions
 
 #Brew
 export PATH=/opt/homebrew/bin:$PATH
@@ -20,9 +20,11 @@ export PATH=$PATH:$GOPATH/bin
 # zsh-autosuggestions and highlighting
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source <(fzf --zsh)
 
 # use vim motions
 set -o vi
+
 # Enable history appending instead of overwriting the history file
 setopt appendhistory
 # Share command history across multiple terminal sessions
@@ -37,11 +39,10 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 # Prevent finding duplicate commands in history search
 setopt hist_find_no_dups
+
 # ----------------------
 # Completion Styling
 # ----------------------
-
 # Configure case-insensitive completion matching
 # This allows tab-completion to match case-insensitively
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-

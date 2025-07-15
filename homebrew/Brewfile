@@ -1,49 +1,54 @@
 tap "homebrew/bundle"
 tap "gitguardian/tap"
 
-brew "git"
-brew "grep"
-brew "htop"
-brew "curl"
-brew "wget"
-brew "tldr"
+# -- CLI --
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
-brew "xcodegen"
-brew "python"
-brew "swiftformat"
-brew "xcodes"
-brew "ansible"
-brew "go"
-brew "bat"
-brew "mas" # Mac App Store manager
-brew "neovim" #yeah i know..
-brew "lazygit"
-brew "httpie"
+brew "tmux"
 brew "fzf"
+brew "htop"
+brew "bat"            # better `cat`
+brew "tldr"           # simplified man pages
+brew "grep"           # text searching
+brew "neovim"		  # höö ?
 
-# -- formatter used in neovim plugin
-brew "prettier"
+# -- CLI: Dev & Build Tools --
+brew "git"
+brew "go"
+brew "python"
+brew "xcodegen"
+brew "ansible"      
+brew "lazygit"
+
+# -- CLI: Networking & Package Management --
+brew "curl"
+brew "wget"
+brew "httpie"
+brew "mas"            # Mac App Store CLI
+brew "xcodes"         # Xcode installer
+
+# Formatter tools used in neovim plugins
+brew "prettier"		  # JS/TS formatter
 brew "swiftformat"
-brew "shfmt"
+brew "shfmt"          # shell formatter
 
-# Apps
-cask "mitmproxy"
+# -- Apps --
 cask "iterm2"
-cask "fork"
-cask "raycast"
-cask "postman"
-cask "fork"
-cask "sublime-text"
-cask "swiftformat-for-xcode"
-cask "xcodes"
+cask "wezterm"
 cask "docker"
-cask "google-chrome"
-cask "termius"
-cask "notion"
+cask "mitmproxy"
 cask "sourcetree"
 cask "tailscale"
 
-# Mac App Store
+cask "postman"
+cask "sublime-text"
+cask "xcodes"
+
+cask "raycast"
+cask "notion"
+cask "google-chrome"
+cask "termius"
+
+# -- Mac App Store --
 mas "Swift Playgrounds", id: 1496833156
 mas "Xcode", id: 497799835

@@ -15,8 +15,8 @@ local conform = require("conform")
 
 wk.add({
     ---- Neotree
-    { "<leader>n", group = "Files" },
-    { "<leader>ne", ":Neotree toggle<CR>", desc = "File tree" },
+    { "<leader>n", group = "Tree" },
+    { "<leader>ne", ":Neotree toggle<CR>", desc = "Toggle Tree" },
 
     ---- Fzf
     { "<leader>f", group = "Search"},
@@ -28,4 +28,7 @@ wk.add({
     ---- Formatting
     { "<leader>i", group = "Format"},
     { "<leader>ii", function() require("conform").format({ async = true, lsp_fallback = true }) end, desc = "Format Buffer" },
+
+    ---- Custom
+    { "<leader>o", ':!open %:h<CR>', desc = "Open in Finder" },
 })
