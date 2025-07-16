@@ -10,6 +10,7 @@ return {
       ensure_installed = {
         "gofmt",       -- Go (should come with go installed - no available in mason)
         "goimports",   -- Also GO
+        "golangcli_lint",
         "swiftformat", -- Swift
         "prettier",    -- YAML (also JSON, etc.)
       },
