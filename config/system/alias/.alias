@@ -44,6 +44,7 @@ alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
+alias lg=lazygit
 
 # Copy public key to clipboard
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
