@@ -1,16 +1,28 @@
 return {
-{
-    "mason-org/mason.nvim",
-    opts = {
-        ui = {
-            icons = {
-                package_installed = "✓",
-                package_pending = "➜",
-                package_uninstalled = "✗"
+  {
+      "mason-org/mason.nvim",
+      config = function()
+        opts = {
+            ui = {
+                icons = {
+                    package_installed = "✓",
+                    package_pending = "➜",
+                    package_uninstalled = "✗"
+                }
             }
         }
-    }
-},
+
+        require("mason").setup(opts)
+      end
+  },
+  {
+      "mason-org/mason-lspconfig.nvim",
+      config = function()
+        require("mason-lspconfig").setup {
+            automatic_enable = false
+        }
+      end
+  },
   -- nvim-lspconfig for setting up LSP servers
   {
     "neovim/nvim-lspconfig",
