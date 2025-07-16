@@ -4,11 +4,9 @@ local conform = require("conform")
 -------------------- Keybindings ------------------------
 
 wk.add({
-  { "<leader>?",  "<cmd>WhichKey<cr>",             desc = "Show all keybindings", mode = "n" },
-
   -- ----- File -----
   { "<leader>f",  group = "File" },
-  { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File",            mode = "n" },
+  { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File",     mode = "n" },
 
   -- ----- Tree -----
   { "<leader>n",  group = "Tree" },

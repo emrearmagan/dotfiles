@@ -17,10 +17,13 @@ local user_var_tab_title_key = "tab_title"
 
 -- Custom tab title formatting
 wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
-  if type(tab.tab_title) == "string" and #tab.tab_title > 0 then
+  local user_title = tab.tab_title
+  -- If user has explicitly set a tab title (via wezterm CLI), use it
+  if type(user_title) == "string" and #user_title > 0 then
     return format_title(tab.tab_title, tab.is_active, max_width)
   end
-  return format_title("temp", tab.is_active, max_width)
+
+  return format_title(user_title, max_width)
 end)
 
 -- Add current time and custom mode message to right side of status bar
@@ -43,7 +46,7 @@ return {
   max_fps = 240,
   front_end = "WebGpu",
   webgpu_power_preference = "HighPerformance",
-  
+
   -- Appearance
   color_scheme = "Tokyo Night",
   font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Medium" }),
@@ -69,6 +72,6 @@ return {
 
   --- window_decorations = "RESIZE",
   window_decorations = "RESIZE",
-  initial_rows = 40,   -- height (default is 24)
-  initial_cols = 120,  -- width (default is 80)
+  initial_rows = 40,  -- height (default is 24)
+  initial_cols = 120, -- width (default is 80)
 }
