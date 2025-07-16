@@ -8,6 +8,18 @@ return {
   },
   config = function()
     require("noice").setup({
+      cmdline = {
+        enabled = true,
+        view = "cmdline_popup",
+        format = {
+          cmdline = {
+            pattern = "^:",
+            icon = "",
+            lang = "vim",
+            conceal = false -- keep ":" visible
+          }
+        }
+      },
       presets = {
         bottom_search = true,         -- classic bottom command line for search
         command_palette = true,       -- position cmdline and popupmenu together

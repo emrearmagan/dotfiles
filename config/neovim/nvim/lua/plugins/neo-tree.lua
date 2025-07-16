@@ -22,29 +22,32 @@ return {
 
         filesystem = {
           follow_current_file = {
-            enabled = true, 
+            enabled = true,
           },
           close_if_last_window = true, -- Close Neo-tree if it's the last open window
 
           filtered_items = {
-            visible = false, -- Hide hidden files
-            show_hidden_count = true, -- Display count of hidden files
-            hide_dotfiles = true, -- Hide dotfiles by default
-            hide_gitignore = false, -- Show files ignored by .gitignore
+            visible = false,                      -- Hide hidden files
+            show_hidden_count = true,             -- Display count of hidden files
+            hide_dotfiles = true,                 -- Hide dotfiles by default
+            hide_gitignore = false,               -- Show files ignored by .gitignore
           },
           hijack_netrw_behavior = "open_default", -- Automatically open Neo-tree for directories
-          use_libuv_file_watcher = true, -- Enable automatic tree refresh
+          use_libuv_file_watcher = true,          -- Enable automatic tree refresh
         },
 
         window = {
           mappings = {
-            ["l"] = "open", -- Open file or directory
-            ["<2-LeftMouse>"] = "open", -- Open with double-click
-            ["<cr>"] = "open", -- Open file or folder with Enter
-            ["<esc>"] = "cancel", -- Close preview or Neo-tree window
-            ["h"] = "close_node", -- Collapse folder
+            ["l"] = "open",               -- Open file or directory
+            ["<2-LeftMouse>"] = "open",   -- Open with double-click
+            ["<cr>"] = "open",            -- Open file or folder with Enter
+            ["<esc>"] = "cancel",         -- Close preview or Neo-tree window
+            ["h"] = "close_node",         -- Collapse folder
             ["<Tab>"] = "toggle_preview", -- Toggle preview window
             ["<space>"] = false,
+            ["f"] = function()
+              require("fzf-lua").files()
+            end,
             ["/"] = "fuzzy_finder",
           },
         },
