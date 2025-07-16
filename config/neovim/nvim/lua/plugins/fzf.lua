@@ -13,8 +13,14 @@ return {
       },
       files = {
         prompt = "Files❯ ",
-        cmd = "find . -type f", -- Use `find` for better file handling
+        -- Use ripgrep to list project files while:
+        -- - including hidden files (like .env)
+        -- - excluding common clutter (e.g. .git, node_modules, .DS_Store)
+        cmd = "rg --files --no-ignore --hidden --follow --glob '!.git/*' --glob '!node_modules/*' --glob '!.DS_Store'",
+        -- cmd = "find . -type f", -- Use `find` for better file handling
         previewer = "bat", -- Use `bat` as a previewer
+        git_icons = true,
+        follow = true
       },
       git = {
         prompt = "GitFiles❯ ",
@@ -24,9 +30,13 @@ return {
       grep = {
         prompt = "Grep❯ ",
         input_prompt = "Grep For❯ ",
-       --- cmd = "grep -rnIH --exclude=dir{.git, node_module} .",
-	silent = true,
-      },
+        previwer = "bat",
+        rg_glob = true, -- Enable glob parsing
+        glob_flag = "--iglob", -- Use case-insensitive globs
+        glob_separator = "%s%-%-", -- Separator pattern
+        cmd = "rg --vimgrep --hidden --glob '!.git/**' --glob '!node_modules/**'", -- Exclude dirs
+        silent = true,
+      }
     })
   end,
 }
