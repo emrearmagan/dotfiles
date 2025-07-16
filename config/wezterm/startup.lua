@@ -23,12 +23,14 @@ wezterm.on("gui-startup", function(cmd)
   stats_tab:set_title("stats")
 
   local stats_pane = stats_tab:active_pane()
-  local right_pane = stats_pane:split({
-    direction = "Right",
-    size = 80,
+  stats_pane:send_text("df -h /\n")
+  local bottom_pane = stats_pane:split({
+    direction = "Bottom",
+    size = 0.5,
     cwd = home,
   })
-  right_pane:send_text("htop\n")
+  bottom_pane:send_text("htop\n")
 
-  window:gui_window():perform_action(act.ActivateTab(0), stats_tab:active_pane())
+  -- activate home tab
+  window:gui_window():perform_action(act.ActivateTab(0), home_tab:active_pane())
 end)
