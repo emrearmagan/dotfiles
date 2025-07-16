@@ -38,5 +38,12 @@ return {
   leader = { key = "F12", mods = "", timeout_milliseconds = 5000 },
   keys = {
     { key = "/", mods = "LEADER", action = act.Search("CurrentSelectionOrEmptyString") },
+
+    -- use the default german shortut for ToggleFullScreen
+    {
+      key = "f",
+      mods = "CMD|CTRL",
+      action = wezterm.action.ToggleFullScreen,
+    },
   },
 }
