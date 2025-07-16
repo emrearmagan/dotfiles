@@ -1,36 +1,60 @@
 return {
+  -- Mason UI for managing LSPs
   {
-      "mason-org/mason.nvim",
-      config = function()
-        opts = {
-            ui = {
-                icons = {
-                    package_installed = "✓",
-                    package_pending = "➜",
-                    package_uninstalled = "✗"
-                }
-            }
+    "mason-org/mason.nvim",
+    config = function()
+      require("mason").setup({
+        ui = {
+          icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
+          }
         }
+      })
+    end
+  },
+  -- Bridge: Mason <-> LSPConfig
+  {
+    "mason-org/mason-lspconfig.nvim",
+    config = function()
+      require("mason-lspconfig").setup {
+        ensure_installed = {
+          "lua_ls",    -- Lua
+          "gopls",     -- Go
+          "dockerls",  -- Docker
+          "yamlls",    -- YAML
+          "ansiblels", -- Ansible
+          "bashls",    -- Bash
 
-        require("mason").setup(opts)
-      end
+          -- sourcekit (Swift) is macOS native, not installable via Mason
+        },
+        automatic_enable = false
+      }
+    end
   },
-  {
-      "mason-org/mason-lspconfig.nvim",
-      config = function()
-        require("mason-lspconfig").setup {
-            automatic_enable = false
-        }
-      end
-  },
-  -- nvim-lspconfig for setting up LSP servers
+
+  -- Built-in LSP Support for setting up LSP servers
   {
     "neovim/nvim-lspconfig",
     config = function()
       local lspconfig = require("lspconfig")
 
-      -- Bash Language Server
-      lspconfig.bashls.setup({})
+      -- Lua Language Server
+      lspconfig.lua_ls.setup({})
+
+      -- Go Language Server
+      lspconfig.gopls.setup({
+        filetypes = { "go", "gomod" },
+      })
+
+      -- Swift Language Server
+      lspconfig.sourcekit.setup({
+        filetypes = { "swift", "objective-c", "objective-cpp" },
+      })
+
+      -- Docker Language Server
+      lspconfig.dockerls.setup({})
 
       -- YAML Language Server
       lspconfig.yamlls.setup({
@@ -55,11 +79,8 @@ return {
         },
       })
 
-      -- Go Language Server
-      lspconfig.gopls.setup({})
-
-      -- Swift Language Server
-      lspconfig.sourcekit.setup({})
+      -- Bash Language Server
+      lspconfig.bashls.setup({})
     end,
   },
 
@@ -94,4 +115,3 @@ return {
     end,
   },
 }
-
