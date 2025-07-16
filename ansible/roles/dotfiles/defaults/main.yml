@@ -1,28 +1,86 @@
 dotfiles:
   # TODO: Just recursively syslink the parent folder of the files
-  - { src: '{{ playbook_dir }}/../config/zsh/.zshrc', dest: '{{ ansible_env.HOME }}/.zshrc' }
-  - { src: '{{ playbook_dir }}/../config/zsh/.zprofile', dest: '{{ ansible_env.HOME }}/.zprofile' }
+  - {
+      src: "{{ playbook_dir }}/../config/zsh/.zshrc",
+      dest: "{{ ansible_env.HOME }}/.zshrc",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/zsh/.zprofile",
+      dest: "{{ ansible_env.HOME }}/.zprofile",
+    }
 
-  - { src: '{{ playbook_dir }}/../config/system/alias/.alias', dest: '{{ ansible_env.HOME }}/.alias/.alias' }
-  - { src: '{{ playbook_dir }}/../config/system/alias/.custom', dest: '{{ ansible_env.HOME }}/.alias/.custom' }
-  - { src: '{{ playbook_dir }}/../config/system/alias/.macos', dest: '{{ ansible_env.HOME }}/.alias/.macos' }
-  - { src: '{{ playbook_dir }}/../config/system/alias/.functions', dest: '{{ ansible_env.HOME }}/.alias/.functions' }
+  - {
+      src: "{{ playbook_dir }}/../config/system/alias/.alias",
+      dest: "{{ ansible_env.HOME }}/.alias/.alias",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/system/alias/.custom",
+      dest: "{{ ansible_env.HOME }}/.alias/.custom",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/system/alias/.macos",
+      dest: "{{ ansible_env.HOME }}/.alias/.macos",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/system/alias/.functions",
+      dest: "{{ ansible_env.HOME }}/.alias/.functions",
+    }
 
-  - { src: '{{ playbook_dir }}/../config/git/.gitconfig', dest: '{{ ansible_env.HOME }}/.gitconfig' }
-  - { src: '{{ playbook_dir }}/../config/git/.gitignore_global', dest: '{{ ansible_env.HOME }}/.gitignore_global' }
+  - {
+      src: "{{ playbook_dir }}/../config/git/.gitconfig",
+      dest: "{{ ansible_env.HOME }}/.gitconfig",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/git/.gitignore_global",
+      dest: "{{ ansible_env.HOME }}/.gitignore_global",
+    }
 
-  - { src: '{{ playbook_dir }}/../config/wezterm/wezterm.lua', dest: '{{ ansible_env.HOME }}/.config/wezterm/wezterm.lua' }
-  - { src: '{{ playbook_dir }}/../config/wezterm/mappings.lua', dest: '{{ ansible_env.HOME }}/.config/wezterm/mappings.lua' }
-  - { src: '{{ playbook_dir }}/../config/wezterm/ui.lua', dest: '{{ ansible_env.HOME }}/.config/wezterm/ui.lua' }
-  - { src: '{{ playbook_dir }}/../config/wezterm/startup.lua', dest: '{{ ansible_env.HOME }}/.config/wezterm/startup.lua' }
+  - {
+      src: "{{ playbook_dir }}/../config/wezterm/wezterm.lua",
+      dest: "{{ ansible_env.HOME }}/.config/wezterm/wezterm.lua",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/wezterm/mappings.lua",
+      dest: "{{ ansible_env.HOME }}/.config/wezterm/mappings.lua",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/wezterm/ui.lua",
+      dest: "{{ ansible_env.HOME }}/.config/wezterm/ui.lua",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/wezterm/startup.lua",
+      dest: "{{ ansible_env.HOME }}/.config/wezterm/startup.lua",
+    }
 
-  - { src: '{{ playbook_dir }}/../config/tmux/tmux.conf', dest: '{{ ansible_env.HOME }}/.config/tmux/tmux.conf' }
-  - { src: '{{ playbook_dir }}/../config/tmux/mappings.conf', dest: '{{ ansible_env.HOME }}/.config/tmux/mappings.conf' }
-  - { src: '{{ playbook_dir }}/../config/tmux/plugins.conf', dest: '{{ ansible_env.HOME }}/.config/tmux/plugins.conf' }
-  - { src: '{{ playbook_dir }}/../config/tmux/ui.conf', dest: '{{ ansible_env.HOME }}/.config/tmux/ui.conf' }
+  - {
+      src: "{{ playbook_dir }}/../config/tmux/tmux.conf",
+      dest: "{{ ansible_env.HOME }}/.config/tmux/tmux.conf",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/tmux/mappings.conf",
+      dest: "{{ ansible_env.HOME }}/.config/tmux/mappings.conf",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/tmux/plugins.conf",
+      dest: "{{ ansible_env.HOME }}/.config/tmux/plugins.conf",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/tmux/ui.conf",
+      dest: "{{ ansible_env.HOME }}/.config/tmux/ui.conf",
+    }
 
-  - { src: '{{ playbook_dir }}/../config/neovim/nvim', dest: '{{ ansible_env.HOME }}/.config/nvim' }
-  - { src: '{{ playbook_dir }}/../config/bat', dest: '{{ ansible_env.HOME }}/.config/bat' } 
+  - {
+      src: "{{ playbook_dir }}/../config/neovim/nvim",
+      dest: "{{ ansible_env.HOME }}/.config/nvim",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/bat",
+      dest: "{{ ansible_env.HOME }}/.config/bat",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/lazygit/config.yml",
+      dest: "{{ ansible_env.HOME }}/.config/lazygit/config.yml",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"
