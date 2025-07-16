@@ -28,6 +28,7 @@ return {
           "bashls",    -- Bash
 
           -- sourcekit (Swift) is macOS native, not installable via Mason
+          -- Make sure to have Xcode installed or CLI Tools: xcode-select --install
         },
         automatic_enable = false
       }
@@ -40,6 +41,23 @@ return {
     config = function()
       local lspconfig = require("lspconfig")
 
+      vim.api.nvim_create_autocmd('LspAttach', {
+        desc = 'LSP Actions',
+        callback = function(args)
+          local wk = require("which-key")
+          wk.add({
+            { "K",  vim.lsp.buf.hover,          desc = "LSP hover info",            mode = "n", buffer = args.buf },
+            { "gd", vim.lsp.buf.definition,     desc = "LSP go to definition",      mode = "n", buffer = args.buf },
+            { "gD", vim.lsp.buf.declaration,    desc = "LSP go to declaration",     mode = "n", buffer = args.buf },
+            { "gi", vim.lsp.buf.implementation, desc = "LSP go to implementation",  mode = "n", buffer = args.buf },
+            { "gr", vim.lsp.buf.references,     desc = "LSP list references",       mode = "n", buffer = args.buf },
+            { "gs", vim.lsp.buf.signature_help, desc = "LSP signature help",        mode = "n", buffer = args.buf },
+            { "gn", vim.lsp.buf.rename,         desc = "LSP rename",                mode = "n", buffer = args.buf },
+            { "[g", vim.diagnostic.goto_prev,   desc = "Go to previous diagnostic", mode = "n", buffer = args.buf },
+            { "g]", vim.diagnostic.goto_next,   desc = "Go to next diagnostic",     mode = "n", buffer = args.buf },
+          })
+        end,
+      })
       -- Lua Language Server
       lspconfig.lua_ls.setup({})
 
@@ -50,7 +68,7 @@ return {
 
       -- Swift Language Server
       lspconfig.sourcekit.setup({
-        filetypes = { "swift", "objective-c", "objective-cpp" },
+        filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
       })
 
       -- Docker Language Server
