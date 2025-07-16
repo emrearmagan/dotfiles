@@ -49,20 +49,11 @@ alias lg=lazygit
 # Copy public key to clipboard
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
 
-alias f="fzf --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
-# alias fd='cd "$(fzf --preview "bat --style=numbers --color=always {}" | xargs -I {} dirname {})"'
-# Search only directories
-alias fd='cd "$(find . -type d -print | fzf --preview "ls -la --color=always {} | bat --style=numbers --color=always --paging=never" --preview-window=right:60%)"'
+# Search files
+alias f="fzf --style minimal --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
 
-# Docker
-# Remove the last container (running or stopped)
-alias docker-rm-last='docker rm -f $(docker ps -alq)'
-
-# Remove the first container in the list
-alias docker-rm-first='docker rm -f $(docker ps -aq | head -n 1)'
-
-# Remove all containers
-alias docker-rm-all='docker rm -f $(docker ps -aq)'
-
-# Start a bash shell in the first container
-alias docker-bash-first='docker exec -it $(docker ps -aq | head -n 1) bash'
+# Grep through files (please improve...)
+alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
+  | fzf --ansi --delimiter ':' --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' --preview-window=up:60% \
+  | awk -F: '{print \$1, \$2}' \
+  | xargs -r -n2 sh -c 'nvim +\$1 \"\$0\"'"
