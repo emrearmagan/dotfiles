@@ -4,20 +4,26 @@ source ~/.alias/.custom
 source ~/.alias/.macos
 source ~/.alias/.functions
 
-#Brew
-export PATH=/opt/homebrew/bin:$PATH
 
+# ----------------------
+# Export
+# ----------------------
 #Prompt
 export PS1='%F{green}%n: (%~)%f '
-
-#Go
+# Go
 export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
+#Brew
+export PATH=/opt/homebrew/bin:$PATH
 
 # zsh-autosuggestions and highlighting
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source <(fzf --zsh)
+
+# ----------------------
+# Configuration
+# ----------------------
 
 # use vim motions
 set -o vi
