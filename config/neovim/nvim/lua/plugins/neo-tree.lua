@@ -21,11 +21,13 @@ return {
         },
 
         filesystem = {
-          follow_current_file = true, -- Focus on the currently active file
+          follow_current_file = {
+            enabled = true, 
+          },
           close_if_last_window = true, -- Close Neo-tree if it's the last open window
-          
+
           filtered_items = {
-            visible = false, -- Show hidden files
+            visible = false, -- Hide hidden files
             show_hidden_count = true, -- Display count of hidden files
             hide_dotfiles = true, -- Hide dotfiles by default
             hide_gitignore = false, -- Show files ignored by .gitignore
@@ -33,6 +35,7 @@ return {
           hijack_netrw_behavior = "open_default", -- Automatically open Neo-tree for directories
           use_libuv_file_watcher = true, -- Enable automatic tree refresh
         },
+
         window = {
           mappings = {
             ["l"] = "open", -- Open file or directory
@@ -41,26 +44,25 @@ return {
             ["<esc>"] = "cancel", -- Close preview or Neo-tree window
             ["h"] = "close_node", -- Collapse folder
             ["<Tab>"] = "toggle_preview", -- Toggle preview window
-	          ["<space>"] = false,
-	          ["/"] = "fuzzy_finder",
+            ["<space>"] = false,
+            ["/"] = "fuzzy_finder",
           },
         },
       })
 
       -- Automatically open Neo-tree for directories or when nvim is launched without arguments
-     vim.api.nvim_create_autocmd("VimEnter", {
-   callback = function(data)
-     local no_args = vim.fn.argc() == 0
-     local directory = vim.fn.isdirectory(data.file) == 1
-     if no_args or directory then
-       require("neo-tree.command").execute({ source = "filesystem", position = "left", toggle = true })
-       if directory then
-         vim.cmd.cd(data.file)
-       end
-     end
-   end,
- })
+      vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function(data)
+          local no_args = vim.fn.argc() == 0
+          local directory = vim.fn.isdirectory(data.file) == 1
+          if no_args or directory then
+            require("neo-tree.command").execute({ source = "filesystem", position = "left", toggle = true })
+            if directory then
+              vim.cmd.cd(data.file)
+            end
+          end
+        end,
+      })
     end,
   },
 }
-

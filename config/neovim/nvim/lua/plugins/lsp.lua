@@ -1,5 +1,16 @@
--- Install the plugins using Lazy.nvim
 return {
+{
+    "mason-org/mason.nvim",
+    opts = {
+        ui = {
+            icons = {
+                package_installed = "✓",
+                package_pending = "➜",
+                package_uninstalled = "✗"
+            }
+        }
+    }
+},
   -- nvim-lspconfig for setting up LSP servers
   {
     "neovim/nvim-lspconfig",
