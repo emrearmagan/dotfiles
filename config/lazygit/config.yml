@@ -7,17 +7,14 @@ gui:
       - magenta
       - bold
     inactiveBorderColor:
-      - black
+      - white
   showFileTree: true # for rendering changes files in a tree format
   border: "rounded" # one of 'single' | 'double' | 'rounded' | 'hidden'
   # previewCommand: "bat --style=plain --color=always --paging=never {{filename}}"
-os:
-  # Use Neovim as your editor inside lazygit
-  editPreset: "nvim"
-  # editCommandTempl:Telescope diagnosticsate: "{{editor}} {{filename}}"
 git:
   autoFetch: true
   autoRefresh: true
+
   # Respect your pager preferences
   paging:
     useConfig: true
