@@ -10,7 +10,7 @@ gui:
       - white
   showFileTree: true # for rendering changes files in a tree format
   border: "rounded" # one of 'single' | 'double' | 'rounded' | 'hidden'
-  # previewCommand: "bat --style=plain --color=always --paging=never {{filename}}"
+
 git:
   autoFetch: true
   autoRefresh: true

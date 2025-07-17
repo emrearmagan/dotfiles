@@ -39,6 +39,15 @@ return {
   {
     "neovim/nvim-lspconfig",
     config = function()
+      vim.diagnostic.config({
+        virtual_text = true,
+        float = {
+          border = "rounded",
+          source = "always",
+          focusable = false,
+        },
+      })
+
       local lspconfig = require("lspconfig")
 
       -- Lua Language Server
