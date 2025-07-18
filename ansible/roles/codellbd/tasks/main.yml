@@ -1,0 +1,48 @@
+# This role installs the CodeLLDB debugger used by the xcodebuild.nvim plugin in Neovim.
+# CodeLLDB enables debugging of languages such as Ada, Fortran, Kotlin Native, Nim,
+# Objective-C, Pascal, Swift, and Zig via LLDB integration.
+
+- name: Check if CodeLLDB is already installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb/codelldb"
+  register: codelldb_dir
+
+- name: Install CodeLLDB and xcodebuild.nvim integration
+  when: not codelldb_dir.stat.exists
+  block:
+    - name: Create codelldb install directory
+      file:
+        path: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb"
+        state: directory
+        mode: "0755"
+
+    - name: Download CodeLLDB for macOS ARM64
+      get_url:
+        url: https://github.com/vadimcn/codelldb/releases/download/v1.11.5/codelldb-darwin-arm64.vsix
+        dest: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb/codelldb-darwin-arm64.vsix"
+        mode: "0644"
+
+    - name: Unzip CodeLLDB
+      unarchive:
+        src: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb/codelldb-darwin-arm64.vsix"
+        dest: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb"
+        remote_src: yes
+
+    - name: Remove VSIX archive
+      file:
+        path: "{{ ansible_env.HOME }}/.local/share/nvim/codelldb/codelldb-darwin-arm64.vsix"
+        state: absent
+
+    - name: Set Ruby path for xcodebuild.nvim
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.zprofile"
+        line: 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"'
+        create: yes
+        insertafter: EOF
+
+    - name: Run `make install` for xcodebuild.nvim
+      make:
+        chdir: "{{ ansible_env.HOME }}/.local/share/nvim/lazy/xcodebuild.nvim"
+        target: install
+      environment:
+        PATH: "/opt/homebrew/opt/ruby/bin:{{ ansible_env.PATH }}"
