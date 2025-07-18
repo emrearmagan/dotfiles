@@ -44,7 +44,6 @@ alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
-alias lg="lazygit --use-config-dir ~/.config/lazygit" # It should work without it: https://github.com/jesseduffield/lazygit/commit/59f06501736dc49f3e35f7858acafa5cda13b845 (but it doesnt ....)
 
 # Copy public key to clipboard
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"

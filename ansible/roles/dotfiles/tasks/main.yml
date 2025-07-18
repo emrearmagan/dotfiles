@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure dotfiles backup directory exists
   file:
     path: "{{ dotfiles_backup_path }}"
@@ -9,7 +8,7 @@
   stat:
     path: "{{ item.dest }}"
   loop: "{{ dotfiles }}"
-  register: dotfiles_stat 
+  register: dotfiles_stat
   no_log: false
 
 - name: Backup existing dotfiles if they are not symlinks
@@ -59,3 +58,4 @@
     state: link
     force: yes
   loop: "{{ dotfiles }}"
+

@@ -1,5 +1,4 @@
 ---
-
 - name: Set fonts directory fact.
   set_fact:
     nf_fonts_dir: "{{ (ansible_facts['os_family'] == 'Darwin')|ternary(nf_macos_fonts_dir, nf_linux_fonts_dir) }}"
@@ -12,7 +11,7 @@
 - name: Check if {{ font_name }} Nerd Font exists
   shell: "ls {{ font_glob }}"
   register: font_exists
-  ignore_errors: yes
+  ignore_errors: true
   changed_when: false
 
 - name: Download {{ font_name }} Nerd Font
@@ -20,4 +19,4 @@
   ansible.builtin.unarchive:
     src: "{{ font_url }}"
     dest: "{{ nf_fonts_dir }}"
-    remote_src: yes 
+    remote_src: yes
