@@ -32,6 +32,8 @@ brew "xcodes"         # Xcode installer
 # Formatter tools used in neovim plugins
 brew "prettier"		  # JS/TS formatter
 brew "swiftformat"
+brew "swiftlint"
+brew "xcbeautify"
 
 # -- Apps --
 cask "iterm2"

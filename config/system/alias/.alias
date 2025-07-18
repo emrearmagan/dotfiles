@@ -1,4 +1,4 @@
-alias reload='source ~/.zshrc'
+alias reload='source ~/.zshrc && source ~/.zprofile'
 alias tmux-reload="tmux source-file ~/.config/tmux/tmux.conf"
 
 alias cls='clear'
@@ -49,7 +49,7 @@ alias v=nvim
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
 
 # Search files
-alias f="fzf --style minimal --preview 'bat --color=always {}' --preview-window '~3' | xargs -I {} nvim \"{}\""
+alias f=fzf
 
 # Grep through files (please improve...)
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \

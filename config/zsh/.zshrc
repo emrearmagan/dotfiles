@@ -10,9 +10,11 @@ source ~/.alias/.functions
 # ----------------------
 #Prompt
 export PS1='%F{green}%n: (%~)%f '
+
 # Go
 export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
+
 #Brew
 export PATH=/opt/homebrew/bin:$PATH
 
