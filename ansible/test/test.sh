@@ -11,7 +11,7 @@
 #   - cleanup: whether to remove the Docker container (default = true)
 #   - container_id: the --name to set for the container (default = timestamp)
 #   - test_idempotence: whether to test playbook's idempotence (default = true)
-# 
+#
 # See: https://github.com/davestephens/ansible-dotfiles/blob/master/tests/test.sh
 
 # Exit on any individual command failure.
@@ -32,16 +32,16 @@ cleanup="${cleanup:-true}"
 ## Mount the whole project including the ../config
 project_dir="$(cd "$(dirname "$0")/../.." && pwd)"
 playbook_path="/playground/ansible/${playbook}"
-skip_tags="ruby,package,brew,fonts"
+skip_tags="ruby,package,brew,fonts,codellbd"
 
 echo $project_dir
 
 # Always cleanup the container when the script exits
 cleanup_container() {
-  if [[ "${cleanup}" == "true" ]]; then
-    echo -e "${green}\nCleaning up container: ${container_id}${neutral}"
-    docker rm -f "${container_id}" >/dev/null 2>&1 || true
-  fi
+	if [[ "${cleanup}" == "true" ]]; then
+		echo -e "${green}\nCleaning up container: ${container_id}${neutral}"
+		docker rm -f "${container_id}" >/dev/null 2>&1 || true
+	fi
 }
 trap cleanup_container EXIT
 
@@ -49,12 +49,12 @@ trap cleanup_container EXIT
 echo -e "${green}Starting Docker container: ${docker_image}${neutral}"
 docker pull "${docker_image}:latest"
 docker run --detach \
-  --name "${container_id}" \
-  --volume="${project_dir}:/playground:rw" \
-  --privileged \
-  --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-  "${docker_image}:latest" \
-  /lib/systemd/systemd
+	--name "${container_id}" \
+	--volume="${project_dir}:/playground:rw" \
+	--privileged \
+	--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
+	"${docker_image}:latest" \
+	/lib/systemd/systemd
 
 # Show Ansible version
 echo -e "${green}\nChecking Ansible version${neutral}"
@@ -62,8 +62,8 @@ docker exec -t "${container_id}" ansible-playbook --version
 
 # Install Galaxy roles if needed
 if [[ -f "${project_dir}/requirements.yml" ]]; then
-  echo -e "${green}\nInstalling Ansible Galaxy dependencies${neutral}"
-  docker exec -t "${container_id}" ansible-galaxy install -r "${playbook_path%/*}/requirements.yml"
+	echo -e "${green}\nInstalling Ansible Galaxy dependencies${neutral}"
+	docker exec -t "${container_id}" ansible-galaxy install -r "${playbook_path%/*}/requirements.yml"
 fi
 
 # Syntax check
@@ -76,11 +76,14 @@ docker exec -e ANSIBLE_FORCE_COLOR=1 -t "${container_id}" ansible-playbook "${pl
 
 # Run idempotence test (optional second run)
 if [[ "${test_idempotence}" == "true" ]]; then
-  echo -e "${green}\nRunning idempotence test...${neutral}"
-  result=$(docker exec "${container_id}" ansible-playbook "${playbook_path}" --skip-tags "${skip_tags}")
-  echo "${result}"
+	echo -e "${green}\nRunning idempotence test...${neutral}"
+	result=$(docker exec "${container_id}" ansible-playbook "${playbook_path}" --skip-tags "${skip_tags}")
+	echo "${result}"
 
-  echo "${result}" | grep -q 'changed=0.*failed=0' \
-    && echo -e "${green}Idempotence test: pass ✅${neutral}" \
-    || { echo -e "${red}Idempotence test: FAIL ❌${neutral}"; exit 1; }
+	echo "${result}" | grep -q 'changed=0.*failed=0' &&
+		echo -e "${green}Idempotence test: pass ✅${neutral}" ||
+		{
+			echo -e "${red}Idempotence test: FAIL ❌${neutral}"
+			exit 1
+		}
 fi

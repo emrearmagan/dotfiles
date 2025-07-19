@@ -50,11 +50,3 @@
     state: link
     force: true
   loop: "{{ dotfiles }}"
-
-- name: Symlink dotfiles to home directory
-  file:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    state: link
-    force: yes
-  loop: "{{ dotfiles }}"
