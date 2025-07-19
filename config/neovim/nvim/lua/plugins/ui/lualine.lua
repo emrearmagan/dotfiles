@@ -44,7 +44,7 @@ return {
 				section_separators = { left = "", right = "" }, -- Curved section separators
 			},
 			sections = {
-				lualine_a = {
+				lualine_b = {
 					-- or simply use: { "mode" }, -- this will display the full name of the mode
 					{
 						function()
@@ -67,12 +67,16 @@ return {
 						end,
 					},
 				},
-				lualine_b = {
+				lualine_a = {
 					{
 						function()
-							local icon = "" -- Gopher icon (or any Nerd Font icon you want)
-							local filename = vim.fn.expand("%:t") -- current file name
-							return icon .. " " .. filename
+							local icons = {
+								go = " ",
+								swift = " ",
+							}
+							local icon = icons[vim.bo.filetype] or ""
+							local filename = vim.fn.expand("%:t")
+							return icon .. filename
 						end,
 					},
 				},
