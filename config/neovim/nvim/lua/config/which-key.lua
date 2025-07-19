@@ -89,7 +89,30 @@ wk.add({
 	{ "<leader>cn", vim.diagnostic.goto_next, desc = "Next diagnostic", mode = "n" },
 
 	-- ----- LazyGit -----
-	{ "<leader>cg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+	{ "<leader>cg", group = "Git" },
+	{ "<leader>cgg", "<cmd>LazyGit<cr>", desc = "Open LazyGit" },
+	{
+		"<leader>cgs",
+		function()
+			require("gitsigns").toggle_current_line_blame()
+		end,
+		desc = "Toggle Line Blame",
+	},
+	{
+		"<leader>cgb",
+		function()
+			require("gitsigns").blame_line({ full = true })
+		end,
+		desc = "Git Blame Line",
+	},
+	{
+		"<leader>cgB",
+		function()
+			vim.cmd("Gitsigns blame")
+			vim.cmd("wincmd p") -- jump back to previous window
+		end,
+		desc = "Git Blame (panel, refocus)",
+	},
 
 	-- Default Keybindings already defined in avantage. Just renaming the group so we have an Icon
 	{ "<leader>a", group = "AI" },

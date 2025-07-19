@@ -29,10 +29,6 @@ return {
 					fg = "#89b4fa", -- Color of the little underline arrow/indicator
 					bold = true,
 				},
-				diagnostics_selected = {
-					fg = "#f38ba8", -- Color of LSP diagnostic text on selected buffer
-					bold = true,
-				},
 			},
 		})
 	end,
