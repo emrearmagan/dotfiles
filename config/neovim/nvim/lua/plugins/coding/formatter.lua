@@ -1,0 +1,23 @@
+return {}  --- using null.lua for linting and formatting now
+
+-- return {
+--   {
+--     "stevearc/conform.nvim",
+--     config = function()
+--       require("conform").setup({
+--         formatters_by_ft = {
+--           yml = { "prettier" },           -- YAML formatting
+--           yaml = { "prettier" },          -- YAML alias
+--           swift = { "swiftformat" },      -- Swift formatting
+--           ansible = { "prettier" },       -- Use prettier for Ansible YAML files
+--           sh = { "shfmt" },               -- Shell script formatting
+--           bash = { "shfmt" },             -- Shell script alias
+--         },
+--         format_on_save = {
+--           enabled = true, -- Enable auto-formatting on save
+-- 	        lsp_fallback = true, --- Use LSP formatting if not formtter is defined
+--         },
+--       })
+--     end,
+--   },
+-- }

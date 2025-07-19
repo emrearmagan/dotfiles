@@ -49,7 +49,7 @@ alias v=nvim
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
 
 # Search files
-alias f=fzf
+alias f="fzf | xargs -I {} nvim \"{}\""
 
 # Grep through files (please improve...)
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
