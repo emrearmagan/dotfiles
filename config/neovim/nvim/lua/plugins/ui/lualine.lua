@@ -1,6 +1,9 @@
 return {
 	"nvim-lualine/lualine.nvim", -- Lualine statusline plugin
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = {
+		"nvim-tree/nvim-web-devicons",
+		"dokwork/lualine-ex", -- Custom LSP component
+	},
 	config = function()
 		local lualine = require("lualine")
 
@@ -19,13 +22,20 @@ return {
 			return " " .. vim.g.xcodebuild_device_name
 		end
 
-		local function lsp_name()
-			local clients = vim.lsp.get_active_clients()
-			if #clients > 0 then
-				return " " .. clients[1].name
-			else
-				return " No LSP"
-			end
+		---------------------------------------------------------------------
+		-- project() → repo‐root folder name, or CWD tail when not in a repo
+		---------------------------------------------------------------------
+		local function project()
+			-- directory of current buffer
+			local buf_dir = vim.fn.expand("%:p:h")
+
+			-- try to detect the git root
+			local git_root =
+				vim.fn.systemlist("git -C " .. vim.fn.fnameescape(buf_dir) .. " rev-parse --show-toplevel")[1]
+
+			-- fall back to current dir if not a git repo
+			local dir = (git_root ~= "" and git_root) or buf_dir
+			return "  " .. vim.fn.fnamemodify(dir, ":t")
 		end
 
 		lualine.setup({
@@ -44,48 +54,52 @@ return {
 				section_separators = { left = "", right = "" }, -- Curved section separators
 			},
 			sections = {
-				lualine_b = {
-					-- or simply use: { "mode" }, -- this will display the full name of the mode
-					{
-						function()
-							local mode_map = {
-								["NORMAL"] = "N",
-								["INSERT"] = "I",
-								["VISUAL"] = "V",
-								["V-LINE"] = "VL",
-								["V-BLOCK"] = "VB",
-								["REPLACE"] = "R",
-								["COMMAND"] = "C",
-								["SELECT"] = "S",
-								["S-LINE"] = "SL",
-								["S-BLOCK"] = "SB",
-								["EX"] = "E",
-								["TERMINAL"] = "T",
-							}
-							local mode = vim.fn.mode(true):upper()
-							return mode_map[vim.api.nvim_get_mode().mode:upper()] or mode:sub(1, 1)
-						end,
-					},
-				},
 				lualine_a = {
 					{
-						function()
-							local icons = {
-								go = " ",
-								swift = " ",
-							}
-							local icon = icons[vim.bo.filetype] or ""
-							local filename = vim.fn.expand("%:t")
-							return icon .. filename
+						"filetype",
+						icon_only = true,
+						colored = true,
+						--color = { bg = "#313244" },
+						--separator = { left = "", right = "" },
+						padding = { left = 1, right = 0 },
+					},
+					{
+						"filename",
+						file_status = true, -- Displays file status (readonly status, modified status)
+						newfile_status = true, -- Display new file status (new file means no write after created)
+						path = 0, -- 0: Just the filename
+						-- 1: Relative path
+						-- 2: Absolute path
+						-- 3: Absolute path, with tilde as the home directory
+						-- 4: Filename and parent dir, with tilde as the home directory
+
+						shorting_target = 40, -- Shortens path to leave 40 spaces in the window
+						-- for other components. (terrible name, any suggestions?)
+						symbols = {
+							modified = "󰷥", -- Text to show when the file is modified.
+							readonly = "", -- Text to show when the file is non-modifiable or readonly.
+							unnamed = " - No Name", -- Text to show for unnamed buffers.
+							newfile = " - New File",
+						},
+						padding = { left = 0, right = 1 },
+					},
+				},
+
+				lualine_b = {
+					{
+						"mode",
+						fmt = function(str)
+							return str:sub(1, 1)
 						end,
 					},
 				},
+
 				lualine_c = {
 					{ "diagnostics" }, -- Show LSP diagnostics (errors/warnings)
 				},
 
 				lualine_x = {
-					{ lsp_name, color = { fg = "#89b4fa" } }, -- Active LSP
+					{ "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
 
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
 					{ "' ' .. vim.g.xcodebuild_last_status", color = { fg = "#a6e3a1" } },
@@ -95,7 +109,19 @@ return {
 					{ xcodebuild_device, color = { fg = "#f9e2af", bg = "#161622" } },
 				},
 				lualine_y = {
+					{ project, color = { fg = "#91d7e3" } }, -- ← new line
 					{ "branch" }, -- Show current git branch
+					{
+						"diff",
+						-- color = { fg = colors.mauve },
+						colored = true, -- Displays a colored diff status if set to true
+						diff_color = { -- match your palette
+							added = { fg = "#a6da95" }, -- green
+							modified = { fg = "#e0af68" }, -- yellow/peach
+							removed = { fg = "#f7768e" }, -- red
+						},
+						symbols = { added = "+", modified = "~", removed = "-" }, -- Changes the symbols used by the diff.
+					},
 				},
 				lualine_z = {
 					{ "location" }, -- Show line & column number

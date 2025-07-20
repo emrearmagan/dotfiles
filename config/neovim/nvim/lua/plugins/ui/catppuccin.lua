@@ -7,7 +7,7 @@ return {
 	config = function()
 		require("catppuccin").setup({
 			flavour = "mocha", -- or "latte", "frappe", "macchiato"
-			transparent_background = false,
+			transparent_background = true,
 			integrations = {
 				notify = true, -- pull in Notify* highlight groups
 			},

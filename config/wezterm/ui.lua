@@ -27,7 +27,7 @@ end)
 
 -- Add current time and custom mode message to right side of status bar
 wezterm.on("update-right-status", function(window)
-	local date = wezterm.strftime("%Y-%m-%d %H:%M:%S ")
+	local date = wezterm.strftime("󰥔 %Y-%m-%d  󰃰 %H:%M ")
 	window:set_right_status(date)
 end)
 
@@ -70,6 +70,16 @@ return {
 	tab_bar_at_bottom = false,
 	use_fancy_tab_bar = false,
 	hide_tab_bar_if_only_one_tab = true,
+	colors = {
+		tab_bar = {
+			-- background = "#1e2030", -- or use the Catppuccin color
+			background = "rgba(0,0,0,0)",
+
+			-- new-tab button: same trick
+			new_tab = { bg_color = "#1e2030", fg_color = "#cdd6f4" },
+			new_tab_hover = { bg_color = "#1e2030", fg_color = "#a6e3a1" },
+		},
+	},
 
 	--- window_decorations = "RESIZE",
 	window_decorations = "RESIZE",

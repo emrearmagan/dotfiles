@@ -11,12 +11,12 @@ return {
 				diagnostics = "nvim_lsp", -- Show LSP diagnostic indicators (errors/warnings)
 				show_close_icon = true, -- Hide top-right global close icon
 				show_buffer_close_icons = false, -- Hide close icon on each buffer tab
-				separator_style = "slant", -- Use slanted separators between tabs ("slant", "thick", "thin")
+				separator_style = "thin", -- Use slanted separators between tabs ("slant", "thick", "thin")
 				always_show_bufferline = false, -- Show bufferline even with only one buffer
 				color_icons = true, -- Enable colorful devicons
 				show_tab_indicators = true, -- Show tab indicator (thin underline for active tab)
 				enforce_regular_tabs = true, -- Prevent bufferline from compressing tab names
-				max_name_length = 25, -- Max length of a buffer name before truncation
+				max_name_length = 40, -- Max length of a buffer name before truncation
 				-- max_prefix_length = 15,         -- Max length of prefix used before truncated name
 			},
 			highlights = {
