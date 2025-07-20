@@ -18,6 +18,7 @@ alias l='eza --no-permissions --color=always --icons --no-user --bytes'
 
 # “la” → long, all files (incl. dotfiles)
 alias la='eza --long --all --color=always --icons --no-user --bytes'
+alias lsa=la
 
 # “lsd” → only directories
 alias lsd='eza -lh --only-dirs --color=always --icons --no-user'
