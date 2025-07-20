@@ -2,14 +2,13 @@ return {
 	{
 		"j-hui/fidget.nvim",
 		-- event = "VeryLazy",
+		--
 		lazy = false,
 		priority = 10000,
 		config = function()
-			local fidget = require("fidget")
-			fidget.setup({
+			require("fidget").setup({
 				notification = {
 					override_vim_notify = false,
-
 					window = {
 						normal_hl = "String", -- Base highlight group in the notification window
 						winblend = 0, -- Background color opacity in the notification window
