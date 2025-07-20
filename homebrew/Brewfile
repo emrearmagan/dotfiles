@@ -6,7 +6,7 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "tmux"
 brew "fzf"
-brew "htop"
+brew "btop"
 brew "fx"
 brew "bat"            # better `cat`
 brew "tldr"           # simplified man pages
@@ -21,6 +21,7 @@ brew "python"
 brew "xcodegen"
 brew "ansible"      
 brew "lazygit"
+brew "delve" # Go Debugger used in nvim (DAP)
 
 # -- CLI: Networking & Package Management --
 brew "curl"

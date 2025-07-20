@@ -1,7 +1,9 @@
 return {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    ---@module "ibl"
-    ---@type ibl.config
-    opts = {},
+	"lukas-reineke/indent-blankline.nvim",
+	main = "ibl",
+	opts = {
+		indent = {
+			char = "┊", -- looks like a dashed vertical line
+		},
+	},
 }

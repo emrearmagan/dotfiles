@@ -17,7 +17,6 @@ return {
         -- - including hidden files (like .env)
         -- - excluding common clutter (e.g. .git, node_modules, .DS_Store)
         cmd = "rg --files --no-ignore --hidden --follow --glob '!.git/*' --glob '!node_modules/*' --glob '!.DS_Store'",
-        -- cmd = "find . -type f", -- Use `find` for better file handling
         previewer = "bat", -- Use `bat` as a previewer
         git_icons = true,
         follow = true

@@ -1,6 +1,8 @@
 return {
   "folke/snacks.nvim",
   event = "VimEnter",
+  lazy = true,
+  priority = 1000,
   opts = {
     dashboard = {
       width = 60,

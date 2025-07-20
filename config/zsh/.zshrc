@@ -33,7 +33,7 @@ set -o vi
 # Enable history appending instead of overwriting the history file
 setopt appendhistory
 # Share command history across multiple terminal sessions
-setopt sharehistory
+# setopt sharehistory
 # Ignore commands that start with a space in history
 setopt hist_ignore_space
 # Ignore duplicate commands in history

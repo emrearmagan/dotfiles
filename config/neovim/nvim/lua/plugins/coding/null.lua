@@ -6,12 +6,14 @@ return {
 	},
 	config = function()
 		local null_ls = require("null-ls")
+    -- vim.lsp.config('null-ls')
+    --
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 		require("mason-null-ls").setup({
 			ensure_installed = {
 				"gofmt", -- Go (should come with go installed - no available in mason)
 				"goimports", -- Also GO
-				"golangci-int",
+				"golangci-lint",
 
 				"swiftformat", -- Swift
 				"swiftlint",
@@ -25,11 +27,12 @@ return {
 
 		vim.fn.sign_define("DiagnosticSignError", { text = "✖", texthl = "DiagnosticSignError" })
 		vim.fn.sign_define("DiagnosticSignWarn", { text = "▲", texthl = "DiagnosticSignWarn" })
+
 		vim.diagnostic.config({
 			virtual_text = {
 				--severity = vim.diagnostic.severity.ERROR, -- Only show errors inline
 				severity = {
-					min = vim.diagnostic.severity.WARN, -- show WARN and ERROR
+					min = vim.diagnostic.severity.INFO, -- show INFO and ERROR
 					max = vim.diagnostic.severity.ERROR,
 				},
 				source = "always", -- Always show source (e.g., gopls)
@@ -49,6 +52,7 @@ return {
 		})
 
 		null_ls.setup({
+      name = "null_ls",
 			-- format on save
 			on_attach = function(client, bufnr)
 				if client.supports_method("textDocument/formatting") then
@@ -79,7 +83,7 @@ return {
 				null_ls.builtins.formatting.stylua,
 				null_ls.builtins.formatting.shfmt,
 
-				-- Liner --
+				-- Linter --
 				null_ls.builtins.diagnostics.golangci_lint,
 				null_ls.builtins.diagnostics.swiftlint,
 			},
