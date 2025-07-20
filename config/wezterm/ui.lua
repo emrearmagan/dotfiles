@@ -25,11 +25,12 @@ wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 	}
 end)
 
+-- INFO: Currently handled by Tmux
 -- Add current time and custom mode message to right side of status bar
-wezterm.on("update-right-status", function(window)
-	local date = wezterm.strftime("󰥔 %Y-%m-%d  󰃰 %H:%M ")
-	window:set_right_status(date)
-end)
+-- wezterm.on("update-right-status", function(window)
+-- 	local date = wezterm.strftime("󰥔 %Y-%m-%d  󰃰 %H:%M ")
+-- 	window:set_right_status(date)
+-- end)
 
 -- Allow user to dynamically change the tab title using `wezterm cli set-user-var tab_title "New Title"`
 local user_var_tab_title_key = "tab_title"

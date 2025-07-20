@@ -15,5 +15,8 @@ export FZF_DEFAULT_OPTS='
   --preview-window=right:60%
 '
 
+# Currently used by lazygit to find the config file.
+export XDG_CONFIG_HOME="$HOME/.config"
+
 export LANG=de_DE.UTF-8
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"

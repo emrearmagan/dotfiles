@@ -9,21 +9,21 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-alias l="ls -lhF ${colorflag}"
-alias la="ls -lahF ${colorflag}"
-alias lsd="ls -lhF ${colorflag} | grep --color=never '^d'"
-alias ls='ls ${colorflag}'
+# ── eza-powered directory listings ───────────────────────────────────────
+# plain “ls” → detailed list (+icons, coloured), no user column
+alias ls='eza --long --color=always --icons --no-user'
 
-# Copy pwd to clipboard
-alias cpwd="pwd|tr -d '\n'|pbcopy"
+# “l”  → short , human-readable sizes
+alias l='eza --no-permissions --color=always --icons --no-user --bytes'
 
-# Folder color
-# Detect which `ls` flavor is in use
-if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
-else # OS X `ls`
-	colorflag="-G"
-fi
+# “la” → long, all files (incl. dotfiles)
+alias la='eza --long --all --color=always --icons --no-user --bytes'
+
+# “lsd” → only directories
+alias lsd='eza -lh --only-dirs --color=always --icons --no-user'
+
+# ── copy current path to clipboard (macOS pbcopy) ────────────────────────
+alias cpwd="pwd | tr -d '\n' | pbcopy"
 
 # Shortcuts
 alias dl="cd ~/Downloads"
@@ -44,13 +44,13 @@ alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
+alias lg=lazygit
 
 # Copy public key to clipboard
 alias pubkey="more ~/.ssh/id_ed25519.pub | xclip -selection clipboard | echo '=> Public key copied to pasteboard.'"
 
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""
-
 # Grep through files (please improve...)
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
   | fzf --ansi --delimiter ':' --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' --preview-window=up:60% \

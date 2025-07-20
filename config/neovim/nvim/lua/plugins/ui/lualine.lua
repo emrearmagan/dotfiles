@@ -110,7 +110,7 @@ return {
 				},
 				lualine_y = {
 					{ project, color = { fg = "#91d7e3" } }, -- ← new line
-					{ "branch" }, -- Show current git branch
+					{ "branch", padding = { right = 0 } }, -- Show current git branch
 					{
 						"diff",
 						-- color = { fg = colors.mauve },

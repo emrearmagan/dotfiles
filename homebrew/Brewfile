@@ -12,6 +12,7 @@ brew "bat"            # better `cat`
 brew "tldr"           # simplified man pages
 brew "grep"           # text searching
 brew "rg"             # for better files searches (also used by nvim)
+brew "eza"
 brew "neovim"		  # höö ?
 
 # -- CLI: Dev & Build Tools --

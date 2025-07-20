@@ -18,7 +18,10 @@ wezterm.on("gui-startup", function(cmd)
 		args = args,
 	})
 	home_tab:set_title("home")
-	local home_pane = home_tab:active_pane():send_text("tmux a\n")
+	home_tab:active_pane():send_text("tmux a\n")
+
+	local empty_tab = window:spawn_tab({ cwd = home })
+	empty_tab:set_title("scratch")
 
 	local stats_tab = window:spawn_tab({ cwd = home })
 	stats_tab:set_title("stats")
@@ -27,7 +30,7 @@ wezterm.on("gui-startup", function(cmd)
 	stats_pane:send_text("df -h /\n")
 	local bottom_pane = stats_pane:split({
 		direction = "Bottom",
-		size = 0.5,
+		size = 0.6,
 		cwd = home,
 	})
 	bottom_pane:send_text("btop\n")
