@@ -109,7 +109,7 @@ return {
 					{ xcodebuild_device, color = { fg = "#f9e2af", bg = "#161622" } },
 				},
 				lualine_y = {
-					{ project, color = { fg = "#91d7e3" } }, -- ← new line
+					-- { project, color = { fg = "#91d7e3" } },
 					{ "branch", padding = { right = 0 } }, -- Show current git branch
 					{
 						"diff",
@@ -124,7 +124,10 @@ return {
 					},
 				},
 				lualine_z = {
-					{ "location" }, -- Show line & column number
+					{
+						"location",
+						padding = { left = 0, right = 0 },
+					}, -- Show line & column number
 				},
 			},
 			inactive_sections = {

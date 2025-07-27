@@ -1,6 +1,7 @@
 local wk = require("which-key")
 local gitsigns = require("gitsigns")
 local xcodebuild = require("xcodebuild.integrations.dap")
+local snacks = require("snacks")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -43,10 +44,6 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │               Tabs / Splits / Buffers              │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>t", group = "Tabs & Splits" },
-	{ "<leader>tt", "<cmd>tabnew<cr>", desc = "New Tab", mode = "n" },
-	{ "<leader>tv", "<cmd>vsplit<cr>", desc = "Vertical Split", mode = "n" },
-	{ "<leader>th", "<cmd>split<cr>", desc = "Horizontal Split", mode = "n" },
 	{ "<C-n>", "<cmd>BufferLineCycleNext<CR>", desc = "Next Buffer", mode = "n" },
 	{ "<C-p>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous Buffer", mode = "n" },
 	{ "<C-x>", "<cmd>bdelete<CR>", desc = "Close current buffer", mode = "n" },
@@ -87,17 +84,21 @@ wk.add({
 	{ "<leader>cf", vim.lsp.buf.format, desc = "Format File (LSP)", mode = "n" },
 	{ "<leader>cp", vim.diagnostic.goto_prev, desc = "Prev diagnostic", mode = "n" },
 	{ "<leader>cn", vim.diagnostic.goto_next, desc = "Next diagnostic", mode = "n" },
+	{
+		"<leader>cs",
+		function()
+			snacks.picker.lsp_symbols()
+		end,
+		desc = "LSP Symbols",
+	},
+	{
+		"<leader>cS",
+		function()
+			snacks.picker.lsp_workspace_symbols()
+		end,
+		desc = "LSP Workspace Symbols",
+	},
 
-	{
-		"<leader>cx",
-		"<cmd>Trouble diagnostics toggle<cr>",
-		desc = "Diagnostics (Trouble)",
-	},
-	{
-		"<leader>cX",
-		"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-		desc = "Buffer Diagnostics (Trouble)",
-	},
 	{
 		"<leader>cm",
 		"<cmd>Trouble symbols toggle focus=false<cr>",
@@ -107,6 +108,20 @@ wk.add({
 		"<leader>cl",
 		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
 		desc = "LSP Definitions / references / ... (Trouble)",
+	},
+	{
+		"<leader>cx",
+		function()
+			snacks.picker.diagnostics()
+		end,
+		desc = "Diagnostics",
+	},
+	{
+		"<leader>cX",
+		function()
+			snacks.picker.diagnostics_buffer()
+		end,
+		desc = "Buffer Diagnostics",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -171,24 +186,73 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                       Git                          │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>cg", group = "Git" },
-	{ "<leader>cgg", "<cmd>LazyGit<cr>", desc = "Open LazyGit" },
+	{ "<leader>g", group = "Git" },
+	{ "<leader>gl", "<cmd>LazyGit<cr>", desc = "Open LazyGit" },
 	{
-		"<leader>cgs",
+		"<leader>gr",
+		function()
+			snacks.picker.git_branches()
+		end,
+		desc = "Git Branches",
+	},
+	{
+		"<leader>gl",
+		function()
+			snacks.picker.git_log()
+		end,
+		desc = "Git Log",
+	},
+	{
+		"<leader>gL",
+		function()
+			snacks.picker.git_log_line()
+		end,
+		desc = "Git Log Line",
+	},
+	{
+		"<leader>gs",
+		function()
+			snacks.picker.git_status()
+		end,
+		desc = "Git Status",
+	},
+	{
+		"<leader>gS",
+		function()
+			snacks.picker.git_stash()
+		end,
+		desc = "Git Stash",
+	},
+	{
+		"<leader>gd",
+		function()
+			snacks.picker.git_diff()
+		end,
+		desc = "Git Diff (Hunks)",
+	},
+	{
+		"<leader>gf",
+		function()
+			snacks.picker.git_log_file()
+		end,
+		desc = "Git Log File",
+	},
+	{
+		"<leader>gt",
 		function()
 			gitsigns.toggle_current_line_blame()
 		end,
 		desc = "Toggle Line Blame",
 	},
 	{
-		"<leader>cgb",
+		"<leader>gb",
 		function()
 			gitsigns.blame_line({ full = true })
 		end,
 		desc = "Git Blame Line",
 	},
 	{
-		"<leader>cgB",
+		"<leader>gB",
 		function()
 			vim.cmd("Gitsigns blame")
 			vim.cmd("wincmd p")
@@ -200,4 +264,127 @@ wk.add({
 	-- │                     AI Tools                       │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>a", group = "AI" },
+
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                     snacks                         │
+	-- ╰────────────────────────────────────────────────────╯
+	{
+		"<leader>sa",
+		function()
+			snacks.picker.autocmds()
+		end,
+		desc = "Autocmds",
+	},
+	{
+		"<leader>sc",
+		function()
+			snacks.picker.command_history()
+		end,
+		desc = "Command History",
+	},
+	{
+		"<leader>sC",
+		function()
+			snacks.picker.commands()
+		end,
+		desc = "Commands",
+	},
+	{
+		"<leader>sh",
+		function()
+			snacks.picker.help()
+		end,
+		desc = "Help Pages",
+	},
+
+	{
+		"<leader>si",
+		function()
+			snacks.picker.icons()
+		end,
+		desc = "Icons",
+	},
+
+	{
+		"<leader>sM",
+		function()
+			snacks.picker.man()
+		end,
+		desc = "Man Pages",
+	},
+
+	{
+		"<leader>su",
+		function()
+			snacks.picker.undo()
+		end,
+		desc = "Undo History",
+	},
+	{
+		"<leader>sB",
+		function()
+			snacks.gitbrowse()
+		end,
+		desc = "Git Browse",
+		mode = { "n", "v" },
+	},
+	{
+		"<leader>sm",
+		function()
+			snacks.picker.marks()
+		end,
+		desc = "Marks",
+	},
+
+	{
+		"<leader>..",
+		function()
+			snacks.scratch()
+		end,
+		desc = "Toggle Scratch Buffer",
+	},
+	{
+		"<leader>.s",
+		function()
+			snacks.scratch.select()
+		end,
+		desc = "Select Scratch Buffer",
+	},
+
+	{
+		"<leader>Xd",
+		function()
+			snacks.picker.lsp_definitions()
+		end,
+		desc = "Goto Definition",
+	},
+	{
+		"<leader>XD",
+		function()
+			snacks.picker.lsp_declarations()
+		end,
+		desc = "Goto Declaration",
+	},
+	{
+		"<leader>Xr",
+		function()
+			snacks.picker.lsp_references()
+		end,
+		nowait = true,
+		desc = "References",
+	},
+	{
+		"<leader>XI",
+		function()
+			snacks.picker.lsp_implementations()
+		end,
+		desc = "Goto Implementation",
+	},
+	{
+		"<leader>Xy",
+		function()
+			snacks.picker.lsp_type_definitions()
+		end,
+		desc = "Goto T[y]pe Definition",
+	},
 })

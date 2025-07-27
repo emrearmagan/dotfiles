@@ -11,7 +11,7 @@ alias .....="cd ../../../.."
 
 # ── eza-powered directory listings ───────────────────────────────────────
 # plain “ls” → detailed list (+icons, coloured), no user column
-alias ls='eza --long --color=always --icons --no-user'
+alias ls='eza --color=always --icons --no-user'
 
 # “l”  → short , human-readable sizes
 alias l='eza --no-permissions --color=always --icons --no-user --bytes'

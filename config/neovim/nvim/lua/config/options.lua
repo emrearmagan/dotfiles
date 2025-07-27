@@ -3,6 +3,21 @@ vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+vim.keymap.set("n", "Y", "y$", { desc = "Yank to end-of-line" })
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines (cursor stays)" })
+
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half-page down & center" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half-page up & center" })
+
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search (centered)" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev search (centered)" })
+
+vim.keymap.set("n", "<leader>d", '"_d', { desc = "Delete without yank" })
+vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without yank" })
+
 -- Basic Options
 vim.opt.number = true
 vim.opt.relativenumber = true
