@@ -25,6 +25,8 @@ brew "ansible"
 brew "lazygit"
 brew "delve" # Go Debugger used in nvim (DAP)
 
+brew "shortcat"
+
 # -- CLI: Networking & Package Management --
 brew "curl"
 brew "wget"
