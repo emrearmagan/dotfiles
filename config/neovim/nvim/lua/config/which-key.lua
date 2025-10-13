@@ -53,6 +53,7 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>q", group = "Quick / File" },
 	{ "<leader>qq", ":bd<CR>", desc = "Close buffer", mode = "n" },
+	{ "<leader>qa", ":BufferLineCloseOthers<CR>", desc = "Close all except current", mode = "n" },
 	{ "<leader>qs", ":w<CR>", desc = "Save file", mode = "n" },
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{ "<leader>qx", ":x<CR>", desc = "Save & close file", mode = "n" },
