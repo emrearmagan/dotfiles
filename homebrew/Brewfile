@@ -53,6 +53,7 @@ cask "raycast"
 cask "notion"
 cask "google-chrome"
 cask "termius"
+cask "rectangle"       # Window management
 
 # -- Mac App Store --
 mas "Swift Playgrounds", id: 1496833156

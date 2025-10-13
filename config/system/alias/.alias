@@ -57,3 +57,16 @@ alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
   | fzf --ansi --delimiter ':' --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' --preview-window=up:60% \
   | awk -F: '{print \$1, \$2}' \
   | xargs -r -n2 sh -c 'nvim +\$1 \"\$0\"'"
+
+alias proxy-local='
+    IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
+    echo "Your IP: $IP | Proxy: $IP:8888"
+    echo "$IP" | pbcopy
+    echo " IP copied to clipboard!"
+    echo "Press Enter to start mitmproxy..."
+    read
+    mitmproxy --mode regular@8888 \
+        --ignore "~u \.png$ | ~u logo" \
+        --ssl-insecure
+        --no-http2
+'
