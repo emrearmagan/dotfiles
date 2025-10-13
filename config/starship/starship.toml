@@ -2,7 +2,7 @@ format = "$directory$git_branch$git_status $character"
 right_format = "$golang$php$nodejs$swift$docker_context"
 
 [directory]
-style = "89B4FA_1"  # pastel blue, matches tmux and Neovim
+style = "#89B4FA"  # pastel blue, matches tmux and Neovim
 format = "[$path]($style)"
 truncation_length = 0
 truncate_to_repo = false
@@ -10,11 +10,11 @@ read_only = ""
 
 [git_branch]
 symbol = ""
-style = "94E2D5_1"
+style = "#94E2D5"
 format = ' [(\($symbol $branch\))]($style)'
 
 [git_status]
-style = "F38BA8_1"
+style = "#F38BA8"
 format = " [$all_status]($style)"
 
 [character]
@@ -23,26 +23,26 @@ error_symbol = " ❯"
 
 [golang]
 symbol = " "
-style = "89DCEB_1"  # sky blue (Catppuccin blue)
+style = "#89DCEB"  # sky blue (Catppuccin blue)
 format = " [$symbol($version)]($style)"
 
 [php]
 symbol = " "
-style = "B4BEFE_1"  # lavender
+style = "#B4BEFE"  # lavender
 format = " [$symbol($version)]($style)"
 
 [nodejs]
 symbol = " "
-style = "A6E3A1_1"  # greenish mint
+style = "#A6E3A1"  # greenish mint
 format = " [$symbol($version)]($style)"
 
 [swift]
 symbol = " "
-style = "F38BA8_1"  # coral/red-pink
+style = "#F38BA8"  # coral/red-pink
 format = " [$symbol($version)]($style)"
 
 [docker_context]
 symbol = " "
-style = "94E2D5_1"  # soft teal
+style = "#94E2D5"  # soft teal
 format = " [$symbol]($style)"
 only_with_files = true
