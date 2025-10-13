@@ -48,18 +48,18 @@ return {
 				},
 			})
 
-			local lspconfig = require("lspconfig")
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 			-- Lua Language Server
-			lspconfig.lua_ls.setup({})
+			vim.lsp.config("lua_ls", {})
 
 			-- Go Language Server
-			lspconfig.gopls.setup({
+			vim.lsp.config("gopls", {
 				filetypes = { "go", "gomod" },
 			})
 
 			-- Swift Language Server
-			lspconfig.sourcekit.setup({
+			vim.lsp.config("sourcekit", {
 				capabilities = {
 					workspace = {
 						didChangeWatchedFiles = {
@@ -71,10 +71,10 @@ return {
 			})
 
 			-- Docker Language Server
-			lspconfig.dockerls.setup({})
+			vim.lsp.config("dockerls", {})
 
 			-- YAML Language Server
-			lspconfig.yamlls.setup({
+			vim.lsp.config("yamlls", {
 				settings = {
 					yaml = {
 						schemas = {
@@ -86,7 +86,7 @@ return {
 			})
 
 			-- Ansible Language Server
-			lspconfig.ansiblels.setup({
+			vim.lsp.config("ansiblels", {
 				settings = {
 					ansible = {
 						ansibleLint = {
@@ -97,7 +97,7 @@ return {
 			})
 
 			-- Bash Language Server
-			lspconfig.bashls.setup({})
+			vim.lsp.config("bashls", {})
 		end,
 	},
 
