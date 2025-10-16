@@ -6,8 +6,8 @@ return {
 	},
 	config = function()
 		local null_ls = require("null-ls")
-    -- vim.lsp.config('null-ls')
-    --
+		-- vim.lsp.config('null-ls')
+		--
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 		require("mason-null-ls").setup({
 			ensure_installed = {
@@ -52,7 +52,7 @@ return {
 		})
 
 		null_ls.setup({
-      name = "null_ls",
+			name = "null_ls",
 			-- format on save
 			on_attach = function(client, bufnr)
 				if client.supports_method("textDocument/formatting") then
