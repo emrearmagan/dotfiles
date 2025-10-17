@@ -34,10 +34,6 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# Go files #
-######################
-go.sum
-
 # General stuff #
 encodings.xml
 Config.swift

@@ -8,6 +8,7 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
+alias cd="z"
 
 # ── eza-powered directory listings ───────────────────────────────────────
 # plain “ls” → detailed list (+icons, coloured), no user column

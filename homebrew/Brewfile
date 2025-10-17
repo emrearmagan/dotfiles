@@ -15,6 +15,7 @@ brew "rg"             # for better files searches (also used by nvim)
 brew "eza"
 brew "neovim"		  # höö ?
 brew "starship"      # Shell prompt
+brew 'zoxide'
 
 # -- CLI: Dev & Build Tools --
 brew "git"
