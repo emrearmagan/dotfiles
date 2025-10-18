@@ -1,5 +1,6 @@
 tap "homebrew/bundle"
 tap "gitguardian/tap"
+tap "FelixKratz/formulae" # for sketchybar
 
 # -- CLI --
 brew "zsh-autosuggestions"
@@ -16,6 +17,7 @@ brew "eza"
 brew "neovim"		  # höö ?
 brew "starship"      # Shell prompt
 brew 'zoxide'
+brew 'sketchybar' # make sure to run 'brew services start sketchybar'
 
 # -- CLI: Dev & Build Tools --
 brew "git"
@@ -31,7 +33,6 @@ brew "curl"
 brew "wget"
 brew "httpie"
 brew "mas"            # Mac App Store CLI
-brew "xcodes"         # Xcode installer
 
 # Formatter tools used in neovim plugins
 brew "prettier"		  # JS/TS formatter
@@ -42,14 +43,14 @@ brew "xcbeautify"
 # -- Apps --
 cask "iterm2"
 cask "wezterm"
-cask "docker"
+cask "docker-desktop"
 cask "mitmproxy"
 cask "sourcetree"
-cask "tailscale"
+cask "tailscale-app"
 
 cask "postman"
 cask "sublime-text"
-cask "xcodes"
+cask "xcodes-app"
 
 cask "raycast"
 cask "notion"
@@ -58,6 +59,7 @@ cask "termius"
 cask "rectangle"       # Window management
 cask "shortcat"
 cask "alt-tab"
+cask "nikitabobko/tap/aerospace"
 
 # -- Mac App Store --
 mas "Swift Playgrounds", id: 1496833156

@@ -56,6 +56,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/aerospace",
       dest: "{{ ansible_env.HOME }}/.config/aerospace",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/sketchybar",
+      dest: "{{ ansible_env.HOME }}/.config/sketchybar",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"

@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+########################################
+# Catppuccin Mocha Colors
+########################################
+BG=0xE01e1e2e
+FG=0xffcdd6f4
+BLUE=0xff89b4fa
+LAVENDER=0xffb4befe
+GREEN=0xffa6e3a1
+PINK=0xfff5c2e7
+PEACH=0xfffab387
+RED=0xfff38ba8
+SURFACE=0x90313245
+
+########################################
+# Bar Appearance
+########################################
+sketchybar --bar \
+  position=top \
+  height=34 \
+  color=$SURFACE \
+  blur_radius=30 \
+  corner_radius=12 \
+  padding_left=8 \
+  padding_right=8 \
+  y_offset=4 \
+  shadow=on
+
+########################################
+# Default Item Style
+########################################
+default=(
+  padding_left=6
+  padding_right=6
+  icon.font="JetBrainsMono Nerd Font:Bold:15.0"
+  label.font="JetBrainsMono Nerd Font:Bold:13.0"
+  icon.color=$FG
+  label.color=$FG
+  background.color=0x00000000
+  background.corner_radius=6
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+########################################
+# Workspaces
+########################################
+SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
+for i in "${!SPACE_ICONS[@]}"; do
+  sid=$((i + 1))
+  space=(
+    space="$sid"
+    icon="${SPACE_ICONS[i]}"
+    icon.padding_left=8
+    icon.padding_right=8
+    icon.color=$LAVENDER
+    background.color=0x00000000
+    background.corner_radius=6
+    background.height=24
+    label.drawing=off
+    script="$PLUGIN_DIR/space.sh"
+    click_script="yabai -m space --focus $sid"
+  )
+  sketchybar --add space space.$sid left --set space.$sid "${space[@]}"
+done
+
+########################################
+# Left Items
+########################################
+sketchybar --add item front_app left \
+           --set front_app icon.drawing=off \
+           --set front_app label.color=$BLUE \
+           --set front_app script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+########################################
+# Right Items
+########################################
+sketchybar --add item clock right \
+           --set clock update_freq=10 \
+           icon=󰥔 \
+           label.color=$FG \
+           icon.color=$PEACH \
+           script="$PLUGIN_DIR/clock.sh"
+
+sketchybar --add item volume right \
+           --set volume script="$PLUGIN_DIR/volume.sh" \
+           icon= \
+           icon.color=$BLUE \
+           --subscribe volume volume_change
+
+sketchybar --add item battery right \
+           --set battery update_freq=120 \
+           script="$PLUGIN_DIR/battery.sh" \
+           icon=󰁹 \
+           icon.color=$GREEN \
+           --subscribe battery system_woke power_source_change
+
+sketchybar --update
