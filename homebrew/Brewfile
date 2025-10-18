@@ -17,7 +17,11 @@ brew "eza"
 brew "neovim"		  # höö ?
 brew "starship"      # Shell prompt
 brew 'zoxide'
-brew 'sketchybar' # make sure to run 'brew services start sketchybar'
+
+# sketchybars and borders will be started with aerospace. Otherwise manully:
+# 'brew services start sketchybar' and 'brew services start borders'
+brew 'sketchybar'
+brew 'borders'
 
 # -- CLI: Dev & Build Tools --
 brew "git"

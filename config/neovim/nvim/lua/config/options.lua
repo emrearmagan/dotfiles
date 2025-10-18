@@ -26,5 +26,4 @@ vim.opt.softtabstop = 2 -- Number of spaces per Tab when editing
 vim.opt.shiftwidth = 2 -- Number of spaces for indentation
 vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.scrolloff = 8 -- Lines to keep above and below the cursor
-
--- vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
+vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard

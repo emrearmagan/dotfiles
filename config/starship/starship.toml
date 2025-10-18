@@ -1,48 +1,126 @@
 format = "$directory$git_branch$git_status $character"
-right_format = "$golang$php$nodejs$swift$docker_context"
+right_format = "$golang$php$nodejs$swift$docker_context$package$jobs"
+
+palette = "catppuccin_mocha"
 
 [directory]
-style = "#89B4FA"  # pastel blue, matches tmux and Neovim
+style = "bold blue" 
 format = "[$path]($style)"
 truncation_length = 0
 truncate_to_repo = false
-read_only = ""
-
-[git_branch]
-symbol = ""
-style = "#94E2D5"
-format = ' [(\($symbol $branch\))]($style)'
-
-[git_status]
-style = "#F38BA8"
-format = " [$all_status]($style)"
+read_only = " "
 
 [character]
 success_symbol = " ❯"
 error_symbol = " ❯"
 
+[git_branch]
+symbol = ""
+style = "bold teal"
+format = ' [(\($symbol $branch\))]($style)'
+
+[git_status]
+format = " [($all_status$ahead_behind)]($style)"
+style = "red"
+conflicted = "⚔"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "📦"
+modified = "~${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+########################################
+# Languages
+########################################
+
 [golang]
 symbol = " "
-style = "#89DCEB"  # sky blue (Catppuccin blue)
-format = " [$symbol($version)]($style)"
-
-[php]
-symbol = " "
-style = "#B4BEFE"  # lavender
+style = "bold sky"  # sky blue (Catppuccin blue)
 format = " [$symbol($version)]($style)"
 
 [nodejs]
 symbol = " "
-style = "#A6E3A1"  # greenish mint
-format = " [$symbol($version)]($style)"
+style = "green"
+format = ' [$symbol($version)]($style)'
+
+[php]
+symbol = " "
+style = "lavender"
+format = ' [$symbol($version)]($style)'
 
 [swift]
 symbol = " "
-style = "#F38BA8"  # coral/red-pink
-format = " [$symbol($version)]($style)"
+style = "red"
+format = ' [$symbol($version)]($style)'
 
 [docker_context]
 symbol = " "
-style = "#94E2D5"  # soft teal
-format = " [$symbol]($style)"
+style = "teal"
+format = ' [$symbol$context]($style)'
 only_with_files = true
+
+[c]
+symbol = " "
+style = "sky"
+format = " [$symbol($version)]($style)"
+
+[java]
+symbol = " "
+style = "peach"
+format = " [$symbol($version)]($style)"
+
+[python]
+symbol = " "
+style = "yellow"
+format = " [$symbol($version)]($style)"
+
+[rust]
+symbol = " "
+style = "maroon"
+format = " [$symbol($version)]($style)"
+
+[jobs]
+symbol = " "
+style = "yellow"
+format = " [$symbol$number]($style)"
+
+[package]
+disabled = false
+symbol = " "
+style = "teal"
+format = " [$symbol$version]($style)"
+
+########################################
+# Catppuccin Mocha Palette
+########################################
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo  = "#f2cdcd"
+pink      = "#f5c2e7"
+mauve     = "#cba6f7"
+red       = "#f38ba8"
+maroon    = "#eba0ac"
+peach     = "#fab387"
+yellow    = "#f9e2af"
+green     = "#a6e3a1"
+teal      = "#94e2d5"
+sky       = "#89dceb"
+sapphire  = "#74c7ec"
+blue      = "#89b4fa"
+lavender  = "#b4befe"
+text      = "#cdd6f4"
+subtext1  = "#bac2de"
+subtext0  = "#a6adc8"
+overlay2  = "#9399b2"
+overlay1  = "#7f849c"
+overlay0  = "#6c7086"
+surface2  = "#585b70"
+surface1  = "#45475a"
+surface0  = "#313244"
+base      = "#1e1e2e"
+mantle    = "#181825"
+crust     = "#11111b"

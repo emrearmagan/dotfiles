@@ -60,6 +60,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/sketchybar",
       dest: "{{ ansible_env.HOME }}/.config/sketchybar",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/borders",
+      dest: "{{ ansible_env.HOME }}/.config/borders",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"

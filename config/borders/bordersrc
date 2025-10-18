@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Configuration for borders: https://github.com/FelixKratz/JankyBorders
+options=(
+	style=round
+	width=6.0
+	hidpi=off
+	active_color=0xff89b4fa   # Catppuccin Blue (active)
+	inactive_color=0xff313244 # Surface0 (inactive)
+)
+
+borders "${options[@]}"
