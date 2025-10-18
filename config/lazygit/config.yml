@@ -1,25 +1,42 @@
 gui:
-  screenMode: "normal" # one of 'normal' | 'half' | 'full' default is 'normal'
-  scrollHeight: 2 # how many lines you scroll by
+  screenMode: "normal" # one of 'normal' | 'half' | 'full'
+  scrollHeight: 2
   showIcons: true
+  showFileTree: true
+  border: "rounded" # 'single' | 'double' | 'rounded' | 'hidden'
+
   theme:
     activeBorderColor:
-      - magenta
+      - "#89b4fa" # blue
       - bold
     inactiveBorderColor:
-      - white
-  showFileTree: true # for rendering changes files in a tree format
-  border: "rounded" # one of 'single' | 'double' | 'rounded' | 'hidden'
+      - "#585b70" # overlay
+    searchingActiveBorderColor:
+      - "#f5c2e7" # pink
+      - bold
+    optionsTextColor:
+      - "#a6e3a1" # green
+    selectedLineBgColor:
+      - "#313244" # subtle line highlight
+    cherryPickedCommitBgColor:
+      - "#45475a"
+    cherryPickedCommitFgColor:
+      - "#89b4fa"
+    unstagedChangesColor:
+      - "#f38ba8" # red
+    defaultFgColor:
+      - "#cdd6f4" # foreground
+    inactiveViewSelectedLineBgColor:
+      - "#313244"
 
 git:
   autoFetch: true
   autoRefresh: true
-  # Respect your pager preferences
   paging:
     useConfig: true
 
-# use esc to exit
+# Allow 'Esc' to quit from top level
 quitOnTopLevelReturn: true
-# Optionally enable per‑repo config if needed
+# Uncomment if you want per-repo overrides later
 # localConfig:
 #   enabled: true
