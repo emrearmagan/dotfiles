@@ -64,7 +64,6 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Coding                        │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<C-K>", vim.lsp.buf.hover, desc = "Hover Info (LSP)", mode = "n" },
 	{ "<leader>c", group = "Code" },
 	{ "<leader>cK", vim.lsp.buf.hover, desc = "Hover Info (LSP)", mode = "n" },
 	{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code actions", mode = "n" },

@@ -1,12 +1,19 @@
+########################################
+# General Settings
+########################################
+
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
-after-login-command = []
+after-startup-command = ['exec-and-forget sketchybar']
 
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+exec-on-workspace-change = ['/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=0'
+]
 
 # Start AeroSpace at login
 start-at-login = true
@@ -50,22 +57,41 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
 outer.bottom =     10
-outer.top =        10
+outer.top =        40
 outer.right =      10
+
+########################################
+# Window Detection Rules
+########################################
+# [[on-window-detected]]
+# if.app-id = 'com.apple.systempreferences'
+# if.app-name-regex-substring = 'settings'
+# if.window-title-regex-substring = 'substring'
+# if.workspace = 'workspace-name'
+# if.during-aerospace-startup = true
+# check-further-callbacks = true
+# run = ['layout floating', 'move-node-to-workspace S']  # The callback itself
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'finder'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'mail'
+run = 'layout floating'
+
+
+########################################
+# Binding Modes
+########################################
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented
 [mode.main.binding]
 
-cmd-enter = 'exec-and-forget open -n /Applications/WezTerm.app'
-
-# cmd-b = '''exec-and-forget osascript -e '
-# tell application "Safari"
-#     make new document at end of documents
-#     activate
-# end tell'
-# '''
+alt-w = 'exec-and-forget open -a /Applications/WezTerm.app'
+alt-s = 'exec-and-forget open -a /Applications/Safari.app'
 
 # All possible keys:
 # - Letters.        a, b, c, ..., z
@@ -98,10 +124,13 @@ alt-h = 'split horizontal'
 alt-v = 'split vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-cmd-left = 'focus left'
-cmd-down = 'focus down'
-cmd-up = 'focus up'
+cmd-left  = 'focus left'
+cmd-down  = 'focus down'
+cmd-up    = 'focus up'
 cmd-right = 'focus right'
+
+cmd-alt-left  = 'focus-monitor prev'
+cmd-alt-right = 'focus-monitor next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
 cmd-shift-left = 'move left'
@@ -138,14 +167,15 @@ cmd-alt-9 = 'move-node-to-workspace 9'
 cmd-alt-0 = 'move-node-to-workspace 10'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-alt-tab = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
 
+########################################
 # Environment Variables
+########################################
 [exec]
     inherit-env-vars = true
 [exec.env-vars]

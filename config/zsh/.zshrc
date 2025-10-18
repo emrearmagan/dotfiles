@@ -52,4 +52,5 @@ setopt hist_find_no_dups
 # ----------------------
 # Configure case-insensitive completion matching
 # This allows tab-completion to match case-insensitively
+autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'

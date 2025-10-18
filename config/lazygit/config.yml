@@ -14,10 +14,12 @@ gui:
 git:
   autoFetch: true
   autoRefresh: true
-
   # Respect your pager preferences
   paging:
     useConfig: true
+
+# use esc to exit
+quitOnTopLevelReturn: true
 # Optionally enable per‑repo config if needed
 # localConfig:
 #   enabled: true

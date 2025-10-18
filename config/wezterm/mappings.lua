@@ -38,6 +38,18 @@ return {
 	leader = { key = "F12", mods = "", timeout_milliseconds = 5000 },
 	keys = {
 		{ key = "/", mods = "LEADER", action = act.Search("CurrentSelectionOrEmptyString") },
+		{
+			key = "r",
+			mods = "CMD",
+			action = wezterm.action.PromptInputLine({
+				description = "Rename Tab",
+				action = wezterm.action_callback(function(window, pane, line)
+					if line then
+						window:active_tab():set_title(line)
+					end
+				end),
+			}),
+		},
 
 		-- use the default german shortut for ToggleFullScreen
 		{
