@@ -60,7 +60,7 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
 outer.bottom =     10
-outer.top =        60
+outer.top =        50
 outer.right =      10
 
 ########################################
@@ -83,6 +83,10 @@ run = 'layout floating'
 if.app-name-regex-substring = 'mail'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-name-regex-substring = 'preview'
+run = 'layout floating'
+
 
 ########################################
 # Binding Modes
@@ -92,6 +96,9 @@ run = 'layout floating'
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented
 [mode.main.binding]
+
+alt-shift-s = "exec-and-forget open -n -a Safari"
+alt-shift-w = "exec-and-forget open -n -a WezTerm"
 
 alt-w = 'exec-and-forget open -a /Applications/WezTerm.app'
 alt-s = 'exec-and-forget open -a /Applications/Safari.app'

@@ -1,6 +1,7 @@
 tap "homebrew/bundle"
 tap "gitguardian/tap"
 tap "FelixKratz/formulae" # for sketchybar
+tap "sst/tap" # for opencode
 
 # -- CLI --
 brew "zsh-autosuggestions"
@@ -17,6 +18,7 @@ brew "eza"
 brew "neovim"		  # höö ?
 brew "starship"      # Shell prompt
 brew 'zoxide'
+brew "opencode"
 
 # sketchybars and borders will be started with aerospace. Otherwise manully:
 # 'brew services start sketchybar' and 'brew services start borders'
@@ -63,6 +65,7 @@ cask "termius"
 cask "rectangle"       # Window management
 cask "shortcat"
 cask "alt-tab"
+cask "sf-symbols"
 cask "nikitabobko/tap/aerospace"
 
 # -- Mac App Store --

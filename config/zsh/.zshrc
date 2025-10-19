@@ -54,3 +54,6 @@ setopt hist_find_no_dups
 # This allows tab-completion to match case-insensitively
 autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
+# Make Tab accept suggestions
+zstyle ':autocomplete:tab:*' insert true

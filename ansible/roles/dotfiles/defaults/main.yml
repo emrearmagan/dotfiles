@@ -64,6 +64,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/borders",
       dest: "{{ ansible_env.HOME }}/.config/borders",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/opencode",
+      dest: "{{ ansible_env.HOME }}/.config/opencode",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"
