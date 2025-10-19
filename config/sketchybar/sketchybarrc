@@ -1,105 +1,67 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$HOME/.config/sketchybar/colors.sh" # Loads all defined colors
+source "$HOME/.config/sketchybar/icons.sh"  # Loads all defined icons
 
-########################################
-# Catppuccin Mocha Colors
-########################################
-BG=0xE01e1e2e
-FG=0xffcdd6f4
-BLUE=0xff89b4fa
-LAVENDER=0xffb4befe
-GREEN=0xffa6e3a1
-PINK=0xfff5c2e7
-PEACH=0xfffab387
-RED=0xfff38ba8
-SURFACE=0x90313245
+ITEM_DIR="$HOME/.config/sketchybar/items"     # Directory where the items are configured
+PLUGIN_DIR="$HOME/.config/sketchybar/plugins" # Directory where all the plugin scripts are stored
 
-########################################
-# Bar Appearance
-########################################
-sketchybar --bar \
-  position=top \
-  height=34 \
-  color=$SURFACE \
-  blur_radius=30 \
-  corner_radius=12 \
-  padding_left=8 \
-  padding_right=8 \
-  y_offset=4 \
-  shadow=on
+FONT="SF Pro" # Needs to have Regular, Bold, Semibold, Heavy and Black variants
 
-########################################
-# Default Item Style
-########################################
-default=(
-  padding_left=6
-  padding_right=6
-  icon.font="JetBrainsMono Nerd Font:Bold:15.0"
-  label.font="JetBrainsMono Nerd Font:Bold:13.0"
-  icon.color=$FG
-  label.color=$FG
-  background.color=0x00000000
-  background.corner_radius=6
-  icon.padding_left=4
-  icon.padding_right=4
-  label.padding_left=4
-  label.padding_right=4
-)
-sketchybar --default "${default[@]}"
+PADDINGS=3 # All paddings use this value (icon, label, background)
 
-########################################
-# Workspaces
-########################################
-SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
-for i in "${!SPACE_ICONS[@]}"; do
-  sid=$((i + 1))
-  space=(
-    space="$sid"
-    icon="${SPACE_ICONS[i]}"
-    icon.padding_left=8
-    icon.padding_right=8
-    icon.color=$LAVENDER
-    background.color=0x00000000
-    background.corner_radius=6
-    background.height=24
-    label.drawing=off
-    script="$PLUGIN_DIR/space.sh"
-    click_script="yabai -m space --focus $sid"
-  )
-  sketchybar --add space space.$sid left --set space.$sid "${space[@]}"
-done
+POPUP_BORDER_WIDTH=2
+POPUP_CORNER_RADIUS=11
 
-########################################
-# Left Items
-########################################
-sketchybar --add item front_app left \
-           --set front_app icon.drawing=off \
-           --set front_app label.color=$BLUE \
-           --set front_app script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched
+SHADOW=on
 
-########################################
-# Right Items
-########################################
-sketchybar --add item clock right \
-           --set clock update_freq=10 \
-           icon=󰥔 \
-           label.color=$FG \
-           icon.color=$PEACH \
-           script="$PLUGIN_DIR/clock.sh"
+# Setting up the general bar appearance and default values
+sketchybar --bar height=30 \
+	color=$BAR_COLOR \
+	shadow=$SHADOW \
+	position=top \
+	sticky=on \
+	padding_right=18 \
+	padding_left=18 \
+	corner_radius=9 \
+	y_offset=10 \
+	margin=10 \
+	blur_radius=20 \
+	\
+	--default updates=when_shown \
+	icon.font="$FONT:Bold:14.0" \
+	icon.color=$ICON_COLOR \
+	icon.padding_left=$PADDINGS \
+	icon.padding_right=$PADDINGS \
+	label.font="$FONT:Semibold:13.0" \
+	label.color=$LABEL_COLOR \
+	label.padding_left=$PADDINGS \
+	label.padding_right=$PADDINGS \
+	background.padding_right=$PADDINGS \
+	background.padding_left=$PADDINGS \
+	popup.background.border_width=2 \
+	popup.background.corner_radius=11 \
+	popup.background.border_color=$POPUP_BORDER_COLOR \
+	popup.background.color=$POPUP_BACKGROUND_COLOR \
+	popup.background.shadow.drawing=$SHADOW
 
-sketchybar --add item volume right \
-           --set volume script="$PLUGIN_DIR/volume.sh" \
-           icon= \
-           icon.color=$BLUE \
-           --subscribe volume volume_change
+# Left
+source "$ITEM_DIR/apple.sh"
+source "$ITEM_DIR/spaces.sh"
+source "$ITEM_DIR/front_app.sh"
+# source "$ITEM_DIR/github.sh"
 
-sketchybar --add item battery right \
-           --set battery update_freq=120 \
-           script="$PLUGIN_DIR/battery.sh" \
-           icon=󰁹 \
-           icon.color=$GREEN \
-           --subscribe battery system_woke power_source_change
+# Center
+# source "$ITEM_DIR/spotify.sh"
 
+# Right
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/calendar.sh"
+source "$ITEM_DIR/cpu.sh"
+source "$ITEM_DIR/tailscale.sh"
+source "$ITEM_DIR/volume.sh"
+
+############## FINALIZING THE SETUP ##############
 sketchybar --update
+
+echo "sketchybar configuation loaded.."

@@ -98,10 +98,10 @@ run = 'layout floating'
 [mode.main.binding]
 
 alt-shift-s = "exec-and-forget open -n -a Safari"
-alt-shift-w = "exec-and-forget open -n -a WezTerm"
+alt-shift-t = "exec-and-forget open -n -a WezTerm"
 
-alt-w = 'exec-and-forget open -a /Applications/WezTerm.app'
 alt-s = 'exec-and-forget open -a /Applications/Safari.app'
+alt-t = 'exec-and-forget open -a /Applications/WezTerm.app'
 
 # All possible keys:
 # - Letters.        a, b, c, ..., z
@@ -176,12 +176,26 @@ cmd-alt-8 = 'move-node-to-workspace 8'
 cmd-alt-9 = 'move-node-to-workspace 9'
 cmd-alt-0 = 'move-node-to-workspace 10'
 
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
+
+[workspace-to-monitor-force-assignment]
+1 = 2                # Assign workspace 1 to the first monitor (leftmost monitor)
+2 = 2                # Assign workspace 2 to the first monitor
+3 = 2                # Assign workspace 3 to the first monitor
+4 = 2                # Assign workspace 4 to the first monitor
+5 = 2                # Assign workspace 5 to the first monitor
+6 = 2                # Assign workspace 6 to the first monitor
+7 = 2                # Assign workspace 7 to the first monitor
+8 = 2                # Assign workspace 8 to the first monitor
+9 = 1                # Assign workspace 9 to the second monitor (rightmost monitor)
+10 = 1               # Assign workspace 10 to the second monitor
+
 
 ########################################
 # Environment Variables

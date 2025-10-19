@@ -27,3 +27,10 @@ vim.opt.shiftwidth = 2 -- Number of spaces for indentation
 vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.scrolloff = 8 -- Lines to keep above and below the cursor
 vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
+
+-- Auto-reload files when changed externally
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+	command = "if mode() != 'c' | checktime | endif",
+	pattern = { "*" },
+})

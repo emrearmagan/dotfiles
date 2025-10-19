@@ -2,7 +2,11 @@
 # Default font to install
 font_name: "JetBrainsMono"
 font_url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/{{ font_name }}.zip"
-font_glob: "{{ nf_fonts_dir }}/{{ font_name }}*Nerd*Font*" 
+font_glob: "{{ nf_fonts_dir }}/{{ font_name }}*Nerd*Font*"
+
+sketchybar_font_name: "SketchyBar App Font"
+sketchybar_font_url: "https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v2.0.47/sketchybar-app-font.ttf"
+sketchybar_font_glob: "{{ nf_fonts_dir }}/sketchybar-app-font.ttf"
 
 # Replace this with the name of the user the font(s) will be installed for.
 user: "emrearmagan"

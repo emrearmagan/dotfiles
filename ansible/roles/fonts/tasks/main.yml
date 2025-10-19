@@ -20,3 +20,16 @@
     src: "{{ font_url }}"
     dest: "{{ nf_fonts_dir }}"
     remote_src: yes
+
+- name: Check if SketchyBar font exists
+  shell: "ls {{ sketchybar_font_glob }}"
+  register: sketchybar_font_exists
+  ignore_errors: true
+  changed_when: false
+
+- name: Download SketchyBar font
+  when: sketchybar_font_exists is failed
+  ansible.builtin.get_url:
+    url: "{{ sketchybar_font_url }}"
+    dest: "{{ sketchybar_font_glob }}"
+    mode: "0644"
