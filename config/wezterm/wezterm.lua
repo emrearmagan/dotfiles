@@ -11,11 +11,11 @@ local config = {
 	-- macos_forward_to_ime_modifier_mask = 'SHIFT',
 
 	-- Ensure AltGr (right Alt) works correctly for German layouts
-	send_composed_key_when_left_alt_is_pressed = true,
-	send_composed_key_when_right_alt_is_pressed = true,
-
+	--   send_composed_key_when_left_alt_is_pressed = true,
+	--   send_composed_key_when_right_alt_is_pressed = true,
+	--
 	-- Support dead-keys (umlauts, tilde, etc.) on European layouts
-	use_dead_keys = true,
+	-- use_dead_keys = true,
 
 	native_macos_fullscreen_mode = true,
 }
