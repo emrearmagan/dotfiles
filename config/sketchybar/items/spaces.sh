@@ -9,11 +9,13 @@ for sid in $(aerospace list-workspaces --all); do
 		--set space."$sid" \
 		background.color=0x44ffffff \
 		background.corner_radius=5 \
-		background.height=20 \
 		background.drawing=off \
 		label="$sid" \
-		label.font="$FONT:Bold:14" \
-		align=center \
+		label.font="sketchybar-app-font:Regular:14.0" \
+		icon.drawing=off \
+		label.width=80 \
+		label.align=center \
+		label.y_offset=-1 \
 		click_script="aerospace workspace $sid" \
 		script="$PLUGIN_DIR/aerospacer.sh $sid"
 done
