@@ -12,14 +12,16 @@ for sid in $(aerospace list-workspaces --all); do
 		background.height=20 \
 		background.drawing=off \
 		label="$sid" \
+		label.font="$FONT:Bold:14" \
+		align=center \
 		click_script="aerospace workspace $sid" \
 		script="$PLUGIN_DIR/aerospacer.sh $sid"
 done
 
+# simply create a separatir item to subscribe to the event and update the space windows
 sketchybar --add item space_separator left \
 	--set space_separator icon=">" \
-	icon.font="sketchybar-app-font:Regular:14.0" \
-	icon.drawing=on \
+	icon.drawing=off \
 	icon.padding_left=4 \
 	script="$PLUGIN_DIR/space_windows.sh" \
 	--subscribe space_separator space_windows_change

@@ -16,7 +16,8 @@ return {
 				color_icons = true, -- Enable colorful devicons
 				show_tab_indicators = true, -- Show tab indicator (thin underline for active tab)
 				enforce_regular_tabs = true, -- Prevent bufferline from compressing tab names
-				max_name_length = 40, -- Max length of a buffer name before truncation
+				-- tabs_size = 120, -- Set a fixed size for tabs
+				max_name_length = 120, -- Max length of a buffer name before truncation
 				-- max_prefix_length = 15,         -- Max length of prefix used before truncated name
 			},
 			highlights = {

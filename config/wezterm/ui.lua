@@ -65,6 +65,13 @@ return {
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
 	window_background_opacity = 1,
+	window_padding = {
+		left = 0,
+		right = 0,
+		top = 10,
+		bottom = 0,
+	},
+	use_resize_increments = true,
 
 	-- Tab bar
 	tab_max_width = 18,

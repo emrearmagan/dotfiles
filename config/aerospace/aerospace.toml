@@ -56,12 +56,12 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-inner.horizontal = 10
-inner.vertical =   10
-outer.left =       10
-outer.bottom =     10
+inner.horizontal = 15
+inner.vertical =   15
+outer.left =       15
+outer.bottom =     15
 outer.top =        50
-outer.right =      10
+outer.right =      15
 
 ########################################
 # Window Detection Rules
@@ -138,10 +138,10 @@ cmd-left  = 'focus left'
 cmd-down  = 'focus down'
 cmd-up    = 'focus up'
 cmd-right = 'focus right'
-cmd-h = 'focus left'
-cmd-j = 'focus down'
-cmd-k = 'focus up'
-cmd-l = 'focus right'
+# cmd-h = 'focus left'
+# cmd-j = 'focus down'
+# cmd-k = 'focus up'
+# cmd-l = 'focus right'
 
 cmd-alt-left  = 'focus-monitor prev'
 cmd-alt-right = 'focus-monitor next'
@@ -151,10 +151,10 @@ cmd-shift-left = 'move left'
 cmd-shift-down = 'move down'
 cmd-shift-up = 'move up'
 cmd-shift-right = 'move right'
-cmd-shift-h = 'move left'
-cmd-shift-j = 'move down'
-cmd-shift-k = 'move up'
-cmd-shift-l = 'move right'
+# cmd-shift-h = 'move left'
+# cmd-shift-j = 'move down'
+# cmd-shift-k = 'move up'
+# cmd-shift-l = 'move right'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
 alt-shift-minus = 'resize smart -50'

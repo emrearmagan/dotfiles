@@ -2,20 +2,35 @@
 set -e
 
 # Update label of space.<workspace_id> with app icons from Aerospace
-# Accepts workspace id as $1 or WORKSPACE env, otherwise uses focused workspace.
+# - If a workspace id is provided as $1 or via WORKSPACE env, update only that one
+# - If none provided, update ALL workspaces
 
-workspace="$1"
-[ -z "$workspace" ] && workspace="${WORKSPACE:-$(aerospace list-workspaces --focused)}"
-
-apps=$(aerospace list-windows --workspace "$workspace" --json 2>/dev/null | jq -r '.[].["app-name"]')
-
-icon_strip=""
-if [ -n "$apps" ]; then
-	while IFS= read -r app; do
-		[ -n "$app" ] && icon_strip="$icon_strip $($CONFIG_DIR/plugins/icon_map_fn.sh "$app")"
-	done <<EOF
-$apps
+icon_for_apps() {
+	apps_list="$1"
+	icon_strip=""
+	if [ -n "$apps_list" ]; then
+		while IFS= read -r app; do
+			[ -n "$app" ] && icon_strip="$icon_strip $($CONFIG_DIR/plugins/icon_map_fn.sh "$app")"
+		done <<EOF
+$apps_list
 EOF
-fi
+	fi
+	printf "%s" "$icon_strip"
+}
 
-sketchybar --set "space.$workspace" icon="$icon_strip" icon.font="sketchybar-app-font:Regular:14.0" icon.padding_right=4
+update_workspace() {
+	ws="$1"
+	apps=$(aerospace list-windows --workspace "$ws" --json 2>/dev/null | jq -r '.[].["app-name"]' | sort -u)
+	icons=$(icon_for_apps "$apps")
+	sketchybar --set "space.$ws" icon="$icons" icon.font="sketchybar-app-font:Regular:14.0"
+}
+
+# If a specific workspace is provided, update only that; otherwise update all
+if [ -n "$1" ] || [ -n "$WORKSPACE" ]; then
+	ws="${1:-$WORKSPACE}"
+	update_workspace "$ws"
+else
+	for sid in $(aerospace list-workspaces --all); do
+		update_workspace "$sid"
+	done
+fi
