@@ -3,6 +3,7 @@
   "theme": "catppuccin",
   "permission": {
     "edit": "ask",
-    "bash": "ask"
+    "bash": "ask",
+    "webfetch": "allow"
   }
 }

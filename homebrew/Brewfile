@@ -62,7 +62,6 @@ cask "raycast"
 cask "notion"
 cask "google-chrome"
 cask "termius"
-cask "rectangle"       # Window management
 cask "shortcat"
 cask "alt-tab"
 cask "sf-symbols"

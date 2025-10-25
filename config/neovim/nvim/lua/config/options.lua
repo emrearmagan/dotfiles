@@ -30,6 +30,12 @@ vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
 
 -- Auto-reload files when changed externally
 vim.opt.autoread = true
+vim.opt.updatetime = 1000 -- Reduce update time (default is 4000ms)
+vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
+	command = "checktime",
+})
+
+-- Also check on buffer enter and cursor hold
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
 	command = "if mode() != 'c' | checktime | endif",
 	pattern = { "*" },

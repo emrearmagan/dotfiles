@@ -37,3 +37,4 @@ Thumbs.db
 # General stuff #
 encodings.xml
 Config.swift
+.env
