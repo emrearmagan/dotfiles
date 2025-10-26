@@ -8,7 +8,7 @@
 
 [difftool "sourcetree"]
 	path = 
-	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh $LOCAL $REMOTE -ancestor $BASE -merge $MERGED
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	trustExitCode = true
 
 [color]
@@ -63,6 +63,6 @@
   tool = sourcetree
 
 [mergetool "sourcetree"]
-  cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh "$LOCAL" "$REMOTE" -ancestor "$BASE" -merge "$MERGED"
-  trustExitCode = true
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
   keepBackup = false
