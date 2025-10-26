@@ -7,7 +7,7 @@ sketchybar --subscribe tailscale tailscale_update
 
 sketchybar --add item tailscale right \
            --set tailscale \
-                update_freq=10 \
+                update_freq=30 \
                 icon=$VPN \
                 icon.color=0xff${RED:2} \
                 label.drawing=off \

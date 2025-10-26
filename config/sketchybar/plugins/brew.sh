@@ -2,7 +2,7 @@
 
 source "$HOME/.config/sketchybar/colors.sh"
 
-COUNT=$(brew outdated | wc -l | tr -d ' ')
+COUNT=$(zsh -l -c "/opt/homebrew/bin/brew outdated --quiet" | wc -l | tr -d ' ')
 COLOR=$RED
 
 case "$COUNT" in
