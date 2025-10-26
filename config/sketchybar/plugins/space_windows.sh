@@ -23,14 +23,15 @@ update_workspace() {
 	icons=$(icon_for_apps "$apps")
 	if [ -n "$icons" ]; then
 		sketchybar --set "space.$ws" \
-			label="$ws $icons" \
+			drawing=on \
+			label="$icons" \
 			label.font="sketchybar-app-font:Regular:14.0" \
-			icon.drawing=off
+			icon.drawing=on
 	else
 		sketchybar --set "space.$ws" \
-			label="$ws —" \
-			label.font="sketchybar-app-font:Regular:14.0" \
-			icon.drawing=off
+			drawing=off \
+			label="" \
+			icon.drawing=on
 	fi
 }
 
