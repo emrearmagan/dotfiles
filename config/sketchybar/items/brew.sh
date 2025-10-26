@@ -14,4 +14,7 @@ brew=(
 sketchybar --add event brew_update \
 	--add item brew right \
 	--set brew "${brew[@]}" \
-	--subscribe brew brew_update
+	--subscribe brew brew_update \
+		mouse.entered \
+		mouse.exited \
+		mouse.exited.global
