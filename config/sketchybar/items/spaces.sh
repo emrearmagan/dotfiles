@@ -8,19 +8,21 @@ for sid in $(aerospace list-workspaces --all); do
 	sketchybar --add item space."$sid" left \
 		--subscribe space."$sid" aerospace_workspace_change \
 		--set space."$sid" \
-		background.color=0x44ffffff \
-		background.corner_radius=5 \
+		background.color=$BACKGROUND_1 \
+		background.border_color=$BACKGROUND_2 \
+		background.border_width=2 \
 		background.drawing=off \
-		background.padding_left=20 \
-		background.height=25 \
-		background.y_offset=0 \
+		background.padding_right=4 \
+		background.padding_top=4 \
+		background.padding_bottom=4 \
 		padding_left=5 \
 		padding_right=5 \
 		padding_top=5 \
 		padding_bottom=5 \
 		icon="$sid" \
 		icon.font="$FONT:Bold:14.0" \
-		label.padding_right=6 \
+		icon.padding_left=8 \
+		label.padding_right=15 \
 		label.font="sketchybar-app-font:Regular:14.0" \
 		label.align=center \
 		label.y_offset=-1 \
@@ -28,9 +30,16 @@ for sid in $(aerospace list-workspaces --all); do
 		script="$PLUGIN_DIR/aerospacer.sh $sid"
 done
 
-# simply create a separatir item to subscribe to the event and update the space windows
-sketchybar --add item space_separator left \
-	--set space_separator icon=">" \
-	icon.padding_left=4 \
-	script="$PLUGIN_DIR/space_windows.sh" \
-	--subscribe space_separator space_windows_change
+separator=(
+  icon=􀆊
+  icon.font="$FONT:Heavy:16.0"
+  padding_left=15
+  padding_right=15
+  label.drawing=off
+  icon.color=$WHITE
+)
+
+sketchybar --add item separator left \
+  --set separator "${separator[@]}" \
+  script="$PLUGIN_DIR/space_windows.sh" \
+  --subscribe separator space_windows_change aerospace_workspace_change

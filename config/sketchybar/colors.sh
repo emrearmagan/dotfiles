@@ -30,17 +30,18 @@ BASE=0xff1e1e2e
 MANTLE=0xff181825
 CRUST=0xff11111b
 TRANSPARENT=0x00000000
+WHITE=0xffffffff
 
 # ----------------------
 # General Bar Colors
 # ----------------------
-BAR_COLOR=0xcc1e1e2e # translucent base
-ICON_COLOR=$TEXT     # icons use main text color
-LABEL_COLOR=$TEXT    # labels match icons
+ICON_COLOR=$WHITE  # Color of all icons
+LABEL_COLOR=$WHITE # Color of all labels
 POPUP_BACKGROUND_COLOR=$BASE
 POPUP_BORDER_COLOR=$BLUE
 SHADOW_COLOR=$CRUST
+SHADOW_COLOR=$BLACK
 
-# Item-specific
-# ----------------------
-SPOTIFY_GREEN=$GREEN
+BAR_COLOR=0xa024273a
+BACKGROUND_1=0x903c3e4f
+BACKGROUND_2=0x90494d64

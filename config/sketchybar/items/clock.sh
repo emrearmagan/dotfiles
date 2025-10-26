@@ -12,7 +12,7 @@ sketchybar --add item clock right \
 	label.font="$FONT:Semibold:13.0" \
 	label.padding_left=4 \
 	label.padding_right=4 \
-	background.color=$SURFACE0 \
+	background.color=$BACKGROUND_1 \
 	background.height=26 \
 	background.corner_radius=8 \
 	script="$PLUGIN_DIR/clock.sh"
