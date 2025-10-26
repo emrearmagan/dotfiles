@@ -1,52 +1,79 @@
 tap "homebrew/bundle"
 tap "gitguardian/tap"
-tap "FelixKratz/formulae" # for sketchybar
-tap "sst/tap" # for opencode
+tap "FelixKratz/formulae"   # for sketchybar
+tap "sst/tap"               # for opencode
 
-# -- CLI --
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
-brew "tmux"
-brew "fzf"
-brew "btop"
-brew "fx"
-brew "bat"            # better `cat`
-brew "tldr"           # simplified man pages
-brew "grep"           # text searching
-brew "rg"             # for better files searches (also used by nvim)
-brew "eza"
-brew "neovim"		  # höö ?
-brew "starship"      # Shell prompt
-brew 'zoxide'
-brew "opencode"
+# ───────────────────────────────
+# CLI Utilities
+# ───────────────────────────────
+brew "bat"                  # better cat
+brew "btop"                 # system monitor
+brew "eza"                  # better ls
+brew "fx"                   # json viewer
+brew "fzf"                  # fuzzy finder
+brew "grep"                 # text search
+brew "rg"                   # file search (used by nvim)
+brew "thefuck"              # fix typos
+brew "tldr"                 # short man pages
+brew "zoxide"               # fast cd
+brew "zsh-autosuggestions"  # zsh helper
+brew "zsh-syntax-highlighting" # zsh colors
+brew "jq"                   # required by xcodebuild.nvim
+brew "nmap"                 # network scanner
+brew "coreutils"             # core utilities
 
-# sketchybars and borders will be started with aerospace. Otherwise manully:
-# 'brew services start sketchybar' and 'brew services start borders'
-brew 'sketchybar'
-brew 'borders'
+brew "neovim"               # editor
+brew "tmux"                 # terminal multiplexer
 
-# -- CLI: Dev & Build Tools --
-brew "git"
-brew "go"
-brew "python"
-brew "xcodegen"
-brew "ansible"      
-brew "lazygit"
-brew "delve" # Go Debugger used in nvim (DAP)
+brew "opencode"             # ai code cli
+brew "lazygit"              # git ui
+brew "starship"             # shell prompt
 
-# -- CLI: Networking & Package Management --
+
+# ───────────────────────────────
+# Dev & Build Tools
+# ───────────────────────────────
+brew "ansible"              # automation
+brew "delve"                # go debugger (nvim DAP)
+brew "git"                  # version control
+brew "go"                   # go lang
+brew "python"               # scripting
+brew "xcodegen"             # xcode project gen
+brew "ruby"                 # ruby lang
+brew "xcode-build-server"   # required by xcodebuild.nvim
+brew "gh"                   # github cli
+
+# ───────────────────────────────
+# Networking & Package Management
+# ───────────────────────────────
 brew "curl"
+brew "mas"                  # Mac App Store CLI
 brew "wget"
-brew "httpie"
-brew "mas"            # Mac App Store CLI
 
-# Formatter tools used in neovim plugins
-brew "prettier"		  # JS/TS formatter
+
+# ───────────────────────────────
+# Formatter & Linter Tools
+# some formatter and linter used in neovim plugins
+# ───────────────────────────────
+brew "prettier"             # JS/TS formatter
 brew "swiftformat"
 brew "swiftlint"
 brew "xcbeautify"
 
-# -- Apps --
+# ───────────────────────────────
+# Desktop UI & Automation
+# sketchybars and borders are started with aerospace.
+# Otherwise manually run:
+#   brew services start sketchybar
+#   brew services start borders
+# ───────────────────────────────
+brew "borders"
+brew "sketchybar"
+
+
+# ───────────────────────────────
+# Applications (Casks)
+# ───────────────────────────────
 cask "iterm2"
 cask "wezterm"
 cask "docker-desktop"
@@ -57,6 +84,7 @@ cask "tailscale-app"
 cask "postman"
 cask "sublime-text"
 cask "xcodes-app"
+cask "swiftformat-for-xcode"
 
 cask "raycast"
 cask "notion"
@@ -66,7 +94,11 @@ cask "shortcat"
 cask "alt-tab"
 cask "sf-symbols"
 cask "nikitabobko/tap/aerospace"
+cask "jordanbaird-ice"
 
-# -- Mac App Store --
+
+# ───────────────────────────────
+# Mac App Store
+# ───────────────────────────────
 mas "Swift Playgrounds", id: 1496833156
 mas "Xcode", id: 497799835

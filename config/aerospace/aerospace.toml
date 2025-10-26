@@ -60,7 +60,7 @@ inner.horizontal = 15
 inner.vertical =   15
 outer.left =       15
 outer.bottom =     15
-outer.top =        50
+outer.top =        55
 outer.right =      15
 
 ########################################
@@ -87,6 +87,15 @@ run = 'layout floating'
 if.app-name-regex-substring = 'preview'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-id = 'com.apple.iphonesimulator'
+run = 'layout tiling'
+check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Simulator'
+run = 'layout tiling'
+check-further-callbacks = true
 
 ########################################
 # Binding Modes

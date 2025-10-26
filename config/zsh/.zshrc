@@ -17,6 +17,7 @@ export GOPATH=$HOME/.go
 
 #Brew
 export PATH=/opt/homebrew/bin:$PATH
+export HOMEBREW_NO_ANALYTICS=1
 
 # zsh-autosuggestions and highlighting
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh

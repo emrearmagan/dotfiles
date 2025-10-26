@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-set -e
 
 # Update label of space.<workspace_id> with app icons from Aerospace
 # - If a workspace id is provided as $1 or via WORKSPACE env, update only that one
@@ -22,7 +21,31 @@ update_workspace() {
 	ws="$1"
 	apps=$(aerospace list-windows --workspace "$ws" --json 2>/dev/null | jq -r '.[].["app-name"]' | sort -u)
 	icons=$(icon_for_apps "$apps")
-	sketchybar --set "space.$ws" icon="$icons" icon.font="sketchybar-app-font:Regular:14.0"
+	# Keep focused workspace visible even if empty
+	focused_ws="${FOCUSED_WORKSPACE:-}"
+	if [ -z "$focused_ws" ]; then
+		focused_ws=$(aerospace list-workspaces --focused)
+	fi
+	if [ -n "$icons" ]; then
+		sketchybar --set "space.$ws" \
+			drawing=on \
+			label="$icons" \
+			label.font="sketchybar-app-font:Regular:14.0" \
+			icon.drawing=on
+	elif [ "$ws" = "$focused_ws" ]; then
+		# Focused but empty: keep visible and show background
+		sketchybar --set "space.$ws" \
+			drawing=on \
+			label="" \
+			label.font="sketchybar-app-font:Regular:14.0" \
+			icon.drawing=on \
+			background.drawing=on
+	else
+		sketchybar --set "space.$ws" \
+			drawing=off \
+			label="" \
+			icon.drawing=on
+	fi
 }
 
 # If a specific workspace is provided, update only that; otherwise update all

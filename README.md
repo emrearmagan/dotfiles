@@ -2,14 +2,34 @@
 
 > **⚠️ Caution**  
 >  Before using these dotfiles, you should **fork this repository**, review the code, and remove anything you **don’t want or need**.  
-⚠ **Use at your own risk!** ⚠
+⚠ **Use at your own risk!**
+
+<img src="./examples/screenshot.png" style="border-radius: 8px;" alt="example" />
+&nbsp;
+
+## Installation
+
+### Ansible Setup (Recommended)
+
+This repository includes an Ansible playbook for automated setup. **This is the recommended way to install and manage your dotfiles.**
 
 
-> **⚠️ This repository's `setup.sh` script is no longer maintained.**
-> **For a reliable and up-to-date setup, use the Ansible playbook provided in the `ansible/` directory.**
+#### Running the Playbook
 
-## Installation (Legacy)
-### **1. Clone the Repository**
+To apply the dotfiles to your system:
+
+```bash
+ansible-playbook ansible/playbook.yml --ask-become-pass
+```
+
+#### Testing with `ansible/test.sh`
+
+The script `ansible/test.sh` allows you to test your Ansible playbook within a Docker container. This is useful for verifying your playbook works as expected before running it on your actual system.
+
+---
+
+### Install Script (Deprecated)
+#### **1. Clone the Repository**
 ```sh
 git clone https://github.com/emrearmagan/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
@@ -28,24 +48,6 @@ You will also want a [Nerd Font](https://www.nerdfonts.com/).
 
 ---
 
-## Ansible Setup (Recommended)
-
-This repository includes an Ansible playbook for automated setup. **This is the recommended way to install and manage your dotfiles.**
-
-
-### 🔧 Running the Playbook
-
-To apply the dotfiles to your system:
-
-```bash
-ansible-playbook ansible/playbook.yml --ask-become-pass
-```
-
-### Testing with `ansible/test.sh`
-
-The script `ansible/test.sh` allows you to test your Ansible playbook within a Docker container. This is useful for verifying your playbook works as expected before running it on your actual system.
-
----
 
 ## **Folder Structure**
 ```
