@@ -27,6 +27,7 @@ brew "tmux"                 # terminal multiplexer
 
 brew "opencode"             # ai code cli
 brew "lazygit"              # git ui
+brew "lazydocker"           # docker ui
 brew "starship"             # shell prompt
 
 

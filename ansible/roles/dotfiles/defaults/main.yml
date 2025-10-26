@@ -68,6 +68,14 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/opencode",
       dest: "{{ ansible_env.HOME }}/.config/opencode",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/btop",
+      dest: "{{ ansible_env.HOME }}/.config/btop",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/lazydocker",
+      dest: "{{ ansible_env.HOME }}/.config/lazydocker",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"

@@ -1,11 +1,17 @@
+# Set theme (optional, replace 'TwoDark' with your preferred theme)
+--theme="Catppuccin Macchiato"
+
 # Use less as the pager with faster scrolling and Vim keybindings
 --pager="less --RAW-CONTROL-CHARS --quit-if-one-screen --window=5 --no-init"
 
 # Enable Vim-style navigation
 --paging=always
-
-# Set theme (optional, replace 'TwoDark' with your preferred theme)
---theme=TwoDark
+--color=always
 
 # Show line numbers
 --style=grid,numbers
+
+# Syntax mappings: map a certain filename pattern to a language.
+#   Example 1: use the C++ syntax for Arduino .ino files
+#   Example 2: Use ".gitignore"-style highlighting for ".ignore" files
+--map-syntax ".ignore:Git Ignore"

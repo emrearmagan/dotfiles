@@ -87,6 +87,7 @@ run = 'layout floating'
 if.app-name-regex-substring = 'preview'
 run = 'layout floating'
 
+# workaround so simulator windows are tiled
 [[on-window-detected]]
 if.app-id = 'com.apple.iphonesimulator'
 run = 'layout tiling'
