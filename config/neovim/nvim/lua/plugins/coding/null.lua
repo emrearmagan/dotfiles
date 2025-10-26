@@ -6,9 +6,8 @@ return {
 	},
 	config = function()
 		local null_ls = require("null-ls")
-		-- vim.lsp.config('null-ls')
-		--
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
 		require("mason-null-ls").setup({
 			ensure_installed = {
 				"gofmt", -- Go (should come with go installed - no available in mason)
@@ -55,7 +54,7 @@ return {
 			name = "null_ls",
 			-- format on save
 			on_attach = function(client, bufnr)
-				if client.supports_method("textDocument/formatting") then
+				if client:supports_method("textDocument/formatting") then
 					vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
 					vim.api.nvim_create_autocmd("BufWritePre", {
 						group = augroup,
@@ -72,6 +71,7 @@ return {
 					})
 				end
 			end,
+
 			sources = {
 				-- Formatter
 				null_ls.builtins.formatting.gofmt,

@@ -41,8 +41,16 @@ brew "go"                   # go lang
 brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
-brew "xcode-build-server"   # required by xcodebuild.nvim
 brew "gh"                   # github cli
+
+# all those below are required by xcodebuild.nvim. Some might have been listed above already.
+brew "xcode-build-server"   
+brew "xcbeautify"
+brew "ruby"
+brew "pipx"
+brew "rg"
+brew "jq"
+brew "coreutils"
 
 # ───────────────────────────────
 # Networking & Package Management
@@ -95,7 +103,8 @@ cask "shortcat"
 cask "alt-tab"
 cask "sf-symbols"
 cask "nikitabobko/tap/aerospace"
-cask "jordanbaird-ice"
+### currently installed manually. Uncomment once v. 0.11.13 is released
+# cask "jordanbaird-ice"
 
 
 # ───────────────────────────────

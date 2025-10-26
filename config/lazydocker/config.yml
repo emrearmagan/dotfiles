@@ -2,7 +2,7 @@
 
 gui:
   scrollHeight: 2
-  language: "auto" # one of 'auto' | 'en' | 'pl' | 'nl' | 'de' | 'tr'
+  language: "en" # one of 'auto' | 'en' | 'pl' | 'nl' | 'de' | 'tr'
   theme:
     lightTheme: false
     activeBorderColor:
@@ -20,7 +20,7 @@ gui:
   sidePanelWidth: 0.25
   # Determines whether we show the bottom line (the one containing keybinding
   # info and the status of the app).
-  showBottomLine: false
+  showBottomLine: true
   # When true, increases vertical space used by focused side panel,
   # creating an accordion effect
   expandFocusedSidePanel: true

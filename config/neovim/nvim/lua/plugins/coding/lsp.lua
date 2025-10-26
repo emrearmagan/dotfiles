@@ -52,30 +52,37 @@ return {
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 			-- Lua Language Server
-			vim.lsp.config("lua_ls", {})
+			vim.lsp.config("lua_ls", {
+				filetypes = { "lua" },
+				capabilities = capabilities,
+			})
 
-			-- Go Language Server
+			-- Go
 			vim.lsp.config("gopls", {
-				filetypes = { "go", "gomod" },
+				filetypes = { "go", "gomod", "gowork", "gotmpl" },
+				capabilities = capabilities,
 			})
 
-			-- Swift Language Server
+			-- Swift (macOS native)
 			vim.lsp.config("sourcekit", {
-				capabilities = {
-					workspace = {
-						didChangeWatchedFiles = {
-							dynamicRegistration = true,
-						},
-					},
-				},
+				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 				filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
+				capabilities = capabilities,
+				on_init = function(client)
+					client.offset_encoding = "utf-8"
+				end,
 			})
 
-			-- Docker Language Server
-			vim.lsp.config("dockerls", {})
+			-- Docker
+			vim.lsp.config("dockerls", {
+				filetypes = { "dockerfile" },
+				capabilities = capabilities,
+			})
 
-			-- YAML Language Server
+			-- YAML
 			vim.lsp.config("yamlls", {
+				filetypes = { "yaml", "yml" },
+				capabilities = capabilities,
 				settings = {
 					yaml = {
 						schemas = {
@@ -86,19 +93,33 @@ return {
 				},
 			})
 
-			-- Ansible Language Server
+			-- Ansible
 			vim.lsp.config("ansiblels", {
+				filetypes = { "yaml", "yml", "ansible" },
+				capabilities = capabilities,
 				settings = {
 					ansible = {
-						ansibleLint = {
-							enabled = true,
-						},
+						ansibleLint = { enabled = true },
 					},
 				},
 			})
 
-			-- Bash Language Server
-			vim.lsp.config("bashls", {})
+			-- Bash / Shell
+			vim.lsp.config("bashls", {
+				filetypes = { "sh", "bash", "zsh" },
+				capabilities = capabilities,
+			})
+
+			-- ── Enable all LSPs ───────────────────────────────────────
+			vim.lsp.enable({
+				"lua_ls",
+				"gopls",
+				"sourcekit",
+				"dockerls",
+				"yamlls",
+				"ansiblels",
+				"bashls",
+			})
 		end,
 	},
 

@@ -22,6 +22,38 @@ return {
 			return " " .. vim.g.xcodebuild_device_name
 		end
 
+		-- Helper: return color hex based on LSP name
+		local function lsp_color(name)
+			local colors = {
+				sourcekit = "#F05138", -- Swift
+				gopls = "#00ADD8", -- Go
+				lua_ls = "#000080", -- Lua
+				yamlls = "#cb171e", -- YAML
+				dockerls = "#2496ED", -- Docker
+				ansiblels = "#1A1918", -- Ansible
+				bashls = "#89e051", -- Bash
+				["null-ls"] = "#6e7681", -- Formatters / Null
+			}
+			return colors[name] or "#89b4fa" -- default gray
+		end
+
+		-- Helper: get the active LSP name (skip null-ls)
+		local function active_lsp_name()
+			local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+			if #clients == 0 then
+				return nil
+			end
+
+			for _, client in ipairs(clients) do
+				if client.name ~= "null-ls" then
+					return client.name
+				end
+			end
+
+			-- fallback if only null-ls is active
+			return clients[1].name
+		end
+
 		---------------------------------------------------------------------
 		-- project() → repo‐root folder name, or CWD tail when not in a repo
 		---------------------------------------------------------------------
@@ -99,7 +131,22 @@ return {
 				},
 
 				lualine_x = {
-					{ "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
+					{
+						function()
+							local name = active_lsp_name()
+							if not name then
+								return ""
+							end
+							return " " .. name
+						end,
+						color = function()
+							local name = active_lsp_name()
+							return { fg = lsp_color(name) }
+						end,
+					},
+					-- this is using lualine-ex plugin which simply shows the first active LSP.
+					-- Which is null_ls most of the time. You can also simply use this instead of the function above:
+					-- { "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
 
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
 					{ "' ' .. vim.g.xcodebuild_last_status", color = { fg = "#a6e3a1" } },
