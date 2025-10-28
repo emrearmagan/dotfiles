@@ -1,5 +1,5 @@
-format = "$directory$git_branch$git_status $character"
-right_format = "$golang$php$nodejs$swift$docker_context$package$jobs$cmd_duration"
+format = "$sudo$directory$git_branch$git_status $character"
+right_format = "$golang$php$nodejs$swift$docker_context$package$jobs$cmd_duration$battery"
 
 palette = "catppuccin_mocha"
 
@@ -38,6 +38,19 @@ modified = "~"
 staged = "+"
 renamed = "»"
 deleted = "✘"
+
+[battery]
+format = "[ $percentage $symbol]($style)"
+full_symbol = "█"
+charging_symbol = "[↑](italic bold green)"
+discharging_symbol = "↓"
+unknown_symbol = "░"
+empty_symbol = "▃"
+
+[[battery.display]]
+threshold = 20
+style = "italic bold red"
+
 
 ########################################
 # Languages

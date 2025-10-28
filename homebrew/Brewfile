@@ -18,6 +18,7 @@ brew "tldr"                 # short man pages
 brew "zoxide"               # fast cd
 brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
+brew "zsh-completions"      # zsh completions
 brew "jq"                   # required by xcodebuild.nvim
 brew "nmap"                 # network scanner
 brew "coreutils"            # core utilities
@@ -29,6 +30,9 @@ brew "opencode"             # ai code cli
 brew "lazygit"              # git ui
 brew "lazydocker"           # docker ui
 brew "starship"             # shell prompt
+
+brew "pass"                 # password manager
+brew "gpg"                  # encryption tool for pass
 
 
 # ───────────────────────────────

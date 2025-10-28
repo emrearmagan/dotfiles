@@ -20,8 +20,10 @@ export PATH=/opt/homebrew/bin:$PATH
 export HOMEBREW_NO_ANALYTICS=1
 
 # zsh-autosuggestions and highlighting
+source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 source <(fzf --zsh)
 eval $(thefuck --alias)
 eval "$(starship init zsh)"
@@ -54,8 +56,16 @@ setopt hist_find_no_dups
 # ----------------------
 # Configure case-insensitive completion matching
 # This allows tab-completion to match case-insensitively
-autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
 # Make Tab accept suggestions
 zstyle ':autocomplete:tab:*' insert true
+
+zstyle ':autocomplete:*' inline no
+zstyle ':autocomplete:*' list-lines 5
+zstyle ':autocomplete:menu:*' select yes
+zstyle ':autocomplete:list-choices:*' color cyan
+
+# Initialize zsh completion system
+# no need to call compinit anymore as it's called by zsh-autocomplete. When deleting zsh-completions, remember to add this back.
+# autoload -Uz compinit && compinit
