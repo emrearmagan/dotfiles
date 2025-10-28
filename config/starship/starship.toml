@@ -19,6 +19,7 @@ style = "bold yellow"
 [character]
 success_symbol = "❯"
 error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[N](bold purple) "  # normal mode indicator (no redraws)
 
 [git_branch]
 symbol = ""
