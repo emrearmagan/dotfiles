@@ -20,7 +20,7 @@ brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "jq"                   # required by xcodebuild.nvim
 brew "nmap"                 # network scanner
-brew "coreutils"             # core utilities
+brew "coreutils"            # core utilities
 
 brew "neovim"               # editor
 brew "tmux"                 # terminal multiplexer
@@ -35,6 +35,7 @@ brew "starship"             # shell prompt
 # Dev & Build Tools
 # ───────────────────────────────
 brew "ansible"              # automation
+brew "ansible-lint"
 brew "delve"                # go debugger (nvim DAP)
 brew "git"                  # version control
 brew "go"                   # go lang

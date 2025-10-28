@@ -61,6 +61,15 @@ return {
 			vim.lsp.config("gopls", {
 				filetypes = { "go", "gomod", "gowork", "gotmpl" },
 				capabilities = capabilities,
+				settings = {
+					gopls = {
+						completeUnimported = true,
+						usePlaceholders = true,
+						analyses = {
+							unusedparams = true,
+						},
+					},
+				},
 			})
 
 			-- Swift (macOS native)
@@ -81,7 +90,7 @@ return {
 
 			-- YAML
 			vim.lsp.config("yamlls", {
-				filetypes = { "yaml", "yml" },
+				filetypes = { "yaml", "yml", "j2" },
 				capabilities = capabilities,
 				settings = {
 					yaml = {
@@ -112,13 +121,8 @@ return {
 
 			-- ── Enable all LSPs ───────────────────────────────────────
 			vim.lsp.enable({
-				"lua_ls",
-				"gopls",
 				"sourcekit",
-				"dockerls",
-				"yamlls",
-				"ansiblels",
-				"bashls",
+				"gopls",
 			})
 		end,
 	},

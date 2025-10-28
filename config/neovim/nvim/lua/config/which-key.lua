@@ -77,6 +77,7 @@ wk.add({
 	},
 	{ "<leader>cD", vim.lsp.buf.declaration, desc = "Go to Declaration (LSP)", mode = "n" },
 	{ "<leader>ci", vim.lsp.buf.implementation, desc = "Go to Implementation (LSP)", mode = "n" },
+	{ "<leader>cd", vim.lsp.buf.definition, desc = "Go to Definition (LSP)", mode = "n" },
 	{ "<leader>cI", require("telescope.builtin").lsp_implementations, desc = "Go to Implementation", mode = "n" },
 	{ "<leader>cr", vim.lsp.buf.references, desc = "List References (LSP)", mode = "n" },
 	{ "<leader>cn", vim.lsp.buf.rename, desc = "Rename Symbol (LSP)", mode = "n" },
