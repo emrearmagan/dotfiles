@@ -25,16 +25,16 @@ return {
 		-- Helper: return color hex based on LSP name
 		local function lsp_color(name)
 			local colors = {
-				sourcekit = "#F05138", -- Swift
-				gopls = "#00ADD8", -- Go
-				lua_ls = "#000080", -- Lua
-				yamlls = "#cb171e", -- YAML
-				dockerls = "#2496ED", -- Docker
-				ansiblels = "#1A1918", -- Ansible
-				bashls = "#89e051", -- Bash
-				["null-ls"] = "#6e7681", -- Formatters / Null
+				sourcekit = "#ff8942",
+				gopls = "#00AED8",
+				lua_ls = "#2C2D72",
+				yamlls = "#FFD500",
+				dockerls = "#1D63ED",
+				ansiblels = "#EE0000",
+				bashls = "#3D8C40",
+				["null-ls"] = "#A6ADC8",
 			}
-			return colors[name] or "#89b4fa" -- default gray
+			return colors[name] or "#89b4fa" -- fallback: soft blue
 		end
 
 		-- Helper: get the active LSP name (skip null-ls)

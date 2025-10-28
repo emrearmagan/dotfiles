@@ -5,7 +5,7 @@ return {
 	{
 		"wojciech-kulik/xcodebuild.nvim",
 		dependencies = {
-			"j-hui/fidget.nvim", -- guarantee load order
+			-- "j-hui/fidget.nvim", -- guarantee load order. Also installed, see figet.lua
 			"nvim-telescope/telescope.nvim", -- Used for pickers (e.g. quickfix list)
 			"MunifTanjim/nui.nvim", -- UI framework for floating windows
 		},

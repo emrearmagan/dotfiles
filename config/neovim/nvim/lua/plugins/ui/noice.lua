@@ -1,27 +1,29 @@
--- lazy.nvim
 return {
 	"folke/noice.nvim",
 	event = "VeryLazy",
 	dependencies = {
 		"MunifTanjim/nui.nvim",
 	},
+
 	config = function()
 		require("noice").setup({
 			cmdline = {
 				enabled = true,
 				view = "cmdline_popup",
 				format = {
-					cmdline = {
-						pattern = "^:",
-						icon = "",
-						lang = "vim",
-						conceal = false, -- keep ":" visible
-					},
+					-- Normal command (e.g. :w, :q)
+					cmdline = { pattern = "^:", icon = "", lang = "vim", conceal = false },
 				},
 			},
-			notify = {
-				enabled = false,
+			messages = { enabled = true },
+			lsp = {
+				progress = { enabled = true },
+				message = { enabled = true },
 			},
+
+			-- notifcations are handled in snacks.nvim
+			notify = { enabled = false },
+			popupmenu = { enabled = false },
 			presets = {
 				bottom_search = true, -- classic bottom command line for search
 				command_palette = true, -- position cmdline and popupmenu together

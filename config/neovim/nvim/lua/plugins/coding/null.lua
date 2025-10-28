@@ -47,7 +47,32 @@ return {
 			float = {
 				border = "rounded", -- Rounded border
 				source = "always", -- Always show diagnostic source (e.g., gopls)
+				focusable = true,
+				header = "", -- no header text
+				severity_sort = true,
+				prefix = "● ",
+
+				-- manually constrain window to avoid invalid width errors
+				max_width = math.floor(vim.o.columns * 0.7),
+				max_height = math.floor(vim.o.lines * 0.3),
 			},
+		})
+
+		vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+			callback = function()
+				local opts = {
+					focusable = false,
+					close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+					scope = "cursor",
+				}
+
+				-- Check if any diagnostics exist at cursor before opening
+				local diagnostics = vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 })
+				if diagnostics and #diagnostics > 0 then
+					vim.diagnostic.open_float(nil, opts)
+				end
+			end,
+			desc = "Show diagnostics in floating window on CursorHold",
 		})
 
 		null_ls.setup({

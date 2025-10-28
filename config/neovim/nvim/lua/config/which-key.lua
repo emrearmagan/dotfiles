@@ -18,6 +18,7 @@ wk.add({
 	{ "<leader>fg", "<cmd>FzfLua live_grep<CR>", desc = "Live grep" },
 	{ "<leader>fb", "<cmd>FzfLua buffers<CR>", desc = "Find buffer" },
 	{ "<leader>ft", "<cmd>FzfLua help_tags<CR>", desc = "Find help tags" },
+	{ "<leader>fy", "<cmd>Telescope neoclip<CR>", desc = "Find from yank history (Telescope)" },
 	{
 		"<leader>fd",
 		function()
@@ -46,6 +47,8 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<C-n>", "<cmd>BufferLineCycleNext<CR>", desc = "Next Buffer", mode = "n" },
 	{ "<C-p>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous Buffer", mode = "n" },
+	{ "<Tab>", "<cmd>BufferLineCycleNext<CR>", desc = "Next Buffer", mode = "n" },
+	{ "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous Buffer", mode = "n" },
 	{ "<C-x>", "<cmd>bdelete<CR>", desc = "Close current buffer", mode = "n" },
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -269,6 +272,14 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     snacks                         │
 	-- ╰────────────────────────────────────────────────────╯
+	{ "<leader>s", group = "Snacks" },
+	{
+		"<leader>sd",
+		function()
+			snacks.dim()
+		end,
+		desc = "Autocmds",
+	},
 	{
 		"<leader>sa",
 		function()
@@ -322,9 +333,17 @@ wk.add({
 		desc = "Undo History",
 	},
 	{
-		"<leader>sB",
+		"<leader>sG",
 		function()
 			snacks.gitbrowse()
+		end,
+		desc = "Git Browse",
+		mode = { "n", "v" },
+	},
+	{
+		"<leader>sg",
+		function()
+			snacks.lazygit()
 		end,
 		desc = "Git Browse",
 		mode = { "n", "v" },
