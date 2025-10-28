@@ -2,6 +2,9 @@
 	email = emrearmagan.dev@gmail.com
 	name = Emre Armagan
 
+[init]
+  defaultBranch = main
+
 [core]
 	excludesfile = /Users/emrearmagan/.gitignore_global
 	autocrlf = input
