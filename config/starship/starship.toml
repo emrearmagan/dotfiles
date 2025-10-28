@@ -1,5 +1,5 @@
 format = "$directory$git_branch$git_status $character"
-right_format = "$golang$php$nodejs$swift$docker_context$package$jobs"
+right_format = "$golang$php$nodejs$swift$docker_context$package$jobs$cmd_duration"
 
 palette = "catppuccin_mocha"
 
@@ -10,9 +10,15 @@ truncation_length = 0
 truncate_to_repo = false
 read_only = " "
 
+[cmd_duration]
+min_time = 2000        # Show if command took > 2000 ms (2 s)
+show_milliseconds = false
+format = "⏱ [$duration]($style) "
+style = "bold yellow"
+
 [character]
-success_symbol = " ❯"
-error_symbol = " ❯"
+success_symbol = "❯"
+error_symbol = "[❯](bold red)"
 
 [git_branch]
 symbol = ""
@@ -23,15 +29,15 @@ format = ' [(\($symbol $branch\))]($style)'
 format = " [($all_status$ahead_behind)]($style)"
 style = "red"
 conflicted = "⚔"
-ahead = "⇡${count}"
-behind = "⇣${count}"
-diverged = "⇕${ahead_count}⇣${behind_count}"
-untracked = "?${count}"
+ahead = "⇡"
+behind = "⇣"
+diverged = "⇕"
+untracked = "?"
 stashed = "📦"
-modified = "~${count}"
-staged = "+${count}"
-renamed = "»${count}"
-deleted = "✘${count}"
+modified = "~"
+staged = "+"
+renamed = "»"
+deleted = "✘"
 
 ########################################
 # Languages

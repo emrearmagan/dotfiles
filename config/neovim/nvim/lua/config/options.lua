@@ -1,11 +1,11 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
+vim.keymap.set("n", " ", "<Nop>", { silent = true, remap = false })
 vim.keymap.set("n", "Y", "y$", { desc = "Yank to end-of-line" })
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines (cursor stays)" })
 
@@ -27,6 +27,7 @@ vim.opt.shiftwidth = 2 -- Number of spaces for indentation
 vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.scrolloff = 8 -- Lines to keep above and below the cursor
 vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
+vim.opt.fillchars = { eob = " " } -- Hide ~ on empty lines
 
 -- Auto-reload files when changed externally
 vim.opt.autoread = true

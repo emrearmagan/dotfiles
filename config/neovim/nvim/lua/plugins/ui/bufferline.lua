@@ -21,8 +21,10 @@ return {
 				-- max_prefix_length = 15,         -- Max length of prefix used before truncated name
 			},
 			highlights = {
+				fill = { bg = "NONE" }, -- remove background
 				buffer_selected = {
-					fg = "#89b4fa", -- Foreground color for selected buffer
+					fg = "#89b4fa",
+					bg = "#1a2235",
 					bold = true, -- Bold text
 					italic = false, -- No italic
 				},

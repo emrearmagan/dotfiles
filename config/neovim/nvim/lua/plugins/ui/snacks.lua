@@ -19,7 +19,28 @@ return {
 		picker = { enabled = true },
 		quickfile = { enabled = true },
 		scope = { enabled = true },
-		scroll = { enabled = true },
+		scroll = {
+			-- feels a bit laggy with my custom keybindings in options.lua, need to optimize later
+			enabled = true,
+			animate = {
+				duration = { step = 10, total = 250 }, -- step: per-frame delay; total: total ms per scroll
+				easing = "outQuad", -- smooth and natural easing
+			},
+			animate_repeat = {
+				delay = 100, -- if you scroll again within 100ms, use faster animation
+				duration = { step = 6, total = 120 },
+				easing = "outQuad",
+			},
+			filter = function(buf)
+				-- animate only “normal” buffers; skip terminals/pickers/etc.
+				local bt = vim.bo[buf].buftype
+				return vim.g.snacks_scroll ~= false
+					and vim.b[buf].snacks_scroll ~= false
+					and bt ~= "terminal"
+					and bt ~= "nofile"
+					and bt ~= "prompt"
+			end,
+		},
 		statuscolumn = { enabled = true },
 		words = { enabled = true },
 		dim = {
