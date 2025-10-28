@@ -12,7 +12,25 @@ return {
 				-- Completely ignore all LSP clients (disables `$ /progress`)
 				-- Currenlty all lsp progress is handled by noice.nvim. In the future i might wanna use fidget again,
 				-- then i could use the display config below.
-				ignore = { "null-ls" },
+				-- Ignore *all* LSP clients you use
+				ignore = {
+					"null-ls",
+					"gopls",
+					"sourcekit",
+					"lua_ls",
+					"yamlls",
+					"bashls",
+					"dockerls",
+					"ansiblels",
+					"swiftlint",
+					"swiftformat",
+					"golangci_lint",
+					"prettier",
+					"shfmt",
+					"stylua",
+					"mason",
+					"mason-lspconfig",
+				},
 
 				-- display = {
 				-- 	-- format_message = function(msg)
