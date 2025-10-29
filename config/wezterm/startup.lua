@@ -25,15 +25,7 @@ wezterm.on("gui-startup", function(cmd)
 
 	local stats_tab = window:spawn_tab({ cwd = home })
 	stats_tab:set_title("stats")
-
-	local stats_pane = stats_tab:active_pane()
-	stats_pane:send_text("df -h /\n")
-	local bottom_pane = stats_pane:split({
-		direction = "Bottom",
-		size = 0.6,
-		cwd = home,
-	})
-	bottom_pane:send_text("btop\n")
+	stats_tab:active_pane():send_text("btop\n")
 
 	-- activate home tab
 	window:gui_window():perform_action(act.ActivateTab(0), home_tab:active_pane())

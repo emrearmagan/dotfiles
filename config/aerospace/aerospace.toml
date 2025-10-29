@@ -95,6 +95,14 @@ run = 'layout floating'
 if.app-name-regex-substring = 'Notes'
 run = 'layout floating'
 
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'SourceTree'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Fork'
+run = 'layout floating'
 # workaround so simulator windows are tiled
 [[on-window-detected]]
 if.app-id = 'com.apple.iphonesimulator'

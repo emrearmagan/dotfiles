@@ -19,6 +19,7 @@ brew "zoxide"               # fast cd
 brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
+brew "zsh-autocomplete"     # zsh autocomplete
 brew "jq"                   # required by xcodebuild.nvim
 brew "nmap"                 # network scanner
 brew "coreutils"            # core utilities
@@ -90,6 +91,7 @@ brew "sketchybar"
 # ───────────────────────────────
 cask "iterm2"
 cask "wezterm"
+cask "ghostty"
 cask "docker-desktop"
 cask "mitmproxy"
 cask "sourcetree"
