@@ -16,8 +16,9 @@ export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
 
 #Brew
-export PATH=/opt/homebrew/bin:$PATH
 export HOMEBREW_NO_ANALYTICS=1
+export PATH=/opt/homebrew/bin:$PATH
+export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")

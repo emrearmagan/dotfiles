@@ -62,8 +62,7 @@ return {
 
 		setup_listeners()
 		local dap_integration = require("xcodebuild.integrations.dap")
-		local codelldbPath = os.getenv("HOME") .. "/.local/share/nvim/codelldb/extension/adapter/codelldb"
-		dap_integration.setup(codelldbPath)
+		dap_integration.setup()
 
 		local define = vim.fn.sign_define
 		define("DapBreakpoint", { text = "", texthl = "DiagnosticError" })

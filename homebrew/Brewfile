@@ -22,7 +22,6 @@ brew "zsh-completions"      # zsh completions
 brew "zsh-autocomplete"     # zsh autocomplete
 brew "jq"                   # required by xcodebuild.nvim
 brew "nmap"                 # network scanner
-brew "coreutils"            # core utilities
 
 brew "neovim"               # editor
 brew "tmux"                 # terminal multiplexer
@@ -34,7 +33,7 @@ brew "starship"             # shell prompt
 
 brew "pass"                 # password manager
 brew "gpg"                  # encryption tool for pass
-
+brew "openssh"              # ssh tool
 
 # ───────────────────────────────
 # Dev & Build Tools
@@ -48,6 +47,7 @@ brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
 brew "gh"                   # github cli
+brew "task"           # task manager
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   
