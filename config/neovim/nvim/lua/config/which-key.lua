@@ -278,7 +278,7 @@ wk.add({
 		function()
 			snacks.dim()
 		end,
-		desc = "Autocmds",
+		desc = "Dim",
 	},
 	{
 		"<leader>sa",

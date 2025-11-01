@@ -1,6 +1,6 @@
 return {
 	"nvimtools/none-ls.nvim",
-	event = { "BufReadPre", "BufNewFile" },
+	event = "LspAttach", --- load when lsp attaches to buffer. This way we make sure lsp is running before null-ls and it also looks nicer in lualine
 	dependencies = {
 		"jay-babu/mason-null-ls.nvim",
 	},

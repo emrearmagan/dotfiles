@@ -16,7 +16,7 @@ return {
 				-- Use ripgrep to list project files while:
 				-- - including hidden files (like .env)
 				-- - excluding common clutter (e.g. .git, node_modules, .DS_Store)
-				cmd = "rg --files --no-ignore --hidden --follow --glob '!.git/*' --glob '!node_modules/*' --glob '!.DS_Store' --glob '!vendor/**'",
+				cmd = "rg --files --no-ignore --hidden --follow --glob '!.git/*' --glob '!node_modules/*' --glob '!.DS_Store' --glob '!vendor/**' --glob '!tmp/**'",
 				previewer = "bat", -- Use `bat` as a previewer
 				git_icons = true,
 				follow = true,
@@ -33,7 +33,7 @@ return {
 				rg_glob = true, -- Enable glob parsing
 				glob_flag = "--iglob", -- Use case-insensitive globs
 				glob_separator = "%s%-%-", -- Separator pattern
-				cmd = "rg --vimgrep --hidden --glob '!.git/**' --glob '!node_modules/**' --glob '!vendor/**'", -- Exclude dirs
+				cmd = "rg --vimgrep --hidden --glob '!.git/**' --glob '!node_modules/**' --glob '!vendor/**' --glob '!tmp/**'", -- Exclude dirs
 				silent = true,
 			},
 		})

@@ -58,6 +58,10 @@ brew "rg"
 brew "jq"
 brew "coreutils"
 
+# Database Tools
+# make sure to run "brew link --force libpq" afterwards
+brew "libpq"                # postgres tools
+
 # ───────────────────────────────
 # Networking & Package Management
 # ───────────────────────────────
