@@ -4,7 +4,7 @@ return {
 	event = "VeryLazy",
 	opts = {
 		disabled_filetypes = { "qf", "netrw", "NvimTree", "lazy", "mason" },
-		max_count = 3, -- how many repeats before blocking
+		max_count = 5, -- how many repeats before blocking
 		restriction_mode = "hint", -- "block" | "hint"
 		hint = true,
 		disable_mouse = false,

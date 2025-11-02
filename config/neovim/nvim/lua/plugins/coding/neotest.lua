@@ -15,8 +15,11 @@ return {
 			},
 		},
 		config = function()
+			-- Ensure Go bin is in PATH for Neovim (for gotestsum)
+			vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.expand("~") .. "/go/bin"
+
 			local config = {
-				runner = "gotestsum", -- Optional, but recommended
+				runner = "gotestsum", -- Optional, but recommended. Could also just use 'gotest' here and get rid of the PATH
 			}
 			require("neotest").setup({
 				adapters = {

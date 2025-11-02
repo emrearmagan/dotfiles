@@ -4,6 +4,7 @@ local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
 local fzf = require("fzf-lua")
 local neotest = require("neotest")
+local doodle = require("doodle")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -428,6 +429,28 @@ wk.add({
 	},
 
 	{
+		"<space>.f",
+		function()
+			doodle:toggle_finder()
+		end,
+		desc = "Doodle Finder",
+	},
+	{
+		"<space>.s",
+		function()
+			doodle:sync()
+		end,
+		desc = "Doodle Sync",
+	},
+	{
+		"<space>.l",
+		function()
+			doodle:toggle_links()
+		end,
+		desc = "Doodle Links",
+	},
+
+	{
 		"<leader>..",
 		function()
 			snacks.scratch()
@@ -435,7 +458,7 @@ wk.add({
 		desc = "Toggle Scratch Buffer",
 	},
 	{
-		"<leader>.s",
+		"<leader>.b",
 		function()
 			snacks.scratch.select()
 		end,

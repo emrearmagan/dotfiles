@@ -98,6 +98,12 @@ return {
 						action = ":lua Snacks.dashboard.pick('oldfiles')",
 					},
 					{
+						icon = "󰈙 ",
+						key = "d",
+						desc = "Doodle Notes",
+						action = ":lua require('doodle'):toggle_finder()",
+					},
+					{
 						icon = " ",
 						key = "c",
 						desc = "Config",
