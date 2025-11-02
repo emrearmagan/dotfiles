@@ -95,7 +95,11 @@ return {
 				},
 
 				lualine_c = {
-					{ "diagnostics" }, -- Show LSP diagnostics (errors/warnings)
+					{
+						"diagnostics",
+
+						sources = { "nvim_diagnostic", "nvim_lsp", "nvim_workspace_diagnostic" },
+					}, -- Show LSP diagnostics (errors/warnings)
 				},
 
 				lualine_x = {

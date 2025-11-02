@@ -1,21 +1,38 @@
 return {
-	{
-		"folke/trouble.nvim",
-		event = "LspAttach",
-		opts = {
-			use_diagnostic_signs = true,
-			auto_preview = true,
-			modes = {
-				diagnostics = {
-					auto_open = false,
-					auto_close = true,
-					win = { position = "right" },
-					filter = { buf = 0 },
-				},
+	"folke/trouble.nvim",
+	event = "LspAttach",
+	opts = {
+		use_diagnostic_signs = true,
+		auto_preview = true,
+		modes = {
+			-- buffer-only diagnostics
+			diagnostics_buffer = {
+				desc = "Buffer Diagnostics",
+				mode = "diagnostics",
+				filter = { buf = 0 }, -- restrict to current buffer
+				win = { position = "right" },
+				auto_open = false,
+				auto_close = false,
+			},
+			-- workspace-wide diagnostics (no filter)
+			diagnostics = {
+				desc = "Workspace Diagnostics",
+				mode = "diagnostics", -- reuse built-in diagnostics source
+				filter = {}, -- no buf filter = workspace-level
+				win = { position = "right" },
+				auto_open = true,
+				auto_close = true,
 			},
 		},
-		config = function(_, opts)
-			require("trouble").setup(opts)
-		end,
+
+		icons = {
+			indent = {
+				last = "╰╴", -- rounded
+			},
+		},
 	},
+	config = function(_, opts)
+		local trouble = require("trouble")
+		trouble.setup(opts)
+	end,
 }
