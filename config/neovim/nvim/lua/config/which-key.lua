@@ -2,6 +2,8 @@ local wk = require("which-key")
 local gitsigns = require("gitsigns")
 local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
+local fzf = require("fzf-lua")
+local neotest = require("neotest")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -65,67 +67,136 @@ wk.add({
 	{ "<leader>qA", ":wqa<CR>", desc = "Save all & quit", mode = "n" },
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                      Coding                        │
+	-- │                   LSP / Code Tools                 │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>c", group = "Code" },
-	{ "<leader>cK", vim.lsp.buf.hover, desc = "Hover Info (LSP)", mode = "n" },
-	{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code actions", mode = "n" },
+	{ "<leader>c", group = "LSP / Code" },
+	{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" } },
+	{ "<leader>cn", vim.lsp.buf.rename, desc = "Rename Symbol", mode = "n" },
 	{
-		"<leader>cx",
+		"<leader>cf",
 		function()
-			vim.lsp.buf.code_action({ apply = true })
+			vim.lsp.buf.format({ async = true })
 		end,
-		desc = "Quickfix (auto-apply)",
+		desc = "Format File",
+		mode = { "n", "v" },
+	},
+	{ "<leader>cd", fzf.diagnostics_document, desc = "Document Diagnostics", mode = "n" },
+	{ "<leader>cw", fzf.diagnostics_workspace, desc = "Workspace Diagnostics", mode = "n" },
+
+	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation", mode = "n" },
+	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = "i" },
+
+	{ "gD", fzf.lsp_declarations, desc = "Go to Declaration", mode = "n" },
+	{ "gd", fzf.lsp_definitions, desc = "Go to Definition", mode = "n" },
+	{ "gi", fzf.lsp_implementations, desc = "Go to Implementation", mode = "n" },
+	{ "gr", fzf.lsp_references, desc = "List References", mode = "n" },
+
+	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic", mode = "n" },
+	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic", mode = "n" },
+
+	{ "<leader>cs", fzf.lsp_document_symbols, desc = "Document Symbols", mode = "n" },
+	{ "<leader>cS", fzf.lsp_workspace_symbols, desc = "Workspace Symbols", mode = "n" },
+
+	-- Keep optional Trouble & Snacks extras
+	{ "<leader>clm", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)", mode = "n" },
+	{
+		"<leader>cll",
+		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+		desc = "LSP List (Trouble)",
 		mode = "n",
 	},
-	{ "<leader>cD", vim.lsp.buf.declaration, desc = "Go to Declaration (LSP)", mode = "n" },
-	{ "<leader>ci", vim.lsp.buf.implementation, desc = "Go to Implementation (LSP)", mode = "n" },
-	{ "<leader>cd", vim.lsp.buf.definition, desc = "Go to Definition (LSP)", mode = "n" },
-	{ "<leader>cI", require("telescope.builtin").lsp_implementations, desc = "Go to Implementation", mode = "n" },
-	{ "<leader>cr", vim.lsp.buf.references, desc = "List References (LSP)", mode = "n" },
-	{ "<leader>cn", vim.lsp.buf.rename, desc = "Rename Symbol (LSP)", mode = "n" },
-	{ "<leader>cs", vim.lsp.buf.signature_help, desc = "Signature Help (LSP)", mode = "n" },
-	{ "<leader>cf", vim.lsp.buf.format, desc = "Format File (LSP)", mode = "n" },
-	{ "<leader>cp", vim.diagnostic.goto_prev, desc = "Prev diagnostic", mode = "n" },
-	{ "<leader>cn", vim.diagnostic.goto_next, desc = "Next diagnostic", mode = "n" },
 	{
-		"<leader>cs",
-		function()
-			snacks.picker.lsp_symbols()
-		end,
-		desc = "LSP Symbols",
-	},
-	{
-		"<leader>cS",
-		function()
-			snacks.picker.lsp_workspace_symbols()
-		end,
-		desc = "LSP Workspace Symbols",
-	},
-
-	{
-		"<leader>cm",
-		"<cmd>Trouble symbols toggle focus=false<cr>",
-		desc = "Minimap",
-	},
-	{
-		"<leader>cl",
-		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-		desc = "LSP Definitions / references / ... (Trouble)",
-	},
-	{
-		"<leader>cx",
+		"<leader>clx",
 		function()
 			snacks.picker.diagnostics()
 		end,
-		desc = "Diagnostics",
+		desc = "Diagnostics (Snacks)",
+		mode = "n",
 	},
 	{
-		"<leader>cX",
+		"<leader>clX",
 		function()
 			snacks.picker.diagnostics_buffer()
 		end,
-		desc = "Buffer Diagnostics",
+		desc = "Buffer Diagnostics (Snacks)",
+		mode = "n",
+	},
+
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                     Code Tests (neotest)           │
+	-- ╰────────────────────────────────────────────────────╯
+	{ "<leader>ct", group = "Tests" },
+	{
+		"<leader>ctt",
+		function()
+			neotest.run.run()
+			vim.schedule(neotest.summary.open)
+		end,
+		desc = "Run nearest test",
+		mode = "n",
+	},
+
+	{
+		"<leader>ctf",
+		function()
+			neotest.run.run(vim.fn.expand("%"))
+			vim.schedule(neotest.summary.open)
+		end,
+		desc = "Run tests in file",
+		mode = "n",
+	},
+
+	{
+		"<leader>cta",
+		function()
+			neotest.run.run({ suite = true })
+			vim.schedule(neotest.summary.open)
+		end,
+		desc = "Run all tests",
+		mode = "n",
+	},
+
+	{
+		"<leader>ctr",
+		function()
+			neotest.run.run_last()
+			vim.schedule(neotest.summary.open)
+		end,
+		desc = "Re-run last test",
+		mode = "n",
+	},
+
+	{
+		"<leader>ctd",
+		function()
+			neotest.run.run({ strategy = "dap" })
+		end,
+		desc = "Debug nearest test",
+		mode = "n",
+	},
+	{
+		"<leader>cts",
+		function()
+			neotest.summary.toggle()
+		end,
+		desc = "Toggle test summary",
+		mode = "n",
+	},
+	{
+		"<leader>cto",
+		function()
+			neotest.output.open({ enter = true })
+		end,
+		desc = "Show test output",
+		mode = "n",
+	},
+	{
+		"<leader>ctO",
+		function()
+			neotest.output_panel.toggle()
+		end,
+		desc = "Toggle output panel",
+		mode = "n",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -191,7 +262,22 @@ wk.add({
 	-- │                       Git                          │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>g", group = "Git" },
-	{ "<leader>gl", "<cmd>LazyGit<cr>", desc = "Open LazyGit" },
+	{
+		"<leader>gG",
+		function()
+			snacks.gitbrowse()
+		end,
+		desc = "Git Browse",
+		mode = { "n", "v" },
+	},
+	{
+		"<leader>gg",
+		function()
+			snacks.lazygit()
+		end,
+		desc = "Git Browse",
+		mode = { "n", "v" },
+	},
 	{
 		"<leader>gr",
 		function()
@@ -288,14 +374,14 @@ wk.add({
 		desc = "Autocmds",
 	},
 	{
-		"<leader>sc",
+		"<leader>sC",
 		function()
 			snacks.picker.command_history()
 		end,
 		desc = "Command History",
 	},
 	{
-		"<leader>sC",
+		"<leader>sc",
 		function()
 			snacks.picker.commands()
 		end,
@@ -332,22 +418,7 @@ wk.add({
 		end,
 		desc = "Undo History",
 	},
-	{
-		"<leader>sG",
-		function()
-			snacks.gitbrowse()
-		end,
-		desc = "Git Browse",
-		mode = { "n", "v" },
-	},
-	{
-		"<leader>sg",
-		function()
-			snacks.lazygit()
-		end,
-		desc = "Git Browse",
-		mode = { "n", "v" },
-	},
+
 	{
 		"<leader>sm",
 		function()
@@ -369,42 +440,5 @@ wk.add({
 			snacks.scratch.select()
 		end,
 		desc = "Select Scratch Buffer",
-	},
-
-	{
-		"<leader>Xd",
-		function()
-			snacks.picker.lsp_definitions()
-		end,
-		desc = "Goto Definition",
-	},
-	{
-		"<leader>XD",
-		function()
-			snacks.picker.lsp_declarations()
-		end,
-		desc = "Goto Declaration",
-	},
-	{
-		"<leader>Xr",
-		function()
-			snacks.picker.lsp_references()
-		end,
-		nowait = true,
-		desc = "References",
-	},
-	{
-		"<leader>XI",
-		function()
-			snacks.picker.lsp_implementations()
-		end,
-		desc = "Goto Implementation",
-	},
-	{
-		"<leader>Xy",
-		function()
-			snacks.picker.lsp_type_definitions()
-		end,
-		desc = "Goto T[y]pe Definition",
 	},
 })
