@@ -121,5 +121,4 @@ cask "nikitabobko/tap/aerospace"
 # ───────────────────────────────
 # Mac App Store
 # ───────────────────────────────
-mas "Swift Playgrounds", id: 1496833156
 mas "Xcode", id: 497799835

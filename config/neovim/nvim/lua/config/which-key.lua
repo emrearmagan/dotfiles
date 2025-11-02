@@ -5,6 +5,7 @@ local snacks = require("snacks")
 local fzf = require("fzf-lua")
 local neotest = require("neotest")
 local doodle = require("doodle")
+local builtin = require("telescope.builtin")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -43,7 +44,8 @@ wk.add({
 	{ "<leader>ff", "<cmd>FzfLua files<CR>", desc = "Find files" },
 	{ "<leader>fg", "<cmd>FzfLua live_grep<CR>", desc = "Live grep" },
 	{ "<leader>fb", "<cmd>FzfLua buffers<CR>", desc = "Find buffer" },
-	{ "<leader>ft", "<cmd>FzfLua help_tags<CR>", desc = "Find help tags" },
+	{ "<leader>ft", "<cmd>TodoTelescope<CR>", desc = "Find TODOs" },
+	{ "<leader>fT", "<cmd>FzfLua help_tags<CR>", desc = "Find help tags" },
 	{ "<leader>fy", "<cmd>Telescope neoclip<CR>", desc = "Find from yank history (Telescope)" },
 	{
 		"<leader>fd",
@@ -104,8 +106,27 @@ wk.add({
 		desc = "Format File",
 		mode = { "n", "v" },
 	},
-	{ "<leader>cd", fzf.diagnostics_document, desc = "Document Diagnostics", mode = "n" },
-	{ "<leader>cw", fzf.diagnostics_workspace, desc = "Workspace Diagnostics", mode = "n" },
+	{ "<leader>cd", builtin.diagnostics, desc = "Document Diagnostics", mode = "n" },
+	{
+		"<leader>cd",
+		function()
+			builtin.diagnostics({ bufnr = 0 })
+		end,
+		desc = "Document Diagnostics",
+		mode = "n",
+	},
+
+	{
+		"<leader>cw",
+		function()
+			builtin.diagnostics()
+		end,
+		desc = "Workspace Diagnostics",
+		mode = "n",
+	},
+
+	{ "<leader>cs", builtin.lsp_document_symbols, desc = "Document Symbols", mode = "n" },
+	{ "<leader>cS", builtin.lsp_workspace_symbols, desc = "Workspace Symbols", mode = "n" },
 
 	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation", mode = "n" },
 	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = "i" },
@@ -117,9 +138,6 @@ wk.add({
 
 	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic", mode = "n" },
 	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic", mode = "n" },
-
-	{ "<leader>cs", fzf.lsp_document_symbols, desc = "Document Symbols", mode = "n" },
-	{ "<leader>cS", fzf.lsp_workspace_symbols, desc = "Workspace Symbols", mode = "n" },
 
 	-- Keep optional Trouble & Snacks extras
 	{ "<leader>clm", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)", mode = "n" },

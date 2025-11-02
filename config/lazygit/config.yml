@@ -4,7 +4,6 @@ gui:
   showIcons: true
   showFileTree: true
   border: "rounded" # 'single' | 'double' | 'rounded' | 'hidden'
-
   theme:
     activeBorderColor:
       - "#89b4fa" # blue
@@ -28,13 +27,11 @@ gui:
       - "#cdd6f4" # foreground
     inactiveViewSelectedLineBgColor:
       - "#313244"
-
 git:
   autoFetch: true
   autoRefresh: true
-  paging:
-    useConfig: true
-
+  pagers:
+    - useConfig: true
 # Allow 'Esc' to quit from top level
 quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later

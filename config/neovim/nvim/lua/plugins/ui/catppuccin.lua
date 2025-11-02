@@ -10,6 +10,7 @@ return {
 			transparent_background = true,
 			integrations = {
 				notify = true, -- pull in Notify* highlight groups
+				telescope = true,
 			},
 			dim_inactive = {
 				enabled = false, -- dims the background color of inactive window
