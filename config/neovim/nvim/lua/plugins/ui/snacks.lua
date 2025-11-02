@@ -104,6 +104,12 @@ return {
 						action = ":lua require('doodle'):toggle_finder()",
 					},
 					{
+						icon = " ",
+						key = "l",
+						desc = "LeetCode",
+						action = ":Leet", -- or :LeetCode browse
+					},
+					{
 						icon = " ",
 						key = "c",
 						desc = "Config",
