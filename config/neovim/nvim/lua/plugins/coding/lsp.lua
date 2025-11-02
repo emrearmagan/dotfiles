@@ -151,8 +151,9 @@ return {
 			require("luasnip.loaders.from_vscode").lazy_load()
 
 			cmp.setup({
+				preselect = cmp.PreselectMode.None, -- do not preselect any item
 				completion = {
-					completeopt = "menu,menuone,preview",
+					completeopt = "menu,menuone,preview,noselect",
 				},
 				snippet = { -- configure how nvim-cmp interacts with snippet engine
 					expand = function(args)
@@ -163,8 +164,30 @@ return {
 
 				mapping = cmp.mapping.preset.insert({
 					["<C-Space>"] = cmp.mapping.complete(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
+					["<CR>"] = cmp.mapping.confirm({ select = false }),
+
+					-- Snippet navigation with Tab / Shift-Tab
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if luasnip.jumpable(1) and luasnip.locally_jumpable(1) then
+							luasnip.jump(1)
+						elseif cmp.visible() then
+							cmp.select_next_item()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+						if luasnip.jumpable(-1) then
+							luasnip.jump(-1)
+						elseif cmp.visible() then
+							cmp.select_prev_item()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
 				}),
+
 				-- sources for autocompletion
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
@@ -174,6 +197,10 @@ return {
 					{ name = "copilot" },
 					{ name = "path" }, -- file system paths
 				}),
+				window = {
+					completion = cmp.config.window.bordered(),
+					documentation = cmp.config.window.bordered(),
+				},
 				-- configure lspkind for vs-code like pictograms in completion menu
 				formatting = {
 					format = lspkind.cmp_format({
