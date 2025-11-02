@@ -9,6 +9,29 @@ local doodle = require("doodle")
 -------------------- Keybindings ------------------------
 wk.add({
 	-- ╭────────────────────────────────────────────────────╮
+	-- │                     Common                        │
+	-- ╰────────────────────────────────────────────────────╯
+	{ "J", "mzJ`z", desc = "Join lines (cursor stays)", mode = "n" },
+	{ "Y", "y$", desc = "Yank to end of line", mode = "n" },
+
+	-- Disable plain <Space> in normal mode so it doesn't move the cursor when used as <leader>
+	-- (prevents accidental motion if <Space> is pressed alone)
+	{ " ", "<Nop>", desc = "Leader key noop", mode = "n" },
+
+	{ "<C-d>", "<C-d>zz", desc = "Half-page down & center", mode = "n" },
+	{ "<C-u>", "<C-u>zz", desc = "Half-page up & center", mode = "n" },
+
+	{ "n", "nzzzv", desc = "Next search result (centered)", mode = "n" },
+	{ "N", "Nzzzv", desc = "Previous search result (centered)", mode = "n" },
+
+	-- Currently overlapping with debugger mappings. But might add them later
+	-- { "<leader>d", '"_d', desc = "Delete without yank", mode = "n" },
+	-- { "<leader>d", '"_d', desc = "Delete without yank", mode = "v" },
+
+	{ "J", ":m '>+1<CR>gv=gv", desc = "Move selection down", mode = "v" },
+	{ "K", ":m '<-2<CR>gv=gv", desc = "Move selection up", mode = "v" },
+
+	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Tree                          │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>n", ":Neotree toggle<CR>", desc = "Toggle Tree" },

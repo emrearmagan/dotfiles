@@ -49,6 +49,17 @@ return {
 				},
 			})
 
+			local cmp = require("cmp")
+			local border_opts = cmp.config.window.bordered({
+				border = "rounded",
+				winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
+				max_width = math.floor(vim.o.columns * 0.4),
+				max_height = math.floor(vim.o.lines * 0.3),
+			})
+
+			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
+			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, border_opts)
+
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 			-- Lua Language Server
@@ -150,6 +161,8 @@ return {
 			-- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
 			require("luasnip.loaders.from_vscode").lazy_load()
 
+			local compare = require("cmp.config.compare")
+
 			cmp.setup({
 				preselect = cmp.PreselectMode.None, -- do not preselect any item
 				completion = {
@@ -165,6 +178,10 @@ return {
 				mapping = cmp.mapping.preset.insert({
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<CR>"] = cmp.mapping.confirm({ select = false }),
+
+					-- scroll completion docs
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 
 					-- Snippet navigation with Tab / Shift-Tab
 					["<Tab>"] = cmp.mapping(function(fallback)
@@ -188,20 +205,44 @@ return {
 					end, { "i", "s" }),
 				}),
 
+				sorting = {
+					comparators = {
+						-- Push Copilot items down
+						function(entry1, entry2)
+							if entry1.source.name == "copilot" then
+								return false
+							elseif entry2.source.name == "copilot" then
+								return true
+							end
+						end,
+
+						-- Keep default comparators
+						compare.offset,
+						compare.exact,
+						compare.score,
+						compare.recently_used,
+						compare.kind,
+						compare.sort_text,
+						compare.length,
+						compare.order,
+					},
+				},
+
 				-- sources for autocompletion
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" }, -- snippets
-					-- INFO: Might add it back later. Seems to be annoying for now
+					-- INFO: Seems annoying at the moment, so disabled for now
 					-- { name = "buffer" }, -- text within current buffer
-					{ name = "copilot" },
 					{ name = "path" }, -- file system paths
+					{ name = "copilot" },
 				}),
+
+				-- configure lspkind for vs-code like pictograms in completion menu
 				window = {
 					completion = cmp.config.window.bordered(),
 					documentation = cmp.config.window.bordered(),
 				},
-				-- configure lspkind for vs-code like pictograms in completion menu
 				formatting = {
 					format = lspkind.cmp_format({
 						maxwidth = 50,
