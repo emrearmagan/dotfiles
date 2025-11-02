@@ -11,6 +11,13 @@ return {
 			integrations = {
 				notify = true, -- pull in Notify* highlight groups
 				telescope = true,
+				neotree = true,
+				flash = true,
+        cmp = true,
+        dap = true,
+        dap_ui = true,
+        lsp_trouble = true,
+        dadbod_ui = false,
 			},
 			dim_inactive = {
 				enabled = false, -- dims the background color of inactive window

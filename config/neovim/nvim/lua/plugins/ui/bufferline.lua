@@ -1,9 +1,24 @@
 return {
 	"akinsho/bufferline.nvim",
 	version = "*",
-	dependencies = { "nvim-tree/nvim-web-devicons" },
+	dependencies = { "nvim-tree/nvim-web-devicons", "catppuccin/nvim" },
 	event = "VeryLazy",
 	config = function()
+		local mocha = require("catppuccin.palettes").get_palette("mocha")
+		local catppuccin_bufferline = require("catppuccin.special.bufferline").get_theme({
+			styles = { "italic", "bold" },
+			custom = {
+				all = {
+					fill = { bg = "NONE" }, -- keep transparency
+				},
+				mocha = {
+					background = { fg = mocha.text },
+				},
+				latte = {
+					background = { fg = "#000000" },
+				},
+			},
+		})
 		require("bufferline").setup({
 			options = {
 				mode = "buffers", -- Show buffers (not tabs)
@@ -20,19 +35,7 @@ return {
 				max_name_length = 120, -- Max length of a buffer name before truncation
 				-- max_prefix_length = 15,         -- Max length of prefix used before truncated name
 			},
-			highlights = {
-				fill = { bg = "NONE" }, -- remove background
-				buffer_selected = {
-					fg = "#89b4fa",
-					bg = "#1a2235",
-					bold = true, -- Bold text
-					italic = false, -- No italic
-				},
-				indicator_selected = {
-					fg = "#89b4fa", -- Color of the little underline arrow/indicator
-					bold = true,
-				},
-			},
+			highlights = catppuccin_bufferline,
 		})
 	end,
 }
