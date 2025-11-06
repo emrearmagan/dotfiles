@@ -159,27 +159,25 @@ alt-f = 'fullscreen'
 
 alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
 
-alt-h = 'split horizontal'
-alt-v = 'split vertical'
+# alt-h = 'split horizontal'
+# alt-v = 'split vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-cmd-left  = 'focus left'
-cmd-down  = 'focus down'
-cmd-up    = 'focus up'
-cmd-right = 'focus right'
+# ----- Vim-style window focus movement -----
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
 
-cmd-alt-left  = 'focus-monitor prev'
-cmd-alt-right = 'focus-monitor next'
+cmd-alt-h = 'focus-monitor prev'
+cmd-alt-l = 'focus-monitor next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
-cmd-shift-left = 'move left'
-cmd-shift-down = 'move down'
-cmd-shift-up = 'move up'
-cmd-shift-right = 'move right'
-# cmd-shift-h = 'move left'
-# cmd-shift-j = 'move down'
-# cmd-shift-k = 'move up'
-# cmd-shift-l = 'move right'
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
 alt-shift-minus = 'resize smart -50'
@@ -219,16 +217,16 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 alt-shift-semicolon = 'mode service'
 
 [workspace-to-monitor-force-assignment]
-1 = 2
-2 = 2
-3 = 2
-4 = 2
-5 = 2
-6 = 1
-7 = 1
-8 = 1
-9 = 1
-10 = 1
+1 = 1
+2 = 1
+3 = 1
+4 = 1
+5 = 1
+6 = 2
+7 = 2
+8 = 2
+9 = 2
+10 = 2
 
 
 ########################################
