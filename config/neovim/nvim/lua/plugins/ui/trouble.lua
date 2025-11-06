@@ -10,7 +10,7 @@ return {
 				desc = "Buffer Diagnostics",
 				mode = "diagnostics",
 				filter = { buf = 0 }, -- restrict to current buffer
-				win = { position = "right" },
+				win = { position = "right", size = 0.2 },
 				auto_open = false,
 				auto_close = false,
 			},
@@ -19,8 +19,8 @@ return {
 				desc = "Workspace Diagnostics",
 				mode = "diagnostics", -- reuse built-in diagnostics source
 				filter = {}, -- no buf filter = workspace-level
-				win = { position = "right" },
-				auto_open = true,
+				win = { position = "right", size = 0.2 },
+				auto_open = false,
 				auto_close = true,
 			},
 		},
