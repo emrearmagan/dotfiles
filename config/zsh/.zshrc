@@ -22,7 +22,8 @@ export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")
-source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# really like the completion but get messy with autosuggestions. For example cd 'suggestion' when pressing tab auto complete takes in and it looks like:
+# cd <auto-completed>'suggestion'
 source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

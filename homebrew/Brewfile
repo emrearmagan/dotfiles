@@ -28,7 +28,6 @@ brew "tmux"                 # terminal multiplexer
 
 brew "opencode"             # ai code cli
 brew "lazygit"              # git ui
-brew "lazydocker"           # docker ui
 brew "starship"             # shell prompt
 
 brew "pass"                 # password manager
@@ -39,7 +38,6 @@ brew "openssh"              # ssh tool
 # Dev & Build Tools
 # ───────────────────────────────
 brew "ansible"              # automation
-brew "ansible-lint"
 brew "delve"                # go debugger (nvim DAP)
 brew "git"                  # version control
 brew "go"                   # go lang
@@ -47,7 +45,6 @@ brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
 brew "gh"                   # github cli
-brew "task"           # task manager
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   
@@ -89,7 +86,6 @@ brew "xcbeautify"
 brew "borders"
 brew "sketchybar"
 
-
 # ───────────────────────────────
 # Applications (Casks)
 # ───────────────────────────────
@@ -109,7 +105,6 @@ cask "swiftformat-for-xcode"
 cask "raycast"
 cask "notion"
 cask "google-chrome"
-cask "termius"
 cask "shortcat"
 cask "alt-tab"
 cask "sf-symbols"
