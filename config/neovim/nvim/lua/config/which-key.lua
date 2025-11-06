@@ -48,12 +48,41 @@ wk.add({
 	-- │                  Search (FzfLua)                   │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>f", group = "Search" },
-	{ "<leader>ff", "<cmd>FzfLua files<CR>", desc = "Find files" },
-	{ "<leader>fg", "<cmd>FzfLua live_grep<CR>", desc = "Live grep" },
-	{ "<leader>fb", "<cmd>FzfLua buffers<CR>", desc = "Find buffer" },
-	{ "<leader>ft", "<cmd>TodoTelescope<CR>", desc = "Find TODOs" },
-	{ "<leader>fT", "<cmd>FzfLua help_tags<CR>", desc = "Find help tags" },
-	{ "<leader>fy", "<cmd>Telescope neoclip<CR>", desc = "Find from yank history (Telescope)" },
+	{
+		"<leader>ff",
+		function()
+			snacks.picker.files()
+		end,
+		desc = "Find files",
+	},
+	{
+		"<leader>fg",
+		function()
+			snacks.picker.grep()
+		end,
+		desc = "Live grep",
+	},
+	{
+		"<leader>fb",
+		function()
+			snacks.picker.buffers()
+		end,
+		desc = "Find buffer",
+	},
+	{
+		"<leader>fm",
+		function()
+			snacks.picker.marks()
+		end,
+		desc = "Marks",
+	},
+	{
+		"<leader>fy",
+		function()
+			snacks.picker.registers()
+		end,
+		desc = "Registers / Yank history",
+	},
 	{
 		"<leader>fm",
 		function()
@@ -214,7 +243,8 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Code Tests (neotest)           │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>t", group = "Tests" },
+	{ "<leader>t", icon = "", group = "Tests" },
+
 	{
 		"<leader>tt",
 		function()
@@ -320,7 +350,6 @@ wk.add({
 	{ "<leader>xP", "<cmd>XcodebuildSelectTestPlan<cr>", desc = "Select Test Plan", mode = "n" },
 
 	-- Quickfix & Actions
-	{ "<leader>xq", "<cmd>Telescope quickfix<cr>", desc = "Show QuickFix List", mode = "n" },
 	{ "<leader>xx", "<cmd>XcodebuildQuickfixLine<cr>", desc = "Quickfix Line", mode = "n" },
 	{ "<leader>xa", "<cmd>XcodebuildCodeActions<cr>", desc = "Show Code Actions", mode = "n" },
 
@@ -447,7 +476,7 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     snacks                         │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>s", group = "Snacks" },
+	{ "<leader>s", icon = "󰆘", group = "Snacks" },
 	{
 		"<leader>sq",
 		function()
@@ -519,7 +548,7 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Utils                          │
 	-- ╰────────────────────────────────────────────────────╯
-
+	{ "<leader>.", icons = "", group = "Utils" },
 	{
 		"<space>.f",
 		function()
