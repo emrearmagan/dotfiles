@@ -2,7 +2,6 @@ local wk = require("which-key")
 local gitsigns = require("gitsigns")
 local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
-local fzf = require("fzf-lua")
 local neotest = require("neotest")
 local doodle = require("doodle")
 local builtin = require("telescope.builtin")
@@ -32,6 +31,14 @@ wk.add({
 	{ "J", ":m '>+1<CR>gv=gv", desc = "Move selection down", mode = "v" },
 	{ "K", ":m '<-2<CR>gv=gv", desc = "Move selection up", mode = "v" },
 
+	{
+		"<leader>/",
+		function()
+			require("snacks.picker").grep_word()
+		end,
+		desc = "Search word under cursor",
+	},
+
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Tree                          │
 	-- ╰────────────────────────────────────────────────────╯
@@ -47,6 +54,14 @@ wk.add({
 	{ "<leader>ft", "<cmd>TodoTelescope<CR>", desc = "Find TODOs" },
 	{ "<leader>fT", "<cmd>FzfLua help_tags<CR>", desc = "Find help tags" },
 	{ "<leader>fy", "<cmd>Telescope neoclip<CR>", desc = "Find from yank history (Telescope)" },
+	{
+		"<leader>fm",
+		function()
+			snacks.picker.marks()
+		end,
+		desc = "Marks",
+	},
+
 	{
 		"<leader>fd",
 		function()
@@ -91,13 +106,25 @@ wk.add({
 	{ "<leader>qQ", ":q!<CR>", desc = "Quit without saving", mode = "n" },
 	{ "<leader>qW", ":wq<CR>", desc = "Save and quit", mode = "n" },
 	{ "<leader>qA", ":wqa<CR>", desc = "Save all & quit", mode = "n" },
+	{
+		"<leader>qM",
+		function()
+			vim.cmd("delmarks!")
+			vim.cmd("delm! | delm A-Z0-9")
+
+			vim.notify("All marks deleted", vim.log.levels.INFO)
+		end,
+		desc = "Delete All Marks",
+	},
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                   LSP / Code Tools                 │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>c", group = "LSP / Code" },
+	{ "<leader>c", group = "Code / LSP" },
+
+	-- Core LSP Actions
 	{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" } },
-	{ "<leader>cn", vim.lsp.buf.rename, desc = "Rename Symbol", mode = "n" },
+	{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename Symbol" },
 	{
 		"<leader>cf",
 		function()
@@ -106,70 +133,90 @@ wk.add({
 		desc = "Format File",
 		mode = { "n", "v" },
 	},
-	{ "<leader>cd", builtin.diagnostics, desc = "Document Diagnostics", mode = "n" },
+
+	-- Diagnostics
 	{
 		"<leader>cd",
 		function()
-			builtin.diagnostics({ bufnr = 0 })
-		end,
-		desc = "Document Diagnostics",
-		mode = "n",
-	},
-
-	{
-		"<leader>cw",
-		function()
-			builtin.diagnostics()
-		end,
-		desc = "Workspace Diagnostics",
-		mode = "n",
-	},
-
-	{ "<leader>cs", builtin.lsp_document_symbols, desc = "Document Symbols", mode = "n" },
-	{ "<leader>cS", builtin.lsp_workspace_symbols, desc = "Workspace Symbols", mode = "n" },
-
-	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation", mode = "n" },
-	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = "i" },
-
-	{ "gD", fzf.lsp_declarations, desc = "Go to Declaration", mode = "n" },
-	{ "gd", fzf.lsp_definitions, desc = "Go to Definition", mode = "n" },
-	{ "gi", fzf.lsp_implementations, desc = "Go to Implementation", mode = "n" },
-	{ "gr", fzf.lsp_references, desc = "List References", mode = "n" },
-
-	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic", mode = "n" },
-	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic", mode = "n" },
-
-	-- Keep optional Trouble & Snacks extras
-	{ "<leader>clm", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)", mode = "n" },
-	{
-		"<leader>cll",
-		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-		desc = "LSP List (Trouble)",
-		mode = "n",
-	},
-	{
-		"<leader>clx",
-		function()
-			snacks.picker.diagnostics()
-		end,
-		desc = "Diagnostics (Snacks)",
-		mode = "n",
-	},
-	{
-		"<leader>clX",
-		function()
-			snacks.picker.diagnostics_buffer()
+			require("snacks.picker").diagnostics_buffer()
 		end,
 		desc = "Buffer Diagnostics (Snacks)",
+	},
+	{
+		"<leader>cD",
+		function()
+			require("snacks.picker").diagnostics()
+		end,
+		desc = "Workspace Diagnostics (Snacks)",
+	},
+
+	{ "<leader>cx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+	{ "<leader>cX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+
+	-- Symbols / References
+	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Document Symbols (Trouble)" },
+	{ "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
+	{
+		"<leader>cl",
+		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+		desc = "LSP Definitions / References (Trouble)",
+	},
+	-- Navigation
+	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },
+	-- { "gd", "<cmd>FzfLua lsp_definitions<cr>", desc = "Go to Definition" },
+	-- { "gi", "<cmd>FzfLua lsp_implementations<cr>", desc = "Go to Implementation" },
+	-- { "gr", "<cmd>Telescope lsp_references<cr>", desc = "Find References" },
+	{
+		"gd",
+		function()
+			require("snacks.picker").lsp_definitions()
+		end,
+		desc = "Go to Definition (Snacks)",
+	},
+	{
+		"gD",
+		function()
+			require("snacks.picker").lsp_declarations()
+		end,
+		desc = "Go to Declaration (Snacks)",
+	},
+	{
+		"gi",
+		function()
+			require("snacks.picker").lsp_implementations()
+		end,
+		desc = "Go to Implementation (Snacks)",
+	},
+	{
+		"gr",
+		function()
+			snacks.picker.lsp_references()
+		end,
+		desc = "Find References (Snacks)",
+	},
+	{
+		"gs",
+		function()
+			require("snacks.picker").lsp_symbols()
+		end,
+		desc = "Outline (Snacks Symbols)",
 		mode = "n",
 	},
+
+	-- Hover & Signature
+	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
+	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = "i" },
+
+	-- Diagnostic Movement
+	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
+	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Code Tests (neotest)           │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>ct", group = "Tests" },
+	{ "<leader>t", group = "Tests" },
 	{
-		"<leader>ctt",
+		"<leader>tt",
 		function()
 			neotest.run.run()
 			vim.schedule(neotest.summary.open)
@@ -179,7 +226,7 @@ wk.add({
 	},
 
 	{
-		"<leader>ctf",
+		"<leader>tf",
 		function()
 			neotest.run.run(vim.fn.expand("%"))
 			vim.schedule(neotest.summary.open)
@@ -189,7 +236,7 @@ wk.add({
 	},
 
 	{
-		"<leader>cta",
+		"<leader>ta",
 		function()
 			neotest.run.run({ suite = true })
 			vim.schedule(neotest.summary.open)
@@ -199,7 +246,7 @@ wk.add({
 	},
 
 	{
-		"<leader>ctr",
+		"<leader>tr",
 		function()
 			neotest.run.run_last()
 			vim.schedule(neotest.summary.open)
@@ -209,7 +256,7 @@ wk.add({
 	},
 
 	{
-		"<leader>ctd",
+		"<leader>td",
 		function()
 			neotest.run.run({ strategy = "dap" })
 		end,
@@ -217,7 +264,7 @@ wk.add({
 		mode = "n",
 	},
 	{
-		"<leader>cts",
+		"<leader>ts",
 		function()
 			neotest.summary.toggle()
 		end,
@@ -225,7 +272,7 @@ wk.add({
 		mode = "n",
 	},
 	{
-		"<leader>cto",
+		"<leader>to",
 		function()
 			neotest.output.open({ enter = true })
 		end,
@@ -233,7 +280,7 @@ wk.add({
 		mode = "n",
 	},
 	{
-		"<leader>ctO",
+		"<leader>tO",
 		function()
 			neotest.output_panel.toggle()
 		end,
@@ -402,6 +449,15 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>s", group = "Snacks" },
 	{
+		"<leader>sq",
+		function()
+			require("snacks.picker").qflist()
+		end,
+		desc = "Quickfix List (Snacks)",
+		mode = "n",
+	},
+
+	{
 		"<leader>sd",
 		function()
 			snacks.dim()
@@ -444,7 +500,6 @@ wk.add({
 		end,
 		desc = "Icons",
 	},
-
 	{
 		"<leader>sM",
 		function()
@@ -461,13 +516,9 @@ wk.add({
 		desc = "Undo History",
 	},
 
-	{
-		"<leader>sm",
-		function()
-			snacks.picker.marks()
-		end,
-		desc = "Marks",
-	},
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                     Utils                          │
+	-- ╰────────────────────────────────────────────────────╯
 
 	{
 		"<space>.f",
