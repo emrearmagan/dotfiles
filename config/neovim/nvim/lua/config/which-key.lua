@@ -483,9 +483,9 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Snacks / Utils                 │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>.", icon = "", group = "Snacks / Utils" },
+	{ "<leader>s", icon = "", group = "Snacks / Utils" },
 	{
-		"<leader>.q",
+		"<leader>sq",
 		function()
 			require("snacks.picker").qflist()
 		end,
@@ -494,35 +494,35 @@ wk.add({
 	},
 
 	{
-		"<leader>.d",
+		"<leader>sd",
 		function()
 			snacks.dim()
 		end,
 		desc = "Dim",
 	},
 	{
-		"<leader>.a",
+		"<leader>sa",
 		function()
 			snacks.picker.autocmds()
 		end,
 		desc = "Autocmds",
 	},
 	{
-		"<leader>.C",
+		"<leader>sC",
 		function()
 			snacks.picker.command_history()
 		end,
 		desc = "Command History",
 	},
 	{
-		"<leader>.c",
+		"<leader>sc",
 		function()
 			snacks.picker.commands()
 		end,
 		desc = "Commands",
 	},
 	{
-		"<leader>.h",
+		"<leader>sh",
 		function()
 			snacks.picker.help()
 		end,
@@ -530,14 +530,14 @@ wk.add({
 	},
 
 	{
-		"<leader>.i",
+		"<leader>si",
 		function()
 			snacks.picker.icons()
 		end,
 		desc = "Icons",
 	},
 	{
-		"<leader>.M",
+		"<leader>sM",
 		function()
 			snacks.picker.man()
 		end,
@@ -545,7 +545,7 @@ wk.add({
 	},
 
 	{
-		"<leader>.u",
+		"<leader>su",
 		function()
 			snacks.picker.undo()
 		end,
@@ -553,14 +553,14 @@ wk.add({
 	},
 
 	{
-		"<leader>.d",
+		"<leader>sd",
 		function()
 			doodle:toggle_finder()
 		end,
 		desc = "Doodle Finder",
 	},
 	{
-		"<leader>.dl",
+		"<leader>sdl",
 		function()
 			doodle:toggle_links()
 		end,
@@ -568,14 +568,14 @@ wk.add({
 	},
 
 	{
-		"<leader>..",
+		"<leader>s.",
 		function()
 			snacks.scratch()
 		end,
 		desc = "Toggle Scratch Buffer",
 	},
 	{
-		"<leader>.b",
+		"<leader>sb",
 		function()
 			snacks.scratch.select()
 		end,
