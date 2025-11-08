@@ -30,7 +30,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/wezterm",
       dest: "{{ ansible_env.HOME }}/.config/wezterm",
     }
-
+  - {
+      src: "{{ playbook_dir }}/../config/ghostty",
+      dest: "{{ ansible_env.HOME }}/.config/ghostty",
+    }
   - {
       src: "{{ playbook_dir }}/../config/tmux",
       dest: "{{ ansible_env.HOME }}/.config/tmux",

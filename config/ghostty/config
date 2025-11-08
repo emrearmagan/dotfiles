@@ -1,0 +1,50 @@
+# ============================================
+#  Ghostty Configuration — Catppuccin Mocha
+#  Inspired by your WezTerm setup
+# ============================================
+
+# --- Theme ---
+theme =  Catppuccin Macchiato
+
+# --- Font ---
+font-family = JetBrainsMono Nerd Font
+font-size = 13
+font-thicken = true
+
+# --- Appearance ---
+# background-blur-radius = 20
+window-decoration = true
+window-padding-x = 0
+window-padding-y = 0
+mouse-hide-while-typing = true
+term = xterm-256color
+window-decoration = none
+
+# --- Behavior ---
+# Always save and restore window state
+window-save-state = always
+# Option key for mac
+macos-option-as-alt = true
+
+# Misc.
+clipboard-trim-trailing-spaces = true
+confirm-close-surface = false
+quit-after-last-window-closed = true
+mouse-shift-capture = true
+link-url = true
+
+# --- Keybindings ---
+# Pane navigation (Vim-style)
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+j=goto_split:bottom
+keybind = ctrl+k=goto_split:top
+keybind = ctrl+l=goto_split:right
+
+# Create and close splits
+# keybind = cmd+d=new_split:right
+# keybind = cmd+shift+d=new_split:bottom
+# keybind = cmd+w=close_surface
+
+# Tab navigation
+keybind = cmd+shift+h=previous_tab
+keybind = cmd+shift+l=next_tab
