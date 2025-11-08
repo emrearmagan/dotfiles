@@ -18,6 +18,9 @@ return {
 				dap_ui = true,
 				lsp_trouble = true,
 				dadbod_ui = false,
+				snacks = {
+					enabled = true,
+				},
 			},
 			dim_inactive = {
 				enabled = false, -- dims the background color of inactive window

@@ -12,8 +12,6 @@ font-size = 13
 font-thicken = true
 
 # --- Appearance ---
-# background-blur-radius = 20
-window-decoration = true
 window-padding-x = 0
 window-padding-y = 0
 mouse-hide-while-typing = true
