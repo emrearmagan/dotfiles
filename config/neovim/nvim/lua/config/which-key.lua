@@ -63,6 +63,13 @@ wk.add({
 		desc = "Live grep",
 	},
 	{
+		"<leader>f/",
+		function()
+			require("snacks.picker").grep_buffers()
+		end,
+		desc = "Search word under cursor",
+	},
+	{
 		"<leader>fb",
 		function()
 			snacks.picker.buffers()
@@ -469,16 +476,16 @@ wk.add({
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                     AI Tools                       │
+	-- │                        AI                          │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>a", group = "AI" },
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                     snacks                         │
+	-- │                     Snacks / Utils                 │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>s", icon = "󰆘", group = "Snacks" },
+	{ "<leader>.", icon = "", group = "Snacks / Utils" },
 	{
-		"<leader>sq",
+		"<leader>.q",
 		function()
 			require("snacks.picker").qflist()
 		end,
@@ -487,35 +494,35 @@ wk.add({
 	},
 
 	{
-		"<leader>sd",
+		"<leader>.d",
 		function()
 			snacks.dim()
 		end,
 		desc = "Dim",
 	},
 	{
-		"<leader>sa",
+		"<leader>.a",
 		function()
 			snacks.picker.autocmds()
 		end,
 		desc = "Autocmds",
 	},
 	{
-		"<leader>sC",
+		"<leader>.C",
 		function()
 			snacks.picker.command_history()
 		end,
 		desc = "Command History",
 	},
 	{
-		"<leader>sc",
+		"<leader>.c",
 		function()
 			snacks.picker.commands()
 		end,
 		desc = "Commands",
 	},
 	{
-		"<leader>sh",
+		"<leader>.h",
 		function()
 			snacks.picker.help()
 		end,
@@ -523,14 +530,14 @@ wk.add({
 	},
 
 	{
-		"<leader>si",
+		"<leader>.i",
 		function()
 			snacks.picker.icons()
 		end,
 		desc = "Icons",
 	},
 	{
-		"<leader>sM",
+		"<leader>.M",
 		function()
 			snacks.picker.man()
 		end,
@@ -538,33 +545,22 @@ wk.add({
 	},
 
 	{
-		"<leader>su",
+		"<leader>.u",
 		function()
 			snacks.picker.undo()
 		end,
 		desc = "Undo History",
 	},
 
-	-- ╭────────────────────────────────────────────────────╮
-	-- │                     Utils                          │
-	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>.", icons = "", group = "Utils" },
 	{
-		"<space>.f",
+		"<leader>.d",
 		function()
 			doodle:toggle_finder()
 		end,
 		desc = "Doodle Finder",
 	},
 	{
-		"<space>.s",
-		function()
-			doodle:sync()
-		end,
-		desc = "Doodle Sync",
-	},
-	{
-		"<space>.l",
+		"<leader>.dl",
 		function()
 			doodle:toggle_links()
 		end,
