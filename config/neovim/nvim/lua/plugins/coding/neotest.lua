@@ -25,6 +25,14 @@ return {
 				adapters = {
 					require("neotest-golang")(config),
 				},
+				summary = {
+					mappings = {
+						expand = { "l", "<Right>" },
+						expand_all = { "L" },
+						collapse = { "h", "<Left>" },
+						collapse_all = { "H" },
+					},
+				},
 			})
 		end,
 	},

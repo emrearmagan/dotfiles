@@ -151,6 +151,7 @@ return {
 			"rafamadriz/friendly-snippets", -- useful snippets
 			"onsails/lspkind.nvim", -- vs-code like pictograms
 			"zbirenbaum/copilot-cmp", -- GitHub Copilot source for nvim-cmp
+			"kristijanhusak/vim-dadbod-completion", -- DB completion source for nvim-cmp
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -234,6 +235,7 @@ return {
 					{ name = "luasnip" }, -- snippets
 					-- INFO: Seems annoying at the moment, so disabled for now
 					-- { name = "buffer" }, -- text within current buffer
+					{ name = "vim-dadbod-completion" },
 					{ name = "path" }, -- file system paths
 					{ name = "copilot" },
 				}),

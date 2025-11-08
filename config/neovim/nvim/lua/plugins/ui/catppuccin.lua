@@ -17,7 +17,7 @@ return {
 				dap = true,
 				dap_ui = true,
 				lsp_trouble = true,
-				dadbod_ui = false,
+				dadbod_ui = true,
 				snacks = {
 					enabled = true,
 				},
