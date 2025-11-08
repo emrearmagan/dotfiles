@@ -126,8 +126,8 @@ check-further-callbacks = true
 # 'main' binding mode must be always presented
 [mode.main.binding]
 
-alt-shift-s = "exec-and-forget open -a Safari"
-alt-shift-t = "exec-and-forget open -a WezTerm"
+alt-shift-s = "exec-and-forget osascript -e 'tell application \"Safari\" to make new document'"
+alt-shift-t = "exec-and-forget open -n -a WezTerm"
 
 alt-s = 'exec-and-forget open -a /Applications/Safari.app'
 alt-t = 'exec-and-forget open -a /Applications/WezTerm.app'

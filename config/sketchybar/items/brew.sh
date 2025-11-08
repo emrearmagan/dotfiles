@@ -9,11 +9,11 @@ brew=(
 	label.font="$FONT:Semibold:13.0"
 	label=?
 	script="$PLUGIN_DIR/brew.sh"
-	update_freq=3600
+	update_freq=3600 # update every hour
 )
 
 sketchybar --add event brew_update \
 	--add item brew right \
 	--set brew "${brew[@]}" \
 	--subscribe brew brew_update \
-		mouse.clicked
+	mouse.clicked

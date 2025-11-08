@@ -10,7 +10,7 @@ COLOR=$RED
 case "$COUNT" in
 0)
 	COLOR=$GREEN
-	COUNT=􀆅
+	COUNT=""
 	;;
 [12])
 	COLOR=$WHITE
