@@ -18,6 +18,15 @@ wk.add({
 	-- (prevents accidental motion if <Space> is pressed alone)
 	{ " ", "<Nop>", desc = "Leader key noop", mode = "n" },
 
+	-- Disable command-line window (q:) as its annoying
+	{
+		"q:",
+		"<nop>",
+		desc = "Disable command-line window",
+		mode = "n",
+		hidden = true, -- hides it from which-key popup
+	},
+
 	{ "<C-d>", "<C-d>zz", desc = "Half-page down & center", mode = "n" },
 	{ "<C-u>", "<C-u>zz", desc = "Half-page up & center", mode = "n" },
 

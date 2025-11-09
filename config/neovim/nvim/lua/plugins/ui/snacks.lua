@@ -189,48 +189,98 @@ return {
 						padding = 1,
 					},
 
-					{
-						icon = " ",
-						desc = "Browse Repo",
-						key = "b",
-						action = function()
-							Snacks.gitbrowse()
-						end,
-					},
-					{
-						title = "Open Issues",
-						cmd = "gh issue list -L 3",
-						key = "i",
-						action = function()
-							vim.fn.jobstart("gh issue list --web", { detach = true })
-						end,
-						icon = " ",
-						height = 7,
-					},
-					{
-						icon = " ",
-						title = "Open PRs",
-						cmd = "gh pr list -L 3",
-						key = "P",
-						action = function()
-							vim.fn.jobstart("gh pr list --web", { detach = true })
-						end,
-						height = 7,
-					},
-					{
-						icon = " ",
-						title = "Git Status",
-						section = "terminal",
-						enabled = function()
-							return require("snacks.git").get_root() ~= nil
-						end,
-						cmd = "git status --short --branch --renames",
-						height = 5,
-						padding = 1,
-						ttl = 5 * 60,
-						indent = 3,
-					},
+					function()
+						local in_git = Snacks.git.get_root() ~= nil
+
+						local function has_output(cmd)
+							local handle = io.popen(cmd .. " 2>/dev/null")
+							if not handle then
+								return false
+							end
+							local result = handle:read("*a")
+							handle:close()
+							return result and result:match("%S") ~= nil
+						end
+
+						return {
+							{
+								pane = 2,
+								-- section = "terminal",
+								-- padding = 1,
+								-- indent = 2,
+								ttl = 5 * 60,
+								title = "Notifications",
+								key = "N",
+								cmd = [[
+        if gh api notifications --jq '.[]' | grep -q .; then
+          gh api notifications --jq '.[] | "\(.repository.full_name): \(.subject.title)"' | head -n 5
+        else
+          echo "󰌾 No notifications"
+        fi
+      ]],
+								action = function()
+									vim.ui.open("https://github.com/notifications")
+								end,
+								icon = " ",
+								height = 2,
+								-- enabled = function()
+								-- 	return in_git and has_output("gh api notifications --jq '.[] | .id' | head -n 1")
+								-- end,
+							},
+
+							{
+								pane = 2,
+								-- section = "terminal",
+								-- padding = 1,
+								-- indent = 2,
+								ttl = 5 * 60,
+								title = "Open Issues",
+								cmd = "gh issue list -L 3",
+								key = "I",
+								action = function()
+									vim.fn.jobstart("gh issue list --web", { detach = true })
+								end,
+								icon = " ",
+								height = 5,
+								-- enabled = function()
+								-- 	return in_git and has_output("gh issue list -L 1")
+								-- end,
+							},
+
+							{
+								pane = 2,
+								-- section = "terminal",
+								padding = 1,
+								-- indent = 2,
+								ttl = 5 * 60,
+								icon = " ",
+								title = "Open PRs",
+								cmd = "gh pr list -L 3",
+								key = "P",
+								action = function()
+									vim.fn.jobstart("gh pr list --web", { detach = true })
+								end,
+								height = 5,
+								-- enabled = function()
+								-- 	return in_git and has_output("gh pr list -L 1")
+								-- end,
+							},
+
+							{
+								pane = 2,
+								section = "terminal",
+								padding = 1,
+								indent = 2,
+								icon = " ",
+								title = "Git Status",
+								cmd = "git --no-pager diff --stat=40 -B -M -C",
+								height = 5,
+								enabled = in_git,
+							},
+						}
+					end,
 				},
+
 				{
 					section = "startup",
 				},
