@@ -208,19 +208,19 @@ return {
 
 						return {
 							{
+								ttl = 5 * 60,
+								title = "Notifications",
+								-- cmd = [[
+								--         if gh api notifications --jq '.[]' | grep -q .; then
+								--           gh api notifications --jq '.[] | "\(.repository.full_name): \(.subject.title)"' | head -n 5
+								--         else
+								--           echo "󰌾 No notifications"
+								--           fi
+								--           ]],
 								-- section = "terminal",
 								-- padding = 1,
 								-- indent = 2,
-								ttl = 5 * 60,
-								title = "Notifications",
 								key = "N",
-								cmd = [[
-        if gh api notifications --jq '.[]' | grep -q .; then
-          gh api notifications --jq '.[] | "\(.repository.full_name): \(.subject.title)"' | head -n 5
-        else
-          echo "󰌾 No notifications"
-        fi
-      ]],
 								action = function()
 									vim.ui.open("https://github.com/notifications")
 								end,
@@ -233,12 +233,12 @@ return {
 							},
 
 							{
+								ttl = 5 * 60,
+								title = "Open Issues",
+								-- cmd = "gh issue list -L 3",
 								-- section = "terminal",
 								-- padding = 1,
 								-- indent = 2,
-								ttl = 5 * 60,
-								title = "Open Issues",
-								cmd = "gh issue list -L 3",
 								key = "I",
 								action = function()
 									vim.fn.jobstart("gh issue list --web", { detach = true })
@@ -252,13 +252,13 @@ return {
 							},
 
 							{
-								-- section = "terminal",
-								padding = 1,
-								-- indent = 2,
 								ttl = 5 * 60,
 								icon = " ",
 								title = "Open PRs",
-								cmd = "gh pr list -L 3",
+								-- cmd = "gh pr list -L 3",
+								-- section = "terminal",
+								padding = 1,
+								-- indent = 2,
 								key = "P",
 								action = function()
 									vim.fn.jobstart("gh pr list --web", { detach = true })
@@ -272,6 +272,7 @@ return {
 
 							{
 								section = "terminal",
+								padding = 1,
 								indent = 2,
 								icon = " ",
 								title = "Git Status",
