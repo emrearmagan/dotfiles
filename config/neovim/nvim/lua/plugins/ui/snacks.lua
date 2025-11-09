@@ -189,6 +189,10 @@ return {
 						padding = 1,
 					},
 
+					-- ─────────────────────────────
+					--  GIT SECTION
+					-- ─────────────────────────────
+
 					function()
 						local in_git = Snacks.git.get_root() ~= nil
 
@@ -204,7 +208,6 @@ return {
 
 						return {
 							{
-								pane = 2,
 								-- section = "terminal",
 								-- padding = 1,
 								-- indent = 2,
@@ -223,13 +226,13 @@ return {
 								end,
 								icon = " ",
 								height = 2,
+								enabled = in_git,
 								-- enabled = function()
 								-- 	return in_git and has_output("gh api notifications --jq '.[] | .id' | head -n 1")
 								-- end,
 							},
 
 							{
-								pane = 2,
 								-- section = "terminal",
 								-- padding = 1,
 								-- indent = 2,
@@ -242,13 +245,13 @@ return {
 								end,
 								icon = " ",
 								height = 5,
+								enabled = in_git,
 								-- enabled = function()
 								-- 	return in_git and has_output("gh issue list -L 1")
 								-- end,
 							},
 
 							{
-								pane = 2,
 								-- section = "terminal",
 								padding = 1,
 								-- indent = 2,
@@ -261,15 +264,14 @@ return {
 									vim.fn.jobstart("gh pr list --web", { detach = true })
 								end,
 								height = 5,
+								enabled = in_git,
 								-- enabled = function()
 								-- 	return in_git and has_output("gh pr list -L 1")
 								-- end,
 							},
 
 							{
-								pane = 2,
 								section = "terminal",
-								padding = 1,
 								indent = 2,
 								icon = " ",
 								title = "Git Status",
@@ -279,11 +281,32 @@ return {
 							},
 						}
 					end,
+
+					{
+						icon = " ",
+						title = "Docker Containers",
+						indent = 2,
+						section = "terminal",
+						ttl = 60,
+						cmd = [[
+            if ! docker info >/dev/null 2>&1; then
+              echo "󰡙 Cannot connect to Docker daemon"
+            elif docker ps -q | grep -q .; then
+            docker ps --format "{{.Names}}\t{{.Status}}" \
+            | awk -F'\t' '{ printf "• %-20s — %s\n", $1, $2 }' | head -n 5
+            else
+              echo "󰡙 No running containers"
+              fi
+              exit 0
+              ]],
+						height = 5,
+						enabled = function()
+							return vim.fn.executable("docker") == 1
+						end,
+					},
 				},
 
-				{
-					section = "startup",
-				},
+				{ section = "startup" },
 			},
 		},
 	},

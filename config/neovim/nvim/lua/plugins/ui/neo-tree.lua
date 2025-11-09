@@ -1,7 +1,7 @@
 return {
 	{
 		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v3.x",
+		branch = "main",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons",
@@ -11,28 +11,9 @@ return {
 			require("neo-tree").setup({
 				hijack_netrw = true, -- Replace default netrw with Neo-tree
 
-				event_handlers = {
-					-- {
-					-- 	event = "file_open_requested",
-					-- 	handler = function()
-					-- 		require("neo-tree.command").execute({ action = "close" })
-					-- 	end,
-					-- },
-					-- {
-					-- 	event = "after_render",
-					-- 	handler = function()
-					-- 		local state = require("neo-tree.sources.manager").get_state("filesystem")
-					-- 		if not require("neo-tree.sources.common.preview").is_active() then
-					-- 			state.config = { use_float = false } -- or whatever your config is
-					-- 			state.commands.toggle_preview(state)
-					-- 		end
-					-- 	end,
-					-- },
-				},
-
 				close_if_last_window = true, -- Close Neo-tree if it's the last open window
 				enable_git_status = true,
-				enable_diagnostics = false,
+				enable_diagnostics = true,
 				filesystem = {
 					follow_current_file = {
 						enabled = true,
