@@ -179,11 +179,17 @@ wk.add({
 		desc = "Buffer Diagnostics (Snacks)",
 	},
 	{
-		"<leader>cD",
+		"<leader>cDD",
 		function()
 			require("snacks.picker").diagnostics()
 		end,
 		desc = "Workspace Diagnostics (Snacks)",
+	},
+
+	{
+		"<leader>cDd",
+		"<cmd>Telescope diagnostics<CR>",
+		desc = "Workspace Diagnostics (Telescope)",
 	},
 
 	{ "<leader>cx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
@@ -241,7 +247,7 @@ wk.add({
 
 	-- Hover & Signature
 	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
-	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = "i" },
+	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
 
 	-- Diagnostic Movement
 	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },

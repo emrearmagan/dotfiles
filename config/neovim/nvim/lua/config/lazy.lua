@@ -22,7 +22,11 @@ require("lazy").setup({
 		{ import = "plugins" },
 		{ import = "plugins.coding" },
 		{ import = "plugins.coding.debugger" },
+		{ import = "plugins.coding.ai" },
+		{ import = "plugins.coding.utils" },
+
 		{ import = "plugins.ui" },
+		{ import = "plugins.utils" },
 	},
 
 	-- automatically check for plugin updates

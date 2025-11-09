@@ -55,6 +55,7 @@ return {
 				winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
 				max_width = math.floor(vim.o.columns * 0.4),
 				max_height = math.floor(vim.o.lines * 0.3),
+				focusable = false,
 			})
 
 			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
@@ -74,6 +75,8 @@ return {
 				capabilities = capabilities,
 				settings = {
 					gopls = {
+						gofumpt = true,
+						staticcheck = true,
 						completeUnimported = true,
 						usePlaceholders = true,
 						analyses = {
@@ -157,8 +160,8 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			local lspkind = require("lspkind")
-
 			require("copilot_cmp").setup()
+
 			-- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
 			require("luasnip.loaders.from_vscode").lazy_load()
 

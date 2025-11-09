@@ -42,7 +42,7 @@ return {
 			},
 			messages = { enabled = true },
 			lsp = {
-				progress = { enabled = true },
+				progress = { enabled = true, view = "mini" },
 				message = { enabled = true },
 			},
 
@@ -60,6 +60,14 @@ return {
 				long_message_to_split = true, -- long messages go to split
 				inc_rename = false, -- disable inc-rename support
 				lsp_doc_border = false, -- no border for hover/signature
+			},
+
+			views = {
+				mini = {
+					position = {
+						row = -2, -- move slightly up (negative = from bottom)
+					},
+				},
 			},
 		})
 	end,
