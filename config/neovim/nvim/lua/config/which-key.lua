@@ -326,7 +326,55 @@ wk.add({
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                       Xcode                         │
+	-- │                      Runner                        │
+	-- ╰────────────────────────────────────────────────────╯
+	{ "<leader>r", icon = "󰐊", group = "Run" },
+
+	-- Normal mode: run
+	{ "<leader>rr", "<cmd>SnipRun<CR>", desc = "Run (SnipRun)", mode = "n" },
+
+	-- Visual mode: run selection
+	{
+		"<leader>rr",
+		function()
+			require("sniprun").run("v")
+		end,
+		desc = "Run selection (SnipRun)",
+		mode = "v",
+	},
+
+	-- Info
+	{
+		"<leader>ri",
+		function()
+			require("sniprun").info()
+		end,
+		desc = "Show SnipRun info",
+		mode = "n",
+	},
+
+	-- Reset
+	{
+		"<leader>rR",
+		function()
+			require("sniprun").reset()
+		end,
+		desc = "Reset SnipRun",
+		mode = "n",
+	},
+
+	-- Live mode toggle
+	{
+		"<leader>rl",
+		function()
+			require("sniprun.live_mode").toggle()
+		end,
+		desc = "Toggle SnipRun Live Mode",
+		mode = "n",
+	},
+
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                       Xcode                        │
 	-- ╰────────────────────────────────────────────────────╯
 
 	{ "<leader>x", group = "Swift / Xcode" },
@@ -393,7 +441,6 @@ wk.add({
 			snacks.gitbrowse()
 		end,
 		desc = "Git Browse",
-		mode = { "n", "v" },
 	},
 	{
 		"<leader>gg",
@@ -401,7 +448,6 @@ wk.add({
 			snacks.lazygit()
 		end,
 		desc = "Git Browse",
-		mode = { "n", "v" },
 	},
 	{
 		"<leader>gr",
@@ -553,7 +599,7 @@ wk.add({
 	},
 
 	{
-		"<leader>sd",
+		"<leader>sdd",
 		function()
 			doodle:toggle_finder()
 		end,
@@ -568,14 +614,14 @@ wk.add({
 	},
 
 	{
-		"<leader>s.",
+		"<leader>ssn",
 		function()
 			snacks.scratch()
 		end,
 		desc = "Toggle Scratch Buffer",
 	},
 	{
-		"<leader>sb",
+		"<leader>sss",
 		function()
 			snacks.scratch.select()
 		end,
