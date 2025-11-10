@@ -60,14 +60,14 @@ wk.add({
 	{
 		"<leader>ff",
 		function()
-			snacks.picker.files()
+			snacks.picker.files({ hidden = true, no_ignore = false })
 		end,
 		desc = "Find files",
 	},
 	{
 		"<leader>fg",
 		function()
-			snacks.picker.grep()
+			snacks.picker.grep({ hidden = true, no_ignore = false })
 		end,
 		desc = "Live grep",
 	},
@@ -188,17 +188,11 @@ wk.add({
 		desc = "Buffer Diagnostics (Snacks)",
 	},
 	{
-		"<leader>cDD",
+		"<leader>cD",
 		function()
 			require("snacks.picker").diagnostics()
 		end,
 		desc = "Workspace Diagnostics (Snacks)",
-	},
-
-	{
-		"<leader>cDd",
-		"<cmd>Telescope diagnostics<CR>",
-		desc = "Workspace Diagnostics (Telescope)",
 	},
 
 	{ "<leader>cx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
@@ -338,6 +332,34 @@ wk.add({
 		end,
 		desc = "Toggle output panel",
 		mode = "n",
+	},
+
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                    HTTP Client (rest.nvim)         │
+	-- ╰────────────────────────────────────────────────────╯
+	{ "<leader>th", icon = "", group = "HTTP" },
+
+	{
+		"<leader>thr",
+		"<cmd>vert rightbelow Rest run<cr>",
+		-- function()
+		-- 	vim.cmd("vert rightbelow Rest run")
+		-- 	local width = math.floor(vim.o.columns * 0.6) -- 40% of total width
+		-- 	vim.cmd("vertical resize " .. width)
+		-- end,
+		desc = "Run HTTP request (rest.nvim)",
+	},
+	{
+		"<leader>thR",
+		"<cmd>vert rightbelow Rest last<cr>",
+		desc = "Rerun last HTTP request (rest.nvim)",
+	},
+	{
+		"<leader>the",
+		function()
+			require("telescope").extensions.rest.select_env()
+		end,
+		desc = "Select .env for rest.nvim",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮

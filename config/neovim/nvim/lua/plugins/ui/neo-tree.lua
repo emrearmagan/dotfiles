@@ -24,6 +24,7 @@ return {
 						show_hidden_count = true, -- Display count of hidden files
 						hide_dotfiles = true, -- Hide dotfiles by default
 						hide_gitignore = false, -- Show files ignored by .gitignore
+						never_show = { ".DS_Store" },
 					},
 					hijack_netrw_behavior = "open_default", -- Automatically open Neo-tree for directories
 					use_libuv_file_watcher = true, -- Enable automatic tree refresh
