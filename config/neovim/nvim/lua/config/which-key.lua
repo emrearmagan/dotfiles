@@ -505,13 +505,6 @@ wk.add({
 		desc = "Git Log",
 	},
 	{
-		"<leader>gL",
-		function()
-			snacks.picker.git_log_line()
-		end,
-		desc = "Git Log Line",
-	},
-	{
 		"<leader>gs",
 		function()
 			snacks.picker.git_status()
@@ -519,25 +512,11 @@ wk.add({
 		desc = "Git Status",
 	},
 	{
-		"<leader>gS",
-		function()
-			snacks.picker.git_stash()
-		end,
-		desc = "Git Stash",
-	},
-	{
 		"<leader>gd",
 		function()
 			snacks.picker.git_diff()
 		end,
 		desc = "Git Diff (Hunks)",
-	},
-	{
-		"<leader>gf",
-		function()
-			snacks.picker.git_log_file()
-		end,
-		desc = "Git Log File",
 	},
 	{
 		"<leader>gt",

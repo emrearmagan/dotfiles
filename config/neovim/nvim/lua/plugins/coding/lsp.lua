@@ -81,6 +81,7 @@ return {
 						usePlaceholders = true,
 						analyses = {
 							unusedparams = true,
+							ST1000 = false, -- disables warning for package comments
 						},
 					},
 				},
