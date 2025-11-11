@@ -6,6 +6,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			"antoinemadec/FixCursorHold.nvim",
 			"nvim-treesitter/nvim-treesitter",
+			"stevearc/overseer.nvim",
 			{
 				"fredrikaverpil/neotest-golang",
 				version = "*", -- Optional, but recommended; track releases
@@ -25,6 +26,7 @@ return {
 				adapters = {
 					require("neotest-golang")(config),
 				},
+
 				summary = {
 					mappings = {
 						expand = { "l", "<Right>" },
@@ -32,6 +34,10 @@ return {
 						collapse = { "h", "<Left>" },
 						collapse_all = { "H" },
 					},
+				},
+
+				consumers = {
+					overseer = require("neotest.consumers.overseer"),
 				},
 			})
 		end,
