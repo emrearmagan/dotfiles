@@ -20,7 +20,6 @@ return {
 		quickfile = { enabled = true },
 		scope = { enabled = true },
 		scroll = {
-			-- feels a bit laggy with my custom keybindings in options.lua, need to optimize later
 			enabled = true,
 			animate = {
 				duration = { step = 10, total = 250 }, -- step: per-frame delay; total: total ms per scroll
@@ -31,6 +30,7 @@ return {
 				duration = { step = 6, total = 120 },
 				easing = "outQuad",
 			},
+
 			filter = function(buf)
 				-- animate only “normal” buffers; skip terminals/pickers/etc.
 				local bt = vim.bo[buf].buftype
@@ -92,22 +92,16 @@ return {
 					},
 					{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
 					{
-						icon = " ",
-						key = "r",
-						desc = "Recent Files",
-						action = ":lua Snacks.dashboard.pick('oldfiles')",
-					},
-					{
 						icon = "󰈙 ",
-						key = "d",
+						key = "n",
 						desc = "Doodle Notes",
 						action = ":lua require('doodle'):toggle_finder()",
 					},
 					{
-						icon = " ",
-						key = "l",
-						desc = "LeetCode",
-						action = ":Leet", -- or :LeetCode browse
+						icon = " ",
+						key = "d",
+						desc = "Database",
+						action = ":DBUIFull",
 					},
 					{
 						icon = " ",

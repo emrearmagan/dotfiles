@@ -103,6 +103,7 @@ return {
 				},
 
 				lualine_x = {
+					{ "overseer" },
 					{ "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
 
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
@@ -114,7 +115,7 @@ return {
 				},
 				lualine_y = {
 					-- { project, color = { fg = "#91d7e3" } },
-					{ "branch", padding = { right = 0 } }, -- Show current git branch
+					{ "branch", padding = { right = 1 } }, -- Show current git branch
 					{
 						"diff",
 						-- color = { fg = colors.mauve },
@@ -130,7 +131,7 @@ return {
 				lualine_z = {
 					{
 						"location",
-						padding = { left = 0, right = 0 },
+						padding = { left = 0, right = 1 },
 					}, -- Show line & column number
 				},
 			},
