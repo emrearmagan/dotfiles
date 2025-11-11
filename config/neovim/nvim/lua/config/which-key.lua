@@ -367,46 +367,50 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>r", icon = "󰐊", group = "Run" },
 
-	-- Normal mode: run
-	{ "<leader>rr", "<cmd>SnipRun<CR>", desc = "Run (SnipRun)", mode = "n" },
-
-	-- Visual mode: run selection
+	-- ───── SnipRun (quick code execution) ─────
+	{ "<leader>rs", "<cmd>SnipRun<CR>", desc = "Run code (SnipRun)", mode = "n" },
 	{
-		"<leader>rr",
+		"<leader>rs",
 		function()
 			require("sniprun").run("v")
 		end,
 		desc = "Run selection (SnipRun)",
 		mode = "v",
 	},
-
-	-- Info
 	{
-		"<leader>ri",
-		function()
-			require("sniprun").info()
-		end,
-		desc = "Show SnipRun info",
-		mode = "n",
-	},
-
-	-- Reset
-	{
-		"<leader>rR",
+		"<leader>rS",
 		function()
 			require("sniprun").reset()
 		end,
 		desc = "Reset SnipRun",
 		mode = "n",
 	},
-
-	-- Live mode toggle
 	{
 		"<leader>rl",
 		function()
 			require("sniprun.live_mode").toggle()
 		end,
 		desc = "Toggle SnipRun Live Mode",
+		mode = "n",
+	},
+
+	-- ───── Overseer (task runner) ─────
+	{
+		"<leader>ro",
+		"<cmd>OverseerToggle<CR>",
+		desc = "Toggle Overseer task list",
+		mode = "n",
+	},
+	{
+		"<leader>rr",
+		"<cmd>OverseerRun<CR>",
+		desc = "Run task (Overseer)",
+		mode = "n",
+	},
+	{
+		"<leader>rR",
+		"<cmd>OverseerRestartLast<CR>",
+		desc = "Restart last task (Overseer)",
 		mode = "n",
 	},
 
@@ -577,7 +581,7 @@ wk.add({
 	},
 
 	{
-		"<leader>sd",
+		"<leader>sD",
 		function()
 			snacks.dim()
 		end,
@@ -635,12 +639,25 @@ wk.add({
 		desc = "Undo History",
 	},
 
+	-- Doodle Telescope integrations
+	{
+		"<leader>sd",
+		group = "Doodle",
+		icon = "󰈙",
+	},
 	{
 		"<leader>sdd",
 		function()
 			doodle:toggle_finder()
 		end,
 		desc = "Doodle Finder",
+	},
+	{
+		"<leader>sdD",
+		function()
+			require("telescope").extensions.doodle.find_notes()
+		end,
+		desc = "Find Notes",
 	},
 	{
 		"<leader>sdl",
