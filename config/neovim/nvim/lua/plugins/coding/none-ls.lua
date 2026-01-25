@@ -14,8 +14,6 @@ return {
 				"goimports", -- Also GO
 				"golangci-lint",
 
-				"swiftformat", -- Swift
-				"swiftlint",
 				"prettier", -- YAML (also JSON, etc.)
 				"shfmt", -- Bash
 
@@ -50,7 +48,6 @@ return {
 				-- Formatter
 				null_ls.builtins.formatting.gofmt,
 				null_ls.builtins.formatting.goimports,
-				null_ls.builtins.formatting.swiftformat,
 				null_ls.builtins.formatting.prettier.with({
 					filetypes = { "yaml", "yml" },
 				}),

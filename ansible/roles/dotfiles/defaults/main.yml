@@ -79,6 +79,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/lazydocker",
       dest: "{{ ansible_env.HOME }}/.config/lazydocker",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/hypr",
+      dest: "{{ ansible_env.HOME }}/.config/hypr",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"

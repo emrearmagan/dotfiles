@@ -87,16 +87,6 @@ return {
 				},
 			})
 
-			-- Swift (macOS native)
-			vim.lsp.config("sourcekit", {
-				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
-				filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
-				capabilities = capabilities,
-				on_init = function(client)
-					client.offset_encoding = "utf-8"
-				end,
-			})
-
 			-- Docker
 			vim.lsp.config("dockerls", {
 				filetypes = { "dockerfile" },
@@ -136,7 +126,6 @@ return {
 
 			-- ── Enable all LSPs ───────────────────────────────────────
 			vim.lsp.enable({
-				"sourcekit",
 				"gopls",
 			})
 		end,

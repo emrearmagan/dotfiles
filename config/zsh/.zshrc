@@ -19,6 +19,8 @@ export GOPATH=$HOME/.go
 export HOMEBREW_NO_ANALYTICS=1
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
+export PATH=/home/emrearmagan/.opencode/bin:$PATH
+export PATH=/home/emrearmagan/.local/bin:$PATH
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")
@@ -71,6 +73,7 @@ fi=97:\        # regular files: soft white
 bindkey              '^I'         menu-complete
 bindkey "$terminfo[kcbt]" reverse-menu-complete
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
 
 # Initialize zsh completion system
 # no need to call compinit anymore as it's called by zsh-autocomplete. When deleting zsh-completions, remember to add this back.

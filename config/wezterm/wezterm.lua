@@ -1,12 +1,17 @@
 local wezterm = require("wezterm")
-require("startup")
 
+require("startup")
 local keys = require("mappings")
 local ui = require("ui")
 
 local config = {
+  -- Force XWayland
+  enable_wayland = false,
+
+  -- Important for arch linux: disbale background GUI
+  mux_enable = false,
+
 	notification_handling = "AlwaysShow",
-	use_ime = true,
 	audible_bell = "Disabled",
 	-- macos_forward_to_ime_modifier_mask = 'SHIFT',
 
@@ -16,8 +21,6 @@ local config = {
 	--
 	-- Support dead-keys (umlauts, tilde, etc.) on European layouts
 	-- use_dead_keys = true,
-
-	native_macos_fullscreen_mode = true,
 }
 
 for k, v in pairs(ui) do
