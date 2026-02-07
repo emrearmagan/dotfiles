@@ -81,17 +81,3 @@ alias proxy-local='
         --ssl-insecure
         --no-http2
 '
-
-# -- mitmproxy local proxy setup
-alias proxy-local='
-    IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
-    echo "Your IP: $IP | Proxy: $IP:8888"
-    echo "$IP" | pbcopy
-    echo " IP copied to clipboard!"
-    echo "Press Enter to start mitmproxy..."
-    read
-    mitmproxy --mode regular@8888 \
-        --ignore "~u \.png$ | ~u logo" \
-        --ssl-insecure
-        --no-http2
-'
