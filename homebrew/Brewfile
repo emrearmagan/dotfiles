@@ -29,6 +29,7 @@ brew "tmux"                 # terminal multiplexer
 brew "opencode"             # ai code cli
 brew "lazygit"              # git ui
 brew "starship"             # shell prompt
+brew "delta"                # git diff tool
 
 brew "pass"                 # password manager
 brew "gpg"                  # encryption tool for pass
@@ -44,7 +45,6 @@ brew "go"                   # go lang
 brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
-brew "gh"                   # github cli
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   
@@ -63,7 +63,6 @@ brew "libpq"                # postgres tools
 # Networking & Package Management
 # ───────────────────────────────
 brew "curl"
-brew "mas"                  # Mac App Store CLI
 brew "wget"
 
 
@@ -111,9 +110,3 @@ cask "sf-symbols"
 cask "nikitabobko/tap/aerospace"
 ### currently installed manually. Uncomment once v. 0.11.13 is released
 # cask "jordanbaird-ice"
-
-
-# ───────────────────────────────
-# Mac App Store
-# ───────────────────────────────
-mas "Xcode", id: 497799835

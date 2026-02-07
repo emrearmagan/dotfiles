@@ -1,22 +1,21 @@
 source ~/.env
-source ~/.alias/.alias
-source ~/.alias/.custom
-source ~/.alias/.macos
-source ~/.alias/.functions
+source ~/.config/alias/.alias
+source ~/.config/alias/.custom
+source ~/.config/alias/.macos
+source ~/.config/alias/.functions
 
 
 # ----------------------
 # Export
 # ----------------------
 #Prompt
-export PS1='%F{green}%n: (%~)%f '
+export PS1='%F{117}%n: %F{110}%~%f %# '
 
 # Go
 export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
 
 #Brew
-export HOMEBREW_NO_ANALYTICS=1
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 

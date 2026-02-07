@@ -12,6 +12,7 @@ vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.scrolloff = 8 -- Lines to keep above and below the cursor
 vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
 vim.opt.fillchars = { eob = " " } -- Hide ~ on empty lines
+vim.env.PATH = "/opt/homebrew/bin:" .. vim.env.PATH
 
 -- Auto-reload files when changed externally
 vim.opt.autoread = true

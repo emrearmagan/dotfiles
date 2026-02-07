@@ -17,6 +17,7 @@ return {
 			"yaml", -- YAML files
 			"json", -- JSON files
 			"lua", -- Lua (for Neovim config)
+			"php",
 		},
 
 		-- Don’t install parsers synchronously (use async)
@@ -37,5 +38,17 @@ return {
 	-- Setup Treesitter using the opts defined above
 	config = function(_, opts)
 		require("nvim-treesitter.configs").setup(opts)
+
+		vim.g.php_noindent = 1 -- ← disable Vim’s built-in PHP indent (GetPhpIndent)
+		-- Simple, predictable PHP indentation (no legacy script)
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "php",
+			callback = function()
+				vim.bo.indentexpr = "" -- kill GetPhpIndent()
+				vim.bo.cindent = true
+				vim.bo.smartindent = true -- basic indent like other langs
+				vim.bo.autoindent = true
+			end,
+		})
 	end,
 }

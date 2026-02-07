@@ -1,0 +1,9 @@
+--hidden
+--follow
+--glob=!.git/**
+--glob=!node_modules/**
+--glob=!vendor/**
+--glob=!tmp/**
+--glob=!.ds_store
+--glob=!.idea/**
+--glob=!*.iml

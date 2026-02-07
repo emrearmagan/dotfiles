@@ -61,47 +61,56 @@ style = "italic bold red"
 symbol = " "
 style = "bold sky"  # sky blue (Catppuccin blue)
 format = " [$symbol($version)]($style)"
+detect_files = ["go.mod"]
 
 [nodejs]
 symbol = " "
 style = "green"
 format = ' [$symbol($version)]($style)'
+detect_files = ["package.json"]
 
 [php]
 symbol = " "
 style = "lavender"
 format = ' [$symbol($version)]($style)'
+detect_files = ["composer.json"]
 
 [swift]
 symbol = " "
 style = "red"
 format = ' [$symbol($version)]($style)'
+detect_files = ["Package.swift"]
 
 [docker_context]
 symbol = " "
 style = "teal"
 format = ' [$symbol$context]($style)'
 only_with_files = true
+detect_files = ["Dockerfile", "docker-compose.yml"]
 
 [c]
 symbol = " "
 style = "sky"
 format = " [$symbol($version)]($style)"
+detect_files = ["Makefile", "CMakeLists.txt"]
 
 [java]
 symbol = " "
 style = "peach"
 format = " [$symbol($version)]($style)"
+detect_files = ["pom.xml", "build.gradle", "build.gradle.kts"]
 
 [python]
 symbol = " "
 style = "yellow"
 format = " [$symbol($version)]($style)"
+detect_files = ["pyproject.toml", "requirements.txt", "Pipfile"]
 
 [rust]
 symbol = " "
 style = "maroon"
 format = " [$symbol($version)]($style)"
+detect_files = ["Cargo.toml"]
 
 [jobs]
 symbol = " "

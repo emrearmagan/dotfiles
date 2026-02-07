@@ -27,6 +27,13 @@ return {
 					"ansiblels", -- Ansible
 					"bashls", -- Bash
 
+					"intelephense", --PHP
+					"html", -- HTML
+					-- "ts_ls", -- TypeScript & JavaScript
+					"vtsls", -- TypeScript & JavaScript (alternative)
+					"angularls", -- Angular
+					"cssls", -- CSS (for LESS support)
+
 					-- sourcekit (Swift) is macOS native, not installable via Mason
 					-- Make sure to have Xcode installed or CLI Tools: xcode-select --install
 				},
@@ -132,6 +139,28 @@ return {
 			vim.lsp.config("bashls", {
 				filetypes = { "sh", "bash", "zsh" },
 				capabilities = capabilities,
+			})
+
+			-- TypeScript / JavaScript
+			vim.lsp.config("ts_ls", {
+				capabilities = capabilities,
+				filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+			})
+
+			-- ESLint Language Server
+			vim.lsp.config("eslint", {
+				capabilities = capabilities,
+			})
+
+			-- Angular
+			vim.lsp.config("angularls", {})
+
+			-- HTML
+			vim.lsp.config("html", {})
+
+			-- CSS / LESS
+			vim.lsp.config("cssls", {
+				filetypes = { "css", "scss", "less" },
 			})
 
 			-- ── Enable all LSPs ───────────────────────────────────────

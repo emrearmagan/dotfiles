@@ -14,6 +14,8 @@ return {
 					vim.system({ "go", "install", "gotest.tools/gotestsum@latest" }):wait() -- Optional, but recommended
 				end,
 			},
+			"nvim-neotest/neotest-jest",
+			"olimorris/neotest-phpunit",
 		},
 		config = function()
 			-- Ensure Go bin is in PATH for Neovim (for gotestsum)

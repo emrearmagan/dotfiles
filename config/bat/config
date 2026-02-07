@@ -1,5 +1,5 @@
 # Set theme (optional, replace 'TwoDark' with your preferred theme)
---theme="Catppuccin Macchiato"
+--theme="Catppuccin Mocha"
 
 # Use less as the pager with faster scrolling and Vim keybindings
 --pager="less --RAW-CONTROL-CHARS --quit-if-one-screen --window=5 --no-init"

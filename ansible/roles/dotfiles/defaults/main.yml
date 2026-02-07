@@ -12,7 +12,7 @@ dotfiles:
     # Alias
   - {
       src: "{{ playbook_dir }}/../config/system/alias",
-      dest: "{{ ansible_env.HOME }}/.alias",
+      dest: "{{ ansible_env.HOME }}/.config/alias",
     }
 
     # Git
@@ -78,6 +78,10 @@ dotfiles:
   - {
       src: "{{ playbook_dir }}/../config/lazydocker",
       dest: "{{ ansible_env.HOME }}/.config/lazydocker",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/ripgrep",
+      dest: "{{ ansible_env.HOME }}/.config/ripgrep",
     }
 
 dotfiles_path: "{{ playbook_dir }}/../config"

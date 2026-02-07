@@ -19,13 +19,14 @@ return {
 				"prettier", -- YAML (also JSON, etc.)
 				"shfmt", -- Bash
 
+				"php-cs-fixer",
+
 				"stylua", --- Lua
 			},
 			automatic_installation = true,
 		})
 
 		null_ls.setup({
-			name = "null_ls",
 			-- format on save
 			on_attach = function(client, bufnr)
 				if client:supports_method("textDocument/formatting") then
@@ -57,9 +58,35 @@ return {
 				null_ls.builtins.formatting.stylua,
 				null_ls.builtins.formatting.shfmt,
 
+				null_ls.builtins.formatting.phpcsfixer.with({
+					command = "php-cs-fixer", -- uses Homebrew binary
+					env = { PHP_CS_FIXER_IGNORE_ENV = "1" }, -- allow PHP 8.4+
+				}),
+
 				-- Linter --
-				null_ls.builtins.diagnostics.golangci_lint,
 				null_ls.builtins.diagnostics.swiftlint,
+				null_ls.builtins.diagnostics.phpstan.with({
+					command = function()
+						local cwd = vim.fn.getcwd()
+						local current = cwd
+						-- Search up the directory tree for vendor/bin/phpstan
+						for _ = 1, 10 do -- Max 10 levels up
+							local vendor_path = current .. "/vendor/bin/phpstan"
+							if vim.fn.filereadable(vendor_path) == 1 then
+								return vendor_path
+							end
+							local parent = vim.fn.fnamemodify(current, ":h")
+							if parent == current then
+								break
+							end -- Reached root
+							current = parent
+						end
+						return "phpstan"
+					end,
+					extra_args = { "analyse", "--error-format", "raw" },
+					to_stdin = false,
+					diagnostics_format = "[phpstan] #{m}",
+				}),
 			},
 		})
 	end,

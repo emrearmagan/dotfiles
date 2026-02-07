@@ -3,6 +3,12 @@ return {
 	branch = "master",
 	opts = {},
 	config = function()
+		vim.api.nvim_create_autocmd("VimLeavePre", {
+			callback = function()
+				pcall(vim.cmd, "OverseerStopAll")
+			end,
+		})
+
 		require("overseer").setup({
 			-- Automatically detect build systems like Makefile, npm, composer, etc.
 			templates = { "builtin" },

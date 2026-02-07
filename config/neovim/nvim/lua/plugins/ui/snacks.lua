@@ -16,7 +16,33 @@ return {
 			winblend = 10, -- transparency
 		},
 		notify = { enabled = true },
-		picker = { enabled = true },
+		picker = {
+			sources = {
+				files = {
+					cmd = "rg",
+					hidden = true,
+					no_ignore = false,
+					preview = "file", -- show file contents
+				},
+				grep = {
+					cmd = "rg --vimgrep",
+					hidden = true,
+					no_ignore = false,
+					live = true,
+					preview = "file", -- open matching line
+				},
+				git_files = {
+					cmd = "git ls-files --exclude-standard --cached --others",
+					preview = "diff", -- show git diff using delta if available
+				},
+			},
+
+			formatters = {
+				file = {
+					filename_first = true, -- display filename before the file path
+				},
+			},
+		},
 		quickfile = { enabled = true },
 		scope = { enabled = true },
 		scroll = {
@@ -80,7 +106,7 @@ return {
 
 			preset = {
 				pick = function(type, opts)
-					require("fzf-lua")[type](opts or {})
+					require("snacks").picker[type](opts or {})
 				end,
 				keys = {
 					{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
@@ -88,7 +114,7 @@ return {
 						icon = " ",
 						key = "g",
 						desc = "Find Text",
-						action = ":lua Snacks.dashboard.pick('live_grep')",
+						action = ":lua Snacks.dashboard.pick('grep')",
 					},
 					{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
 					{
@@ -183,6 +209,10 @@ return {
 						padding = 1,
 					},
 
+					{
+						gap = 1, -- adds space below
+					},
+
 					-- ─────────────────────────────
 					--  GIT SECTION
 					-- ─────────────────────────────
@@ -268,15 +298,19 @@ return {
 								section = "terminal",
 								padding = 1,
 								indent = 2,
+								ttl = 0,
 								icon = " ",
 								title = "Git Status",
 								cmd = "git --no-pager diff --stat=40 -B -M -C",
+								key = "S", -- press “S” on the dashboard
+								action = function()
+									require("snacks").picker.git_status()
+								end,
 								height = 5,
 								enabled = in_git,
 							},
 						}
 					end,
-
 					{
 						icon = " ",
 						title = "Docker Containers",

@@ -4,21 +4,31 @@ local function setup_listeners()
 	local areSet = false
 
 	dap.listeners.after["event_initialized"]["me"] = function()
-		if not areSet and not _G.run_mode then
+		if not areSet then
 			areSet = true
-			vim.keymap.set("n", "<leader>dx", function()
-				require("dap").terminate()
-			end, { desc = "Terminate Debugger" })
 
-			if not _G.run_mode then
-				vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
-				vim.keymap.set("n", "<leader>dC", dap.run_to_cursor, { desc = "Run To Cursor" })
-				vim.keymap.set("n", "<leader>ds", dap.step_over, { desc = "Step Over" })
-				vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Step Into" })
-				vim.keymap.set("n", "<leader>do", dap.step_out, { desc = "Step Out" })
-				vim.keymap.set({ "n", "v" }, "<Leader>dh", require("dap.ui.widgets").hover, { desc = "Hover" })
-				vim.keymap.set({ "n", "v" }, "<Leader>de", require("dapui").eval, { desc = "Eval" })
-			end
+			vim.keymap.set("n", "<leader>dx", function()
+				local dap, dapui = require("dap"), require("dapui")
+				if dap.session() then
+					dap.terminate()
+				end
+
+				dapui.close()
+				pcall(function()
+					dap.repl.close()
+				end)
+
+				vim.cmd("silent! bd! term://*dap-repl*")
+				_G.run_mode = false
+			end, { desc = "Terminate Debugger (close everything)" })
+
+			vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
+			vim.keymap.set("n", "<leader>dC", dap.run_to_cursor, { desc = "Run To Cursor" })
+			vim.keymap.set("n", "<leader>ds", dap.step_over, { desc = "Step Over" })
+			vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Step Into" })
+			vim.keymap.set("n", "<leader>do", dap.step_out, { desc = "Step Out" })
+			vim.keymap.set({ "n", "v" }, "<Leader>dh", require("dap.ui.widgets").hover, { desc = "Hover" })
+			vim.keymap.set({ "n", "v" }, "<Leader>de", require("dapui").eval, { desc = "Eval" })
 		end
 	end
 
@@ -40,6 +50,35 @@ local function setup_listeners()
 	dap.listeners.after["event_terminated"]["me"] = cleanup
 	dap.listeners.after["event_exited"]["me"] = cleanup
 	dap.listeners.before["disconnect"]["me"] = cleanup
+
+	-- PHP DAP configuration
+	-- Make sure to have this installed *inside Neovim's data directory*:
+	--
+	-- cd ~/.local/share/nvim
+	-- git clone https://github.com/xdebug/vscode-php-debug.git php-debug-adapter
+	-- cd php-debug-adapter
+	-- npm install
+	-- npm run build
+	-- ls out/phpDebug.js
+	--
+	-- This keeps the adapter under ~/.local/share/nvim/php-debug-adapter
+	dap.adapters.php = {
+		type = "executable",
+		command = "node",
+		args = { vim.fn.stdpath("data") .. "/php-debug-adapter/out/phpDebug.js" },
+	}
+
+	dap.configurations.php = {
+		{
+			type = "php",
+			request = "launch",
+			name = "Listen for Xdebug",
+			port = 9003,
+			pathMappings = {
+				["/home/zzv-core/current"] = "/Users/emre.armagan/Projects/zzv/zzv-core/",
+			},
+		},
+	}
 
 	-- Auto terminate DAP on Vim exit otherwise the debugger will still be attached
 	vim.api.nvim_create_autocmd("VimLeavePre", {
@@ -81,7 +120,7 @@ return {
 		vim.keymap.set("n", "<leader>dD", function()
 			require("dap").clear_breakpoints()
 			local fidget = require("fidget")
-			fidget.notify("❌ All breakpoints cleared", vim.log.levels.INFO)
+			fidget.notify("All breakpoints cleared", vim.log.levels.INFO)
 		end, { desc = "Clear All Breakpoints" })
 
 		-- Run mode: Uses the console-only layout, disabled all breakpoints temporarily
