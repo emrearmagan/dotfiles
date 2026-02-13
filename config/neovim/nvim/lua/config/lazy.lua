@@ -23,8 +23,10 @@ require("lazy").setup({
 		{ import = "plugins.coding" },
 		{ import = "plugins.coding.debugger" },
 		{ import = "plugins.coding.ai" },
+		{ import = "plugins.coding.lsp" },
 		{ import = "plugins.coding.utils" },
 		{ import = "plugins.coding.tests" },
+		{ import = "plugins.coding.db" },
 
 		{ import = "plugins.ui" },
 		{ import = "plugins.utils" },
