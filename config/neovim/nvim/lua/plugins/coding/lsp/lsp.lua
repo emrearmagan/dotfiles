@@ -47,6 +47,13 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
+			-- Auto-populate quickfix with diagnostics
+			vim.api.nvim_create_autocmd("DiagnosticChanged", {
+				callback = function()
+					vim.diagnostic.setqflist({ open = false })
+				end,
+			})
+
 			vim.diagnostic.config({
 				virtual_text = true,
 				float = {
