@@ -24,7 +24,7 @@ fpath+=("$(brew --prefix)/share/zsh-completions")
 # really like the completion but get messy with autosuggestions. For example cd 'suggestion' when pressing tab auto complete takes in and it looks like:
 # cd <auto-completed>'suggestion'
 source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 source <(fzf --zsh)
