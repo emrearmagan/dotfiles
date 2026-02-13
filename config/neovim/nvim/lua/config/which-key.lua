@@ -119,11 +119,22 @@ wk.add({
 	-- Diagnostic Movement
 	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
 	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
-	{ "<leader>e", vim.diagnostic.open_float, desc = "Show line diagnostics" },
 
 	-- Words Navigation (Snacks)
-	{ "[w", function() require("snacks.words").jump(-1) end, desc = "Previous Reference" },
-	{ "]w", function() require("snacks.words").jump(1) end, desc = "Next Reference" },
+	{
+		"[w",
+		function()
+			require("snacks.words").jump(-1)
+		end,
+		desc = "Previous Reference",
+	},
+	{
+		"]w",
+		function()
+			require("snacks.words").jump(1)
+		end,
+		desc = "Next Reference",
+	},
 
 	-- Quickfix Navigation
 	{ "[q", ":cprev<CR>", desc = "Previous quickfix" },
