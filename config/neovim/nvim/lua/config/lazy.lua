@@ -15,22 +15,46 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Function to dynamically discover plugin directories
+local function get_plugin_imports()
+	local imports = {}
+	local plugins_path = vim.fn.stdpath("config") .. "/lua/plugins"
+  --
+	-- Add root plugins directory
+	table.insert(imports, { import = "plugins" })
+
+	-- Function to recursively scan directories
+	local function scan_directory(path, import_path)
+		local handle = vim.loop.fs_scandir(path)
+		if handle then
+			while true do
+				local name, type = vim.loop.fs_scandir_next(handle)
+				if not name then break end
+
+				-- Skip hidden files and DS_Store
+				if type == "directory" and not name:match("^%.") and name ~= ".DS_Store" then
+					local subdir_path = path .. "/" .. name
+					local subdir_import = import_path .. "." .. name
+
+					-- Add the subdirectory import
+					table.insert(imports, { import = subdir_import })
+
+					-- Recursively scan subdirectories
+					scan_directory(subdir_path, subdir_import)
+				end
+			end
+		end
+	end
+
+	-- Start scanning from plugins directory
+	scan_directory(plugins_path, "plugins")
+
+	return imports
+end
+
 -- Setup lazy.nvim
 require("lazy").setup({
-	spec = {
-		-- import your plugins
-		{ import = "plugins" },
-		{ import = "plugins.coding" },
-		{ import = "plugins.coding.debugger" },
-		{ import = "plugins.coding.ai" },
-		{ import = "plugins.coding.lsp" },
-		{ import = "plugins.coding.utils" },
-		{ import = "plugins.coding.tests" },
-		{ import = "plugins.coding.db" },
-
-		{ import = "plugins.ui" },
-		{ import = "plugins.utils" },
-	},
+	spec = get_plugin_imports(),
 
 	-- automatically check for plugin updates
 	checker = { enabled = true },
