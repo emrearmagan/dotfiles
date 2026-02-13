@@ -2,35 +2,47 @@ tap "homebrew/bundle"
 tap "gitguardian/tap"
 tap "FelixKratz/formulae"   # for sketchybar
 tap "sst/tap"               # for opencode
+tap "nikitabobko/tap"       # for aerospace
 
 # ───────────────────────────────
 # CLI Utilities
 # ───────────────────────────────
+
+# Enhanced Unix Tools
 brew "bat"                  # better cat
-brew "btop"                 # system monitor
 brew "eza"                  # better ls
-brew "fx"                   # json viewer
-brew "fzf"                  # fuzzy finder
 brew "grep"                 # text search
 brew "rg"                   # file search (used by nvim)
+brew "fzf"                  # fuzzy finder
+brew "zoxide"               # fast cd
+
+# System & Network
+brew "btop"                 # system monitor
+brew "nmap"                 # network scanner
+brew "curl"                 # http client
+brew "wget"                 # file downloader
+
+# Data & Text Processing
+brew "jq"                   # json processor
+brew "fx"                   # json viewer
+
+# Shell Enhancement
+brew "starship"             # shell prompt
 brew "thefuck"              # fix typos
 brew "tldr"                 # short man pages
-brew "zoxide"               # fast cd
 brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
 brew "zsh-autocomplete"     # zsh autocomplete
-brew "jq"                   # required by xcodebuild.nvim
-brew "nmap"                 # network scanner
 
+# Core Dev Tools
 brew "neovim"               # editor
 brew "tmux"                 # terminal multiplexer
-
-brew "opencode"             # ai code cli
 brew "lazygit"              # git ui
-brew "starship"             # shell prompt
 brew "delta"                # git diff tool
+brew "opencode"             # ai code cli
 
+# Security
 brew "pass"                 # password manager
 brew "gpg"                  # encryption tool for pass
 brew "openssh"              # ssh tool
@@ -47,63 +59,54 @@ brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
-brew "xcode-build-server"   
-brew "xcbeautify"
-brew "ruby"
-brew "pipx"
-brew "rg"
-brew "jq"
-brew "coreutils"
+brew "xcode-build-server"   # xcode lsp server
+brew "xcbeautify"           # xcode build formatter
+brew "ruby"                 # ruby lang (duplicate)
+brew "pipx"                 # python package installer
+brew "rg"                   # file search (duplicate)
+brew "jq"                   # json processor (duplicate)
+brew "coreutils"            # gnu core utilities
 
 # Database Tools
 # make sure to run "brew link --force libpq" afterwards
 brew "libpq"                # postgres tools
 
 # ───────────────────────────────
-# Networking & Package Management
-# ───────────────────────────────
-brew "curl"
-brew "wget"
-
-
-# ───────────────────────────────
 # Formatter & Linter Tools
-# some formatter and linter used in neovim plugins
 # ───────────────────────────────
 brew "prettier"             # JS/TS formatter
-brew "swiftformat"
-brew "swiftlint"
-brew "xcbeautify"
+brew "swiftformat"          # swift formatter
+brew "swiftlint"            # swift linter
+brew "xcbeautify"           # xcode build formatter (duplicate)
 
 # ───────────────────────────────
 # Desktop UI & Automation
+# ───────────────────────────────
 # sketchybars and borders are started with aerospace.
 # Otherwise manually run:
 #   brew services start sketchybar
 #   brew services start borders
-# ───────────────────────────────
-brew "borders"
-brew "sketchybar"
+brew "borders"              # window borders
+brew "sketchybar"           # status bar
 
 # ───────────────────────────────
 # Applications (Casks)
 # ───────────────────────────────
-cask "iterm2"
-cask "wezterm"
-cask "ghostty"
-cask "docker-desktop"
-cask "mitmproxy"
-cask "sourcetree"
-cask "tailscale-app"
+cask "iterm2"               # terminal emulator
+cask "wezterm"              # gpu terminal
+cask "ghostty"              # fast terminal
+cask "docker-desktop"       # container platform
+cask "mitmproxy"            # http proxy
+cask "sourcetree"           # git gui
+cask "tailscale-app"        # vpn mesh network
 
-cask "postman"
-cask "sublime-text"
-cask "xcodes-app"
-cask "swiftformat-for-xcode"
+cask "postman"              # api client
+cask "sublime-text"         # text editor
+cask "xcodes-app"           # xcode version manager
+cask "swiftformat-for-xcode" # xcode swift formatter
 
-cask "raycast"
-cask "notion"
-cask "google-chrome"
-cask "shortcat"
-cask "sf-symbols"
-cask "nikitabobko/tap/aerospace"
+cask "raycast"              # spotlight replacement
+cask "notion"               # note taking
+cask "google-chrome"        # web browser
+cask "shortcat"             # mouse-free navigation
+cask "aerospace"            # tiling window manager
