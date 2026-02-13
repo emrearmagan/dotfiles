@@ -1,6 +1,7 @@
 return {
 	"rest-nvim/rest.nvim",
 	ft = "http",
+	rocks = false, -- Disable luarocks installation
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"nvim-treesitter/nvim-treesitter",
