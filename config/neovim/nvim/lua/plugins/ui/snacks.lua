@@ -117,12 +117,6 @@ return {
 						action = ":lua Snacks.dashboard.pick('grep')",
 					},
 					{
-						icon = "󰈙 ",
-						key = "n",
-						desc = "Doodle Notes",
-						action = ":lua require('doodle'):toggle_finder()",
-					},
-					{
 						icon = " ",
 						key = "d",
 						desc = "Database",

@@ -3,7 +3,6 @@ local gitsigns = require("gitsigns")
 local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
 local neotest = require("neotest")
-local doodle = require("doodle")
 local builtin = require("telescope.builtin")
 
 -------------------- Keybindings ------------------------
@@ -629,34 +628,6 @@ wk.add({
 			snacks.picker.undo()
 		end,
 		desc = "Undo History",
-	},
-
-	-- Doodle Telescope integrations
-	{
-		"<leader>sd",
-		group = "Doodle",
-		icon = "󰈙",
-	},
-	{
-		"<leader>sdd",
-		function()
-			doodle:toggle_finder()
-		end,
-		desc = "Doodle Finder",
-	},
-	{
-		"<leader>sdD",
-		function()
-			require("telescope").extensions.doodle.find_notes()
-		end,
-		desc = "Find Notes",
-	},
-	{
-		"<leader>sdl",
-		function()
-			doodle:toggle_links()
-		end,
-		desc = "Doodle Links",
 	},
 
 	{
