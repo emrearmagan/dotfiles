@@ -553,6 +553,28 @@ wk.add({
 		desc = "Git Blame (panel, refocus)",
 	},
 
+	-- Diffview
+	{
+		"<leader>gD",
+		"<cmd>DiffviewOpen<cr>",
+		desc = "Open Diffview",
+	},
+	{
+		"<leader>gC",
+		"<cmd>DiffviewClose<cr>",
+		desc = "Close Diffview",
+	},
+	{
+		"<leader>gH",
+		"<cmd>DiffviewFileHistory<cr>",
+		desc = "File History",
+	},
+	{
+		"<leader>gh",
+		"<cmd>DiffviewFileHistory %<cr>",
+		desc = "Current File History",
+	},
+
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                        AI                          │
 	-- ╰────────────────────────────────────────────────────╯
