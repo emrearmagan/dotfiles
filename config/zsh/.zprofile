@@ -22,6 +22,7 @@ export FZF_DEFAULT_OPTS='
   --preview-window=right:60%
 '
 export FZF_CTRL_R_OPTS="--preview ''"
+export FZF_ALT_C_OPTS="--preview ''"
 
 # Currently used by lazygit to find the config file.
 export XDG_CONFIG_HOME="$HOME/.config"

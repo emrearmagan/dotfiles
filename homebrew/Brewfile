@@ -105,8 +105,5 @@ cask "raycast"
 cask "notion"
 cask "google-chrome"
 cask "shortcat"
-cask "alt-tab"
 cask "sf-symbols"
 cask "nikitabobko/tap/aerospace"
-### currently installed manually. Uncomment once v. 0.11.13 is released
-# cask "jordanbaird-ice"
