@@ -6,6 +6,7 @@ return {
 	opts = {
 		bigfile = { enabled = true },
 		explorer = { enabled = false },
+		image = { enabled = true },
 		indent = { enabled = true },
 		input = { enabled = false },
 		notifier = {
@@ -68,6 +69,18 @@ return {
 			end,
 		},
 		statuscolumn = { enabled = true },
+		terminal = {
+			enabled = true,
+			win = {
+				position = "float",
+				backdrop = 60,
+				height = 0.8,
+				width = 0.8,
+				border = "rounded",
+				title_pos = "center",
+				footer_pos = "center",
+			},
+		},
 		words = { enabled = true },
 		dim = {
 			enabled = true,
