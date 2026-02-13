@@ -641,6 +641,34 @@ wk.add({
 		desc = "Git Blame Line",
 	},
 	{
+		"<leader>gp",
+		function()
+			gitsigns.preview_hunk()
+		end,
+		desc = "Preview Hunk",
+	},
+	{
+		"<leader>gr",
+		function()
+			gitsigns.reset_hunk()
+		end,
+		desc = "Reset Hunk",
+	},
+	{
+		"<leader>g[",
+		function()
+			gitsigns.prev_hunk()
+		end,
+		desc = "Previous Hunk",
+	},
+	{
+		"<leader>g]",
+		function()
+			gitsigns.next_hunk()
+		end,
+		desc = "Next Hunk",
+	},
+	{
 		"<leader>gB",
 		function()
 			vim.cmd("Gitsigns blame")
