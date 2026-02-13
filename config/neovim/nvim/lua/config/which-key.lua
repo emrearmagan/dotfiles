@@ -3,7 +3,6 @@ local gitsigns = require("gitsigns")
 local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
 local neotest = require("neotest")
-local builtin = require("telescope.builtin")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -39,13 +38,92 @@ wk.add({
 	{ "J", ":m '>+1<CR>gv=gv", desc = "Move selection down", mode = "v" },
 	{ "K", ":m '<-2<CR>gv=gv", desc = "Move selection up", mode = "v" },
 
+	-- Override Neovim's default LSP keymaps with Snacks equivalents
 	{
-		"<leader>/",
+		"gra",
 		function()
-			require("snacks.picker").grep_word()
+			vim.lsp.buf.code_action()
 		end,
-		desc = "Search word under cursor",
+		desc = "Code Actions",
+		mode = { "n", "v" },
 	},
+	{
+		"gri",
+		function()
+			require("snacks.picker").lsp_implementations()
+		end,
+		desc = "Go to Implementation (Snacks)",
+	},
+	{
+		"grn",
+		function()
+			vim.lsp.buf.rename()
+		end,
+		desc = "Rename Symbol",
+	},
+	{
+		"grr",
+		function()
+			require("snacks.picker").lsp_references()
+		end,
+		desc = "Find References (Snacks)",
+	},
+	{
+		"grt",
+		function()
+			require("snacks.picker").lsp_type_definitions()
+		end,
+		desc = "Go to Type Definition (Snacks)",
+	},
+
+	{
+		"gs",
+		function()
+			require("snacks.picker").lsp_symbols()
+		end,
+		desc = "Outline (Snacks Symbols)",
+	},
+	{
+		"gd",
+		function()
+			require("snacks.picker").lsp_definitions()
+		end,
+		desc = "Go to Definition (Snacks)",
+	},
+	{
+		"gD",
+		function()
+			require("snacks.picker").lsp_declarations()
+		end,
+		desc = "Go to Declaration (Snacks)",
+	},
+	{
+		"gi",
+		function()
+			require("snacks.picker").lsp_implementations()
+		end,
+		desc = "Go to Implementation (Snacks)",
+	},
+	{
+		"gy",
+		function()
+			require("snacks.picker").lsp_type_definitions()
+		end,
+		desc = "Go to Type Definition (Snacks)",
+	},
+
+	-- Hover & Signature
+	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
+	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
+
+	-- Diagnostic Movement
+	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
+	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
+	{ "<leader>e", vim.diagnostic.open_float, desc = "Show line diagnostics" },
+
+	-- Quickfix Navigation
+	{ "[q", ":cprev<CR>", desc = "Previous quickfix" },
+	{ "]q", ":cnext<CR>", desc = "Next quickfix" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Tree                          │
@@ -166,10 +244,14 @@ wk.add({
 	{
 		"<leader>qM",
 		function()
+			-- Delete all marks in current buffer
 			vim.cmd("delmarks!")
-			vim.cmd("delm! | delm A-Z0-9")
+			-- Delete all global marks (A-Z) and numbered marks (0-9)
+			vim.cmd("delm A-Z0-9")
+			-- Also clear jumplist to remove ` marks
+			vim.cmd("clearjumps")
 
-			vim.notify("All marks deleted", vim.log.levels.INFO)
+			vim.notify("All marks and jumps deleted", vim.log.levels.INFO)
 		end,
 		desc = "Delete All Marks",
 	},
@@ -193,14 +275,14 @@ wk.add({
 
 	-- Diagnostics
 	{
-		"<leader>cd",
+		"<leader>cD",
 		function()
 			require("snacks.picker").diagnostics_buffer()
 		end,
 		desc = "Buffer Diagnostics (Snacks)",
 	},
 	{
-		"<leader>cD",
+		"<leader>cd",
 		function()
 			require("snacks.picker").diagnostics()
 		end,
@@ -217,6 +299,13 @@ wk.add({
 		"<leader>cl",
 		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
 		desc = "LSP Definitions / References (Trouble)",
+	},
+	{
+		"<leader>cq",
+		function()
+			require("snacks.picker").qflist()
+		end,
+		desc = "Quickfix List (Snacks)",
 	},
 	-- Navigation
 	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },
@@ -259,14 +348,6 @@ wk.add({
 		desc = "Outline (Snacks Symbols)",
 		mode = "n",
 	},
-
-	-- Hover & Signature
-	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
-	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
-
-	-- Diagnostic Movement
-	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
-	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Code Tests (neotest)           │
@@ -584,14 +665,6 @@ wk.add({
 	-- │                     Snacks / Utils                 │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>s", icon = "", group = "Snacks / Utils" },
-	{
-		"<leader>sq",
-		function()
-			require("snacks.picker").qflist()
-		end,
-		desc = "Quickfix List (Snacks)",
-		mode = "n",
-	},
 
 	{
 		"<leader>sD",
@@ -665,5 +738,12 @@ wk.add({
 			snacks.scratch.select()
 		end,
 		desc = "Select Scratch Buffer",
+	},
+	{
+		"<leader>st",
+		function()
+			snacks.terminal.toggle()
+		end,
+		desc = "Floating Terminal",
 	},
 })
