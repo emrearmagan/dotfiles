@@ -1,4 +1,3 @@
--- avante.nvim for AI-powered code chat
 return {
 	"yetone/avante.nvim",
 	-- build function didnt work somehow. Had to run this manually:
@@ -12,28 +11,41 @@ return {
 	end,
 	event = "VeryLazy",
 	version = false,
-
 	opts = {
-		provider = "openrouter",
+		provider = "ollama",
 		file_selector = "fzf",
 		system_message = "You always respond in English unless explicitly asked",
 		providers = {
-			openrouter = {
-				-- API key is read from the environment: AVANTE_OPENROUTER_API_KEY
+			ollama = {
 				__inherited_from = "openai",
-				model = "openai/gpt-4o-mini",
-				api_key_name = "OPENROUTER_API_KEY",
-				endpoint = "https://openrouter.ai/api/v1",
+				endpoint = "https://ollama.local.emrearmagan.dev/v1",
+				model = "qwen2.5-coder:7b", -- DEFAULT MODEL
 				timeout = 30000,
-			},
-			openai = {
-				-- API key is read from the environment: AVANTE_OPENAI_API_KEY
-				model = "gpt-4o",
-				endpoint = "https://api.openai.com/v1",
-				timeout = 30000,
-				extra_request_body = {
-					temperature = 0.7,
-					max_tokens = 2048,
+
+				models = {
+					coder = {
+						model = "qwen2.5-coder:7b",
+						extra_request_body = {
+							temperature = 0.2,
+							max_tokens = 4096,
+						},
+					},
+
+					reasoning = {
+						model = "qwen3:8b",
+						extra_request_body = {
+							temperature = 0.3,
+							max_tokens = 4096,
+						},
+					},
+
+					lightweight = {
+						model = "phi4-mini:3.8b",
+						extra_request_body = {
+							temperature = 0.1,
+							max_tokens = 2048,
+						},
+					},
 				},
 			},
 		},
