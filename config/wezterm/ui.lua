@@ -68,7 +68,7 @@ return {
 	window_padding = {
 		left = 0,
 		right = 0,
-		top = 15,
+		top = 10,
 		bottom = 0,
 	},
 	use_resize_increments = true,
@@ -89,7 +89,6 @@ return {
 		},
 	},
 
-	--- window_decorations = "RESIZE",
 	window_decorations = "RESIZE",
 	initial_rows = 40, -- height (default is 24)
 	initial_cols = 120, -- width (default is 80)
