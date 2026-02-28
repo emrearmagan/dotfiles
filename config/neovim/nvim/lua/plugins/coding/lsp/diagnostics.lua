@@ -4,19 +4,18 @@ return {
 		event = "VeryLazy",
 		priority = 1000,
 		config = function()
-			-- Disable default inline virtual text
-			vim.diagnostic.config({ virtual_text = false })
-
-			local signs = {
-				{ name = "DiagnosticSignError", text = "✖" },
-				{ name = "DiagnosticSignWarn", text = "▲" },
-				{ name = "DiagnosticSignInfo", text = "●" },
-				{ name = "DiagnosticSignHint", text = "" },
-			}
-
-			for _, sign in ipairs(signs) do
-				vim.fn.sign_define(sign.name, { text = sign.text, texthl = sign.name, numhl = "" })
-			end
+			-- Disable default inline virtual text and configure signs
+			vim.diagnostic.config({
+				virtual_text = false,
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = "✖",
+						[vim.diagnostic.severity.WARN] = "▲",
+						[vim.diagnostic.severity.INFO] = "●",
+						[vim.diagnostic.severity.HINT] = "",
+					},
+				},
+			})
 
 			require("tiny-inline-diagnostic").setup({
 				-- Available: "modern", "classic", "minimal", "powerline", "ghost", "simple", "nonerdfont", "amongus"
