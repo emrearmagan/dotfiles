@@ -12,7 +12,7 @@ return {
 	event = "VeryLazy",
 	version = false,
 	opts = {
-		provider = "ollama",
+		provider = "copilot",
 		file_selector = "fzf",
 		system_message = "You always respond in English unless explicitly asked",
 		providers = {
