@@ -1,6 +1,7 @@
 return {
 	"hat0uma/csvview.nvim",
 	---@module "csvview"
+	---@diagnostic disable-next-line: undefined-doc-name
 	---@type CsvView.Options
 	opts = {
 		parser = { comments = { "#", "//" } },

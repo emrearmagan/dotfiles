@@ -61,6 +61,7 @@ brew "go"                   # go lang
 brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
+brew "luarocks"             # lua package manager
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server
