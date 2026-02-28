@@ -132,7 +132,7 @@ return {
 				settings = {
 					yaml = {
 						schemas = {
-							["https://json.schemastore.org/ansible-stable-2.9.json"] = "*/playbook.yml",
+							["https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook"] = "*/playbook.yml",
 							["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
 						},
 					},
