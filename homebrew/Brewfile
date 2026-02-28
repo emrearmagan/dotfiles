@@ -15,6 +15,10 @@ brew "grep"                 # text search
 brew "rg"                   # file search (used by nvim)
 brew "fzf"                  # fuzzy finder
 brew "zoxide"               # fast cd
+brew "imagemagick"          # image processing
+brew "ghostscript"          # pdf processing
+brew "fd"                   # find alternative
+brew "git-delta"            # better git diff
 
 # System & Network
 brew "btop"                 # system monitor
