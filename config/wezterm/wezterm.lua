@@ -5,9 +5,11 @@ local keys = require("mappings")
 local ui = require("ui")
 
 local config = {
+	enable_kitty_graphics = true,
 	notification_handling = "AlwaysShow",
 	use_ime = true,
 	audible_bell = "Disabled",
+	scrollback_lines = 10000,
 	-- macos_forward_to_ime_modifier_mask = 'SHIFT',
 
 	-- Ensure AltGr (right Alt) works correctly for German layouts
