@@ -164,10 +164,15 @@ alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 # ----- Vim-style window focus movement (cycles through monitors) -----
-alt-h = 'focus left --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
-alt-j = 'focus down --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
-alt-k = 'focus up --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
-alt-l = 'focus right --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
+alt-h = 'focus left --boundaries all-monitors-outer-frame'
+alt-j = 'focus down --boundaries all-monitors-outer-frame'
+alt-k = 'focus up --boundaries all-monitors-outer-frame'
+alt-l = 'focus right --boundaries all-monitors-outer-frame'
+
+# alt-h = 'focus left --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
+# alt-j = 'focus down --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
+# alt-k = 'focus up --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
+# alt-l = 'focus right --boundaries all-monitors-outer-frame --boundaries-action wrap-around-all-monitors'
 
 cmd-alt-h = 'focus-monitor prev'
 cmd-alt-l = 'focus-monitor next'
