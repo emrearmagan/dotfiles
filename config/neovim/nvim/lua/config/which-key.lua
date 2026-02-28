@@ -599,13 +599,6 @@ wk.add({
 		desc = "Git Browse",
 	},
 	{
-		"<leader>gr",
-		function()
-			snacks.picker.git_branches()
-		end,
-		desc = "Git Branches",
-	},
-	{
 		"<leader>gl",
 		function()
 			snacks.picker.git_log()
