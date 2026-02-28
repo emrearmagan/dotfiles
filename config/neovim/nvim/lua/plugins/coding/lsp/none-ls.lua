@@ -22,6 +22,7 @@ return {
 				"php-cs-fixer",
 
 				"stylua", --- Lua
+				"luacheck", --- Lua linter
 			},
 			automatic_installation = true,
 		})
