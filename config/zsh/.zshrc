@@ -18,6 +18,7 @@ export GOPATH=$HOME/.go
 #Brew
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")
