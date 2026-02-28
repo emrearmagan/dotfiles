@@ -1,7 +1,7 @@
 return {
 	"folke/snacks.nvim",
 	event = "VimEnter",
-	lazy = true,
+	lazy = false,
 	priority = 1000,
 	opts = {
 		bigfile = { enabled = true },
@@ -308,9 +308,9 @@ return {
 								icon = " ",
 								title = "Git Status",
 								cmd = "git --no-pager diff --stat=40 -B -M -C",
-								key = "S", -- press “S” on the dashboard
+								key = "S",
 								action = function()
-									require("snacks").picker.git_status()
+									require("snacks").picker.git_diff()
 								end,
 								height = 5,
 								enabled = in_git,
