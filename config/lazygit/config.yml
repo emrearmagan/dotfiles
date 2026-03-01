@@ -96,8 +96,87 @@ customCommands:
         | sed 's/^[0-9]\+[\.\)]\s*//' \
         | fzf --height 40% --border --no-ansi --preview "echo {}" --preview-window=up:wrap \
         | {
+            SELECTED=$(cat)
+            if [ -z "$SELECTED" ]; then
+                echo "Cancelled."
+                exit 0
+            fi
             f=$(mktemp)
-            cat > "$f"
+            echo "$SELECTED" > "$f"
+            original_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
+            ${EDITOR:-nvim} "$f"
+            new_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
+            if [ -s "$f" ] && [ "$original_mtime" != "$new_mtime" ]; then
+                git commit -F "$f"
+            else
+                echo "Commit aborted (no changes made)."
+            fi
+            rm -f "$f"
+            reset 2>/dev/null || tput reset 2>/dev/null || true
+        }
+    context: "files"
+    output: terminal
+  - key: "<c-o>"
+    description: "Pick AI commit (Ollama)"
+    command: |
+      DIFF=$(git diff --cached)
+      LOGS=$(git log -n 10 --pretty=format:'%h %s')
+      PROMPT="Please suggest 10 commit messages, given the following diff:
+
+      \`\`\`diff
+      $DIFF
+      \`\`\`
+
+      **Criteria:**
+      1. Format: Plain commit messages without prefixes like feat:, fix:, chore:, etc.
+      2. Start with a verb in imperative mood (add, update, fix, remove, etc.)
+      3. Be clear and concise
+      4. Focus on WHAT changed and WHY
+
+      **Commit Message Examples:**
+      - add password validation regex
+      - update user authentication flow
+      - fix memory leak in data processing
+      - remove deprecated API endpoints
+      - refactor database connection logic
+
+      **Recent Commits for Reference:**
+      \`\`\`
+      $LOGS
+      \`\`\`
+
+      **Output Format:**
+      Output ONLY raw commit messages, one per line, without numbers or decorations.
+
+      **Instructions:**
+      - Understand the changes in the diff
+      - Think about impact (bug fixes, features, performance, refactoring, docs)
+      - Abstract to higher level, don't just describe code changes
+      - Generate 10 diverse messages covering different scenarios
+      - Make them helpful for project history
+      - DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
+
+      jq -n --arg model "qwen3:8b" --arg content "$PROMPT" '{
+        model: $model,
+        messages: [{role: "user", content: $content}]
+      }' | curl -s https://ollama.local.emrearmagan.dev/v1/chat/completions \
+        -H "Content-Type: application/json" \
+        -d @- \
+        | jq -r '.choices[0].message.content' 2>/dev/null \
+        | tr -d '\r' \
+        | sed 's/\x1b\[[0-9;]*m//g' \
+        | grep -vE '^\s*$' \
+        | grep -vE '^(#|```|\*\*|-)' \
+        | sed 's/^[0-9]\+[\.\)]\s*//' \
+        | fzf --height 40% --border --no-ansi --preview "echo {}" --preview-window=up:wrap \
+        | {
+            SELECTED=$(cat)
+            if [ -z "$SELECTED" ]; then
+                echo "Cancelled."
+                exit 0
+            fi
+            f=$(mktemp)
+            echo "$SELECTED" > "$f"
             original_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
             ${EDITOR:-nvim} "$f"
             new_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
