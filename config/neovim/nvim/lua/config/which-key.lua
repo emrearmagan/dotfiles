@@ -705,6 +705,17 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>a", group = "AI" },
 
+	{ "<leader>aa", "<cmd>AvanteAsk<cr>", desc = "Ask" },
+	{ "<leader>ac", "<cmd>AvanteChat<cr>", desc = "Chat" },
+	{ "<leader>an", "<cmd>AvanteChatNew<cr>", desc = "New Chat" },
+	{ "<leader>ae", "<cmd>AvanteEdit<cr>", desc = "Edit Selection" },
+	{ "<leader>am", "<cmd>AvanteModels<cr>", desc = "Models" },
+	{ "<leader>ar", "<cmd>AvanteRefresh<cr>", desc = "Refresh" },
+	{ "<leader>as", "<cmd>AvanteStop<cr>", desc = "Stop" },
+	{ "<leader>at", "<cmd>AvanteToggle<cr>", desc = "Toggle Panel" },
+	{ "<leader>af", "<cmd>AvanteFocus<cr>", desc = "Focus Panel" },
+	{ "<leader>ax", "<cmd>AvanteClear<cr>", desc = "Clear History/Cache" },
+	{ "<leader>ap", "<cmd>AvanteSwitchProvider<cr>", desc = "Switch Provider" },
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Snacks / Utils                 │
 	-- ╰────────────────────────────────────────────────────╯

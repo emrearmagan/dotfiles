@@ -13,6 +13,9 @@ return {
 	version = false,
 	opts = {
 		provider = "copilot",
+		mappings = {},
+		hints = { enabled = false },
+		selection = { hint_display = "none" },
 		file_selector = "fzf",
 		system_message = "You always respond in English unless explicitly asked",
 		providers = {
