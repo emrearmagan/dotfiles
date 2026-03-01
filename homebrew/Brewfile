@@ -103,7 +103,7 @@ cask "wezterm"              # gpu terminal
 cask "ghostty"              # fast terminal
 cask "docker-desktop"       # container platform
 cask "mitmproxy"            # http proxy
-cask "sourcetree"           # git gui
+cask "fork"                 # git gui
 cask "tailscale-app"        # vpn mesh network
 
 cask "postman"              # api client
