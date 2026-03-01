@@ -94,7 +94,7 @@ customCommands:
         | grep -vE '^\s*$' \
         | grep -vE '^(#|```|\*\*|-)' \
         | sed 's/^[0-9]\+[\.\)]\s*//' \
-        | fzf --height 40% --border --no-ansi --preview "echo {}" --preview-window=up:wrap \
+        | fzf --height 40% --border --no-ansi --no-preview \
         | {
             SELECTED=$(cat)
             if [ -z "$SELECTED" ]; then
@@ -168,7 +168,7 @@ customCommands:
         | grep -vE '^\s*$' \
         | grep -vE '^(#|```|\*\*|-)' \
         | sed 's/^[0-9]\+[\.\)]\s*//' \
-        | fzf --height 40% --border --no-ansi --preview "echo {}" --preview-window=up:wrap \
+        | fzf --height 40% --border --no-ansi --no-preview \
         | {
             SELECTED=$(cat)
             if [ -z "$SELECTED" ]; then
