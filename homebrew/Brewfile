@@ -45,7 +45,9 @@ brew "tmux"                 # terminal multiplexer
 brew "lazygit"              # git ui
 brew "delta"                # git diff tool
 brew "opencode"             # ai code cli
-brew "copilot"          # ai code cli
+brew "copilot"              # ai code cli
+# llm models default openrouter/openrouter/free - to simply use this as default with just llm "hi"
+brew "llm"                  # ai code cli
 
 # Security
 brew "pass"                 # password manager

@@ -37,12 +37,12 @@ quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later
 # localConfig:
 #   enabled: true
-# Uses OpenRouter Free Models Router (requires OPENROUTER_API_KEY env variable)
-# Set your API key: export OPENROUTER_API_KEY="your-key-here"
-# Get key at: https://openrouter.ai/keys
+# Uses LLM CLI tool with OpenRouter and Ollama
+# Setup: llm install llm-openrouter && llm keys set openrouter
+# Setup: export OLLAMA_HOST=https://ollama.local.emrearmagan.dev
 customCommands:
   - key: "<c-a>"
-    description: "Pick AI commit"
+    description: "Pick AI commit (OpenRouter)"
     command: |
       DIFF=$(git diff --cached)
       LOGS=$(git log -n 10 --pretty=format:'%h %s')
@@ -81,14 +81,7 @@ customCommands:
       - Make them helpful for project history
       - DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
 
-      jq -n --arg model "openrouter/auto:free" --arg content "$PROMPT" '{
-        model: $model,
-        messages: [{role: "user", content: $content}]
-      }' | curl -s https://openrouter.ai/api/v1/chat/completions \
-        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d @- \
-        | jq -r '.choices[0].message.content' 2>/dev/null \
+      llm -m openrouter/openrouter/free "$PROMPT" \
         | tr -d '\r' \
         | sed 's/\x1b\[[0-9;]*m//g' \
         | grep -vE '^\s*$' \
@@ -119,6 +112,7 @@ customCommands:
   - key: "<c-o>"
     description: "Pick AI commit (Ollama)"
     command: |
+      export OLLAMA_HOST=https://ollama.local.emrearmagan.dev
       DIFF=$(git diff --cached)
       LOGS=$(git log -n 10 --pretty=format:'%h %s')
       PROMPT="Please suggest 10 commit messages, given the following diff:
@@ -156,13 +150,7 @@ customCommands:
       - Make them helpful for project history
       - DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
 
-      jq -n --arg model "qwen3:8b" --arg content "$PROMPT" '{
-        model: $model,
-        messages: [{role: "user", content: $content}]
-      }' | curl -s https://ollama.local.emrearmagan.dev/v1/chat/completions \
-        -H "Content-Type: application/json" \
-        -d @- \
-        | jq -r '.choices[0].message.content' 2>/dev/null \
+      llm -m qwen3:8b "$PROMPT" \
         | tr -d '\r' \
         | sed 's/\x1b\[[0-9;]*m//g' \
         | grep -vE '^\s*$' \
