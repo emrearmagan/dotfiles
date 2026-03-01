@@ -45,6 +45,7 @@ brew "tmux"                 # terminal multiplexer
 brew "lazygit"              # git ui
 brew "delta"                # git diff tool
 brew "opencode"             # ai code cli
+brew "copilot"          # ai code cli
 
 # Security
 brew "pass"                 # password manager

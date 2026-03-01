@@ -99,12 +99,15 @@ customCommands:
             f=$(mktemp)
             cat > "$f"
             original_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
-            ${EDITOR:-nvim} "$f" < /dev/tty > /dev/tty
+            ${EDITOR:-nvim} "$f"
             new_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
             if [ -s "$f" ] && [ "$original_mtime" != "$new_mtime" ]; then
-                git commit -F "$f" > /dev/null 2>&1
+                git commit -F "$f"
+            else
+                echo "Commit aborted (no changes made)."
             fi
             rm -f "$f"
+            reset 2>/dev/null || tput reset 2>/dev/null || true
         }
     context: "files"
     output: terminal
