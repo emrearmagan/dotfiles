@@ -65,6 +65,7 @@ brew "python"               # scripting
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
 brew "luarocks"             # lua package manager
+brew "tree-sitter-cli"      # tree-sitter cli for nvim
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server

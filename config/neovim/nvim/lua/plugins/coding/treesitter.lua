@@ -6,6 +6,7 @@ return {
 		config = function()
 			local ts = require("nvim-treesitter")
 
+			-- make sure to install the cli tool for installing parsers - brew install tree-sitter-cli
 			local parsers = {
 				"go",
 				"swift",
