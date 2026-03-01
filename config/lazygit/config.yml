@@ -149,7 +149,7 @@ customCommands:
       - Make them helpful for project history
       - DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
 
-      llm -m cursor/gpt-4o-mini "$PROMPT" \
+      llm -m cursor/grok "$PROMPT" \
         | tr -d '\r' \
         | sed 's/\x1b\[[0-9;]*m//g' \
         | grep -vE '^\s*$' \
