@@ -37,9 +37,9 @@ quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later
 # localConfig:
 #   enabled: true
-# Uses LLM CLI tool with OpenRouter and Ollama
+# Uses LLM CLI tool with OpenRouter and Cursor
 # Setup: llm install llm-openrouter && llm keys set openrouter
-# Setup: export OLLAMA_HOST=https://ollama.local.emrearmagan.dev
+# Setup: cd ~/.config/io.datasette.llm/plugins && ./install.sh
 customCommands:
   - key: "<c-a>"
     description: "Pick AI commit (OpenRouter)"
@@ -110,9 +110,8 @@ customCommands:
     context: "files"
     output: terminal
   - key: "<c-o>"
-    description: "Pick AI commit (Ollama)"
+    description: "Pick AI commit (Cursor)"
     command: |
-      export OLLAMA_HOST=https://ollama.local.emrearmagan.dev
       DIFF=$(git diff --cached)
       LOGS=$(git log -n 10 --pretty=format:'%h %s')
       PROMPT="Please suggest 10 commit messages, given the following diff:
@@ -150,7 +149,7 @@ customCommands:
       - Make them helpful for project history
       - DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
 
-      llm -m qwen3:8b "$PROMPT" \
+      llm -m cursor/gpt-4o-mini "$PROMPT" \
         | tr -d '\r' \
         | sed 's/\x1b\[[0-9;]*m//g' \
         | grep -vE '^\s*$' \
