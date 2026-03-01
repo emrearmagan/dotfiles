@@ -5,28 +5,28 @@ source ~/.config/alias/.macos
 source ~/.config/alias/.functions
 
 
+# use vim motions
+set -o vi
+
 # ----------------------
 # Export
 # ----------------------
 #Prompt
 export PS1='%F{117}%n: %F{110}%~%f %# '
-
-# Go
 export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
 
-#Brew
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")
-# really like the completion but get messy with autosuggestions. For example cd 'suggestion' when pressing tab auto complete takes in and it looks like:
-# cd <auto-completed>'suggestion'
-source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# INFO: really like the completion but get messy with autosuggestions. For example cd 'suggestion' when pressing tab auto complete takes in and it looks like:
+# cd <auto-completed>'suggestion' - please FIX
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 source <(fzf --zsh)
 eval $(thefuck --alias)
@@ -36,9 +36,6 @@ eval "$(zoxide init zsh)"
 # ----------------------
 # Configuration
 # ----------------------
-
-# use vim motions
-set -o vi
 
 setopt appendhistory        # Enable history appending instead of overwriting the history file
 # setopt sharehistory       # Share command history across multiple terminal sessions

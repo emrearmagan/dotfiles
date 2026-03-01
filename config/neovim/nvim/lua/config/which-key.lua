@@ -220,6 +220,14 @@ wk.add({
 		end,
 		desc = "Find directory",
 	},
+
+	{
+		"<leader>ft",
+		function()
+			vim.cmd("TodoTelescope")
+		end,
+		desc = "Find todos",
+	},
 	{ "<leader>fo", ":!open %:h<CR>", desc = "Open in Finder" },
 
 	-- ╭────────────────────────────────────────────────────╮
