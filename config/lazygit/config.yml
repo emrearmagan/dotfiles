@@ -37,3 +37,72 @@ quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later
 # localConfig:
 #   enabled: true
+# Uses OpenRouter Free Models Router (requires OPENROUTER_API_KEY env variable)
+# Set your API key: export OPENROUTER_API_KEY="your-key-here"
+# Get key at: https://openrouter.ai/keys
+customCommands:
+  - key: "<c-a>"
+    description: "Pick AI commit"
+    command: |
+      DIFF=$(git diff --cached)
+      LOGS=$(git log -n 10 --pretty=format:'%h %s')
+      PROMPT="Please suggest 10 commit messages, given the following diff:
+
+      \`\`\`diff
+      $DIFF
+      \`\`\`
+
+      **Criteria:**
+      1. Format: Each commit message must follow conventional commits format: <type>(<scope>): <description>
+      2. Relevance: Avoid mentioning a module name unless directly relevant
+      3. Clarity and Conciseness: Each message should clearly convey the change
+
+      **Commit Message Examples:**
+      - fix(app): add password regex pattern
+      - test(unit): add new test cases
+      - style: remove unused imports
+      - refactor(pages): extract common code to utils/wait.ts
+
+      **Recent Commits for Reference:**
+      \`\`\`
+      $LOGS
+      \`\`\`
+
+      **Output Format:**
+      Output ONLY raw commit messages, one per line, without numbers or decorations.
+
+      **Instructions:**
+      - Understand the changes in the diff
+      - Think about impact (bug fixes, features, performance, refactoring, docs)
+      - Abstract to higher level, don't just describe code changes
+      - Generate 10 diverse messages covering different scenarios
+      - Make them helpful for project history"
+
+      jq -n --arg model "openrouter/auto:free" --arg content "$PROMPT" '{
+        model: $model,
+        messages: [{role: "user", content: $content}]
+      }' | curl -s https://openrouter.ai/api/v1/chat/completions \
+        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d @- \
+        | jq -r '.choices[0].message.content' 2>/dev/null \
+        | tr -d '\r' \
+        | sed 's/\x1b\[[0-9;]*m//g' \
+        | grep -E '^[a-z]+(\([a-z]+\))?: ' \
+        | fzf --height 40% --border --no-ansi --preview "echo {}" --preview-window=up:wrap \
+        | {
+            f=$(mktemp)
+            cat > "$f"
+            original_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
+            ${EDITOR:-nvim} "$f"
+            new_mtime=$(stat -f %m "$f" 2>/dev/null || stat -c %Y "$f" 2>/dev/null)
+            if [ -s "$f" ] && [ "$original_mtime" != "$new_mtime" ]; then
+                git commit -F "$f"
+            else
+                echo "Commit aborted (no changes made)."
+            fi
+            rm -f "$f"
+            reset 2>/dev/null || tput reset 2>/dev/null || true
+        }
+    context: "files"
+    output: terminal
