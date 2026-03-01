@@ -166,7 +166,7 @@ wk.add({
 	{
 		"<leader>f/",
 		function()
-			require("snacks.picker").grep_buffers()
+			require("snacks.picker").grep_word()
 		end,
 		desc = "Search word under cursor",
 	},
