@@ -452,34 +452,6 @@ wk.add({
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                    HTTP Client (rest.nvim)         │
-	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>th", icon = "", group = "HTTP" },
-
-	{
-		"<leader>thr",
-		"<cmd>vert rightbelow Rest run<cr>",
-		-- function()
-		-- 	vim.cmd("vert rightbelow Rest run")
-		-- 	local width = math.floor(vim.o.columns * 0.6) -- 40% of total width
-		-- 	vim.cmd("vertical resize " .. width)
-		-- end,
-		desc = "Run HTTP request (rest.nvim)",
-	},
-	{
-		"<leader>thR",
-		"<cmd>vert rightbelow Rest last<cr>",
-		desc = "Rerun last HTTP request (rest.nvim)",
-	},
-	{
-		"<leader>the",
-		function()
-			require("telescope").extensions.rest.select_env()
-		end,
-		desc = "Select .env for rest.nvim",
-	},
-
-	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Runner                        │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>r", icon = "󰐊", group = "Run" },
@@ -531,6 +503,31 @@ wk.add({
 		mode = "n",
 	},
 
+	-- ───── HTTP Client (rest.nvim) ─────
+	{ "<leader>rh", icon = "", group = "HTTP" },
+
+	{
+		"<leader>rhr",
+		"<cmd>vert rightbelow Rest run<cr>",
+		-- function()
+		-- 	vim.cmd("vert rightbelow Rest run")
+		-- 	local width = math.floor(vim.o.columns * 0.6) -- 40% of total width
+		-- 	vim.cmd("vertical resize " .. width)
+		-- end,
+		desc = "Run HTTP request (rest.nvim)",
+	},
+	{
+		"<leader>rhR",
+		"<cmd>vert rightbelow Rest last<cr>",
+		desc = "Rerun last HTTP request (rest.nvim)",
+	},
+	{
+		"<leader>rhe",
+		function()
+			require("telescope").extensions.rest.select_env()
+		end,
+		desc = "Select .env for rest.nvim",
+	},
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                       Xcode                        │
 	-- ╰────────────────────────────────────────────────────╯
