@@ -1,51 +1,78 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPost", "BufNewFile" },
+		lazy = false,
 		build = ":TSUpdate",
+		config = function()
+			local ts = require("nvim-treesitter")
 
-		-- Treesitter setup options
-		opts = {
-			-- Install only these language parsers
-			ensure_installed = {
-				"go", -- Go
-				"swift", -- Swift - Custom below, since its not supported
-				"bash", -- Shell scripting
-				"yaml", -- YAML files
-				"json", -- JSON files
-				"lua", -- Lua (for Neovim config)
+			local parsers = {
+				"go",
+				"swift",
+				"bash",
+				"yaml",
+				"json",
+				"lua",
 				"php",
-				"http", -- HTTP requests (for rest.nvim)
-			},
+				"http",
 
-			-- Don't install parsers synchronously (use async)
-			sync_install = false,
+				"comment",
+				"css",
+				"dockerfile",
+				"git_config",
+				"gitcommit",
+				"gitignore",
+				"html",
+				"javascript",
+				"json5",
+				"make",
+				"markdown",
+				"markdown_inline",
+				"python",
+				"regex",
+				"ssh_config",
+				"sql",
+				"toml",
+				"typescript",
+				"vim",
+			}
 
-			-- Automatically install missing parsers when opening a buffer
-			auto_install = true,
+			-- Install your parsers
+			for _, parser in ipairs(parsers) do
+				ts.install(parser)
+			end
 
-			highlight = {
-				-- Enable Treesitter-based syntax highlighting
-				enable = true,
+			-- Not every tree-sitter parser is the same as the file type detected
+			-- So the patterns need to be registered more cleverly
+			local patterns = {}
+			for _, parser in ipairs(parsers) do
+				local parser_patterns = vim.treesitter.language.get_filetypes(parser)
+				for _, pp in pairs(parser_patterns) do
+					table.insert(patterns, pp)
+				end
+			end
 
-				-- Don't run traditional `:syntax` highlighting alongside Treesitter
-				additional_vim_regex_highlighting = false,
-			},
-		},
-
-		-- Setup Treesitter using the opts defined above
-		config = function(_, opts)
-			require("nvim-treesitter.config").setup(opts)
-
-			vim.g.php_noindent = 1 -- ← disable Vim's built-in PHP indent (GetPhpIndent)
-			-- Simple, predictable PHP indentation (no legacy script)
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "php",
-				callback = function()
-					vim.bo.indentexpr = "" -- kill GetPhpIndent()
-					vim.bo.cindent = true
-					vim.bo.smartindent = true -- basic indent like other langs
-					vim.bo.autoindent = true
+				pattern = patterns,
+				callback = function(ev)
+					local buf = ev.buf
+
+					-- Skip special buffers (dashboard, telescope, snacks, etc.)
+					if vim.bo[buf].buftype ~= "" then
+						return
+					end
+
+					local ft = ev.match
+					local lang = vim.treesitter.language.get_lang(ft) or ft
+
+					local ok = pcall(vim.treesitter.start, buf, lang)
+					if not ok then
+						return
+					end
+
+					vim.wo.foldmethod = "expr"
+					vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 				end,
 			})
 		end,
@@ -53,39 +80,47 @@ return {
 
 	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
-		event = { "BufReadPost", "BufNewFile" },
+		branch = "main",
+		dependencies = { "nvim-treesitter/nvim-treesitter", branch = "main" },
 		config = function()
-			require("nvim-treesitter.config").setup({
-				textobjects = {
-					select = {
-						enable = true,
-						lookahead = true,
-						keymaps = {
-							["af"] = "@function.outer",
-							["if"] = "@function.inner",
-							["ac"] = "@class.outer",
-							["ic"] = "@class.inner",
-						},
-					},
-					move = {
-						enable = true,
-						set_jumps = true,
-						goto_next_start = {
-							["]]"] = "@function.outer",
-						},
-						goto_next_end = {
-							["]["] = "@function.outer",
-						},
-						goto_previous_start = {
-							["[["] = "@function.outer",
-						},
-						goto_previous_end = {
-							["[]"] = "@function.outer",
-						},
-					},
+			require("nvim-treesitter-textobjects").setup({
+				select = {
+					lookahead = true,
+				},
+				move = {
+					set_jumps = true,
 				},
 			})
+
+			-- Select
+			local select = require("nvim-treesitter-textobjects.select")
+			vim.keymap.set({ "x", "o" }, "af", function()
+				select.select_textobject("@function.outer", "textobjects")
+			end)
+			vim.keymap.set({ "x", "o" }, "if", function()
+				select.select_textobject("@function.inner", "textobjects")
+			end)
+			vim.keymap.set({ "x", "o" }, "ac", function()
+				select.select_textobject("@class.outer", "textobjects")
+			end)
+			vim.keymap.set({ "x", "o" }, "ic", function()
+				select.select_textobject("@class.inner", "textobjects")
+			end)
+
+			-- Move
+			local move = require("nvim-treesitter-textobjects.move")
+			vim.keymap.set({ "n", "x", "o" }, "]]", function()
+				move.goto_next_start("@function.outer", "textobjects")
+			end)
+			vim.keymap.set({ "n", "x", "o" }, "][", function()
+				move.goto_next_end("@function.outer", "textobjects")
+			end)
+			vim.keymap.set({ "n", "x", "o" }, "[[", function()
+				move.goto_previous_start("@function.outer", "textobjects")
+			end)
+			vim.keymap.set({ "n", "x", "o" }, "[]", function()
+				move.goto_previous_end("@function.outer", "textobjects")
+			end)
 		end,
 	},
 }
