@@ -1,0 +1,31 @@
+data:
+  06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca:
+  - completion
+  - tools
+  3c3952274c1323798ac52bfb9c8e75a26b5b959242ab3a38252c339477231a96:
+  - completion
+  500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41:
+  - completion
+  - tools
+  - thinking
+  613f068e29f863bb900e568f920401b42678efca873d7a7c87b0d6ef4945fadd:
+  - completion
+  78fad5d182a7c33065e153a5f8ba210754207ba9d91973f57dffa7f487363753:
+  - completion
+  - tools
+  8b2b884b915204df8c8bb33d0113598d8d197e9715cd8869a91b46e74c98ba47:
+  - completion
+  a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72:
+  - completion
+  - tools
+  cf62f31c7147c87e67f2bab1859ce482335862f3a67d94c53ad286c57b88351e:
+  - completion
+  dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:
+  - completion
+  - tools
+  - insert
+  e47cda433269449f8fec13d31211abfaf36fbf1c29c41b6b5d20b1c16b1259c8:
+  - completion
+  - tools
+  - thinking
+version: 3

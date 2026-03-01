@@ -83,6 +83,10 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/ripgrep",
       dest: "{{ ansible_env.HOME }}/.config/ripgrep",
     }
+  - {
+      src: "{{ playbook_dir }}/../config/io.datasette.llm",
+      dest: "{{ ansible_env.HOME }}/.config/io.datasette.llm",
+    }
 
 dotfiles_path: "{{ playbook_dir }}/../config"
 dotfiles_backup_path: "{{ ansible_env.HOME }}/.dotfiles_backup"

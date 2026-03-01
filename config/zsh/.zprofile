@@ -27,6 +27,10 @@ export FZF_ALT_C_OPTS="--preview ''"
 # Currently used by lazygit to find the config file.
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# LLM config location - use XDG standard instead of macOS default
+# https://github.com/simonw/llm
+export LLM_USER_PATH="$HOME/.config/io.datasette.llm"
+
 export LANG=de_DE.UTF-8
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
