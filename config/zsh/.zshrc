@@ -16,6 +16,7 @@ export PS1='%F{117}%n: %F{110}%~%f %# '
 export GOPATH=$HOME/development/go
 export GOPATH=$HOME/.go
 
+export PATH="$PATH:$GOPATH/bin"
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
