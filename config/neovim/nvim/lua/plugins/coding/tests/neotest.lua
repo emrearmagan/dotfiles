@@ -17,6 +17,7 @@ return {
 			"nvim-neotest/neotest-jest",
 			"olimorris/neotest-phpunit",
 		},
+		lazy = true,
 		config = function()
 			-- Ensure Go bin is in PATH for Neovim (for gotestsum)
 			vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.expand("~") .. "/go/bin"

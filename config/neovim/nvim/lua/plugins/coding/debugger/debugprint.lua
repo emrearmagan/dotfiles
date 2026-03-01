@@ -1,5 +1,6 @@
 return {
 	"andrewferrier/debugprint.nvim",
+	event = { "BufReadPost", "LspAttach" },
 	opts = {
 		keymaps = {
 			normal = {

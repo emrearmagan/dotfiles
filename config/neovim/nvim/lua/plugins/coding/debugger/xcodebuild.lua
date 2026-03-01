@@ -9,7 +9,7 @@ return {
 			"nvim-telescope/telescope.nvim", -- Used for pickers (e.g. quickfix list)
 			"MunifTanjim/nui.nvim", -- UI framework for floating windows
 		},
-		lazy = false,
+		lazy = true,
 		config = function()
 			require("xcodebuild").setup({
 				-- Disable the default progress bar (we use fidget instead)

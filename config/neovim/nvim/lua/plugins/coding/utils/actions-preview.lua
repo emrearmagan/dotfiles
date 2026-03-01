@@ -1,5 +1,6 @@
 return {
 	"aznhe21/actions-preview.nvim",
+	event = { "BufReadPost", "LspAttach" },
 	config = function()
 		require("actions-preview").setup({
 			-- priority list of external command to highlight diff

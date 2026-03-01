@@ -1,5 +1,6 @@
 return {
 	"nvim-lualine/lualine.nvim", -- Lualine statusline plugin
+	event = "BufRead",
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 		"dokwork/lualine-ex", -- Custom LSP component

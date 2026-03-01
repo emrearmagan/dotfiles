@@ -93,6 +93,7 @@ end
 
 return {
 	"mfussenegger/nvim-dap",
+	lazy = true, -- Don't load on startup
 	dependencies = {
 		"rcarriga/nvim-dap-ui", -- UI for debugging (scopes, breakpoints, etc.)
 	},

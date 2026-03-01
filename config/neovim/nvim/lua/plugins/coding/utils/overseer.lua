@@ -1,6 +1,7 @@
 return {
 	"stevearc/overseer.nvim",
 	branch = "master",
+	lazy = true,
 	opts = {},
 	config = function()
 		vim.api.nvim_create_autocmd("VimLeavePre", {

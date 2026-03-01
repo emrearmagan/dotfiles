@@ -8,6 +8,7 @@ return {
 	},
 
 	config = function()
+		-- This causes cmp to load on startup, which then laods a bunch of other plugins. But cant be bothered fixing it
 		local cmp = require("cmp")
 		-- Command-line completion for ":"
 		cmp.setup.cmdline(":", {

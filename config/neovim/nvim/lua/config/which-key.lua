@@ -1,8 +1,5 @@
 local wk = require("which-key")
-local gitsigns = require("gitsigns")
-local xcodebuild = require("xcodebuild.integrations.dap")
 local snacks = require("snacks")
-local neotest = require("neotest")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -286,7 +283,7 @@ wk.add({
 
 	-- Core LSP Actions
 	-- { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" } },
-	{ "<leader>ca", require("actions-preview").code_actions, desc = "Code Action", mode = { "n", "v" } },
+	{ "<leader>ca", function() require("actions-preview").code_actions() end, desc = "Code Action", mode = { "n", "v" } },
 	{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename Symbol" },
 	{
 		"<leader>cf",
@@ -381,6 +378,7 @@ wk.add({
 	{
 		"<leader>tt",
 		function()
+			local neotest = require("neotest")
 			neotest.run.run()
 			vim.schedule(neotest.summary.open)
 		end,
@@ -391,6 +389,7 @@ wk.add({
 	{
 		"<leader>tf",
 		function()
+			local neotest = require("neotest")
 			neotest.run.run(vim.fn.expand("%"))
 			vim.schedule(neotest.summary.open)
 		end,
@@ -401,6 +400,7 @@ wk.add({
 	{
 		"<leader>ta",
 		function()
+			local neotest = require("neotest")
 			neotest.run.run({ suite = true })
 			vim.schedule(neotest.summary.open)
 		end,
@@ -411,6 +411,7 @@ wk.add({
 	{
 		"<leader>tr",
 		function()
+			local neotest = require("neotest")
 			neotest.run.run_last()
 			vim.schedule(neotest.summary.open)
 		end,
@@ -421,6 +422,7 @@ wk.add({
 	{
 		"<leader>td",
 		function()
+			local neotest = require("neotest")
 			neotest.run.run({ strategy = "dap" })
 		end,
 		desc = "Debug nearest test",
@@ -429,6 +431,7 @@ wk.add({
 	{
 		"<leader>ts",
 		function()
+			local neotest = require("neotest")
 			neotest.summary.toggle()
 		end,
 		desc = "Toggle test summary",
@@ -437,6 +440,7 @@ wk.add({
 	{
 		"<leader>to",
 		function()
+			local neotest = require("neotest")
 			neotest.output.open({ enter = true })
 		end,
 		desc = "Show test output",
@@ -445,6 +449,7 @@ wk.add({
 	{
 		"<leader>tO",
 		function()
+			local neotest = require("neotest")
 			neotest.output_panel.toggle()
 		end,
 		desc = "Toggle output panel",
@@ -564,15 +569,64 @@ wk.add({
 	{ "<leader>xa", "<cmd>XcodebuildCodeActions<cr>", desc = "Show Code Actions", mode = "n" },
 
 	{ "<leader>xd", group = "Debugger" },
-	{ "<leader>xdd", xcodebuild.build_and_debug, desc = "Build & Debug", mode = "n" },
-	{ "<leader>xdr", xcodebuild.debug_without_build, desc = "Debug Without Building", mode = "n" },
-	{ "<leader>xdt", xcodebuild.debug_tests, desc = "Debug Tests", mode = "n" },
-	{ "<leader>xdT", xcodebuild.debug_class_tests, desc = "Debug Class Tests", mode = "n" },
-	{ "<leader>xdb", xcodebuild.toggle_breakpoint, desc = "Toggle Breakpoint", mode = "n" },
-	{ "<leader>xdB", xcodebuild.toggle_message_breakpoint, desc = "Toggle Message Breakpoint", mode = "n" },
+	{
+		"<leader>xdd",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.build_and_debug()
+		end,
+		desc = "Build & Debug",
+		mode = "n",
+	},
+	{
+		"<leader>xdr",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.debug_without_build()
+		end,
+		desc = "Debug Without Building",
+		mode = "n",
+	},
+	{
+		"<leader>xdt",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.debug_tests()
+		end,
+		desc = "Debug Tests",
+		mode = "n",
+	},
+	{
+		"<leader>xdT",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.debug_class_tests()
+		end,
+		desc = "Debug Class Tests",
+		mode = "n",
+	},
+	{
+		"<leader>xdb",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.toggle_breakpoint()
+		end,
+		desc = "Toggle Breakpoint",
+		mode = "n",
+	},
+	{
+		"<leader>xdB",
+		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
+			xcodebuild.toggle_message_breakpoint()
+		end,
+		desc = "Toggle Message Breakpoint",
+		mode = "n",
+	},
 	{
 		"<leader>xdx",
 		function()
+			local xcodebuild = require("xcodebuild.integrations.dap")
 			xcodebuild.terminate_session()
 			require("dap").listeners.after["event_terminated"]["me"]()
 		end,
@@ -628,6 +682,7 @@ wk.add({
 	{
 		"<leader>gt",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.toggle_current_line_blame()
 		end,
 		desc = "Toggle Line Blame",
@@ -635,6 +690,7 @@ wk.add({
 	{
 		"<leader>gb",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.blame_line({ full = true })
 		end,
 		desc = "Git Blame Line",
@@ -642,6 +698,7 @@ wk.add({
 	{
 		"<leader>gp",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.preview_hunk()
 		end,
 		desc = "Preview Hunk",
@@ -649,6 +706,7 @@ wk.add({
 	{
 		"<leader>gr",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.reset_hunk()
 		end,
 		desc = "Reset Hunk",
@@ -656,6 +714,7 @@ wk.add({
 	{
 		"<leader>g[",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.prev_hunk()
 		end,
 		desc = "Previous Hunk",
@@ -663,6 +722,7 @@ wk.add({
 	{
 		"<leader>g]",
 		function()
+			local gitsigns = require("gitsigns")
 			gitsigns.next_hunk()
 		end,
 		desc = "Next Hunk",
