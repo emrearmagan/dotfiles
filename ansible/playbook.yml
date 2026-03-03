@@ -3,6 +3,7 @@
   hosts: all
   roles:
     - { role: dotfiles, tags: [setup, dotfiles] }
+    - { role: macos, tags: [setup, macos] }
     - { role: homebrew, tags: [setup, homebrew, brew] }
     - { role: codellbd, tags: [setup, codellbd] } # Debugger required for xcodebuild.vim
     - { role: iterm, tags: [setup, iterm] }
