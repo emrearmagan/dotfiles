@@ -22,7 +22,6 @@ return {
 				preset = "minimal", -- simple and clean inline style
 				transparent_bg = true, -- remove background
 				transparent_cursorline = true, -- no tint on cursorline
-
 				hi = {
 					error = "DiagnosticError",
 					warn = "DiagnosticWarn",
@@ -45,7 +44,13 @@ return {
 				blend = { factor = 0.0 }, -- no blending at all
 
 				options = {
-					use_icons_from_diagnostic = false,
+					-- Display the source of diagnostics (e.g., "lua_ls", "pyright")
+					show_source = {
+						enabled = true, -- Enable showing source names
+						if_many = true, -- Only show source if multiple sources exist for the same diagnostic
+					},
+
+					use_icons_from_diagnostic = true,
 					throttle = 20,
 					softwrap = 30,
 					add_messages = {
@@ -61,63 +66,4 @@ return {
 			})
 		end,
 	},
-
-	-- Old configuration (commented out). Using tiny-inline-diagnostic.nvim instead.
-	-- {
-	-- 	"neovim/nvim-lspconfig",
-	-- 	event = "VeryLazy",
-	-- 	config = function()
-	-- 		-- Define diagnostic signs
-	-- 		vim.fn.sign_define("DiagnosticSignError", { text = "✖", texthl = "DiagnosticSignError" })
-	-- 		vim.fn.sign_define("DiagnosticSignWarn", { text = "▲", texthl = "DiagnosticSignWarn" })
-	-- 		vim.fn.sign_define("DiagnosticSignInfo", { text = "●", texthl = "DiagnosticSignInfo" })
-	-- 		vim.fn.sign_define("DiagnosticSignHint", { text = "●", texthl = "DiagnosticSignHint" })
-	--
-	--
-	-- Configure diagnostics display
-	-- vim.diagnostic.config({
-	-- 	virtual_text = {
-	-- 		severity = {
-	-- 			min = vim.diagnostic.severity.INFO,
-	-- 			max = vim.diagnostic.severity.ERROR,
-	-- 		},
-	-- 		source = "always",
-	-- 		prefix = "●",
-	-- 		spacing = 4,
-	-- 		current_line = false,
-	-- 	},
-	-- 	signs = true,
-	-- 	underline = true,
-	-- 	update_in_insert = false,
-	-- 	severity_sort = true,
-	--
-	-- 	float = {
-	-- 		border = "rounded",
-	-- 		source = "always",
-	-- 		focusable = true,
-	-- 		header = "",
-	-- 		severity_sort = true,
-	-- 		prefix = "● ",
-	-- 		max_width = math.floor(vim.o.columns * 0.7),
-	-- 		max_height = math.floor(vim.o.lines * 0.3),
-	-- 	},
-	-- })
-	--
-	-- -- Show diagnostics in floating window when hovering
-	-- vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-	-- 	callback = function()
-	-- 		local opts = {
-	-- 			focusable = false,
-	-- 			close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-	-- 			scope = "cursor",
-	-- 		}
-	-- 		local diagnostics = vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 })
-	-- 		if diagnostics and #diagnostics > 0 then
-	-- 			vim.diagnostic.open_float(nil, opts)
-	-- 		end
-	-- 	end,
-	-- 	desc = "Show diagnostics in floating window on CursorHold",
-	-- })
-	-- 	end,
-	-- },
 }

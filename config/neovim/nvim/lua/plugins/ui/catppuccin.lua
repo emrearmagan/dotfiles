@@ -37,6 +37,12 @@ return {
 					IncSearch = searchActive,
 					EndOfBuffer = { fg = colors.flamingo },
 					WinSeparator = { fg = colors.surface0, bg = colors.surface0 },
+					-- Solid background for completion popup (overrides transparent_background)
+					-- Pmenu = { bg = colors.mantle, fg = colors.text },
+					-- PmenuSel = { bg = colors.surface0, fg = colors.text, bold = true },
+					-- PmenuBorder = { fg = colors.surface1 },
+					-- NormalFloat = { bg = colors.mantle, fg = colors.text },
+					-- FloatBorder = { bg = colors.mantle, fg = colors.surface1 },
 				}
 			end,
 		})

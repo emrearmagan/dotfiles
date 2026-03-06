@@ -310,7 +310,7 @@ return {
 								cmd = "git --no-pager diff --stat=40 -B -M -C",
 								key = "S",
 								action = function()
-									require("snacks").picker.git_diff()
+									require("snacks").picker.git_status()
 								end,
 								height = 5,
 								enabled = in_git,
