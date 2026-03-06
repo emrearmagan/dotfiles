@@ -4,6 +4,7 @@ return {
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 		"dokwork/lualine-ex", -- Custom LSP component
+		"mfussenegger/nvim-dap",
 	},
 	config = function()
 		local lualine = require("lualine")
@@ -21,22 +22,6 @@ return {
 
 			-- fallback: just device name
 			return " " .. vim.g.xcodebuild_device_name
-		end
-
-		---------------------------------------------------------------------
-		-- project() → repo‐root folder name, or CWD tail when not in a repo
-		---------------------------------------------------------------------
-		local function project()
-			-- directory of current buffer
-			local buf_dir = vim.fn.expand("%:p:h")
-
-			-- try to detect the git root
-			local git_root =
-				vim.fn.systemlist("git -C " .. vim.fn.fnameescape(buf_dir) .. " rev-parse --show-toplevel")[1]
-
-			-- fall back to current dir if not a git repo
-			local dir = (git_root ~= "" and git_root) or buf_dir
-			return "  " .. vim.fn.fnamemodify(dir, ":t")
 		end
 
 		lualine.setup({
@@ -105,12 +90,27 @@ return {
 
 				lualine_x = {
 					{ "overseer" },
+					{
+						function()
+							local reg = vim.fn.reg_recording()
+							if reg ~= "" then
+								return "󰑋"
+							end
+							return ""
+						end,
+						color = function()
+							if vim.fn.reg_recording() ~= "" then
+								return { fg = "#f38ba8" } -- recording color
+							end
+							return {}
+						end,
+					},
+
 					{ "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
+					{ "dap_status" },
 
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
 					{ "' ' .. vim.g.xcodebuild_last_status", color = { fg = "#a6e3a1" } },
-					-- Optional test plan info (currently commented)
-					{ "'󰙨 ' .. vim.g.xcodebuild_test_plan", color = { fg = "#a6e3a1", bg = "#161622" } },
 					-- Custom device info from earlier function
 					{ xcodebuild_device, color = { fg = "#f9e2af", bg = "#161622" } },
 				},

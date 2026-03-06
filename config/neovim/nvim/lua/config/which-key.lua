@@ -283,7 +283,14 @@ wk.add({
 
 	-- Core LSP Actions
 	-- { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" } },
-	{ "<leader>ca", function() require("actions-preview").code_actions() end, desc = "Code Action", mode = { "n", "v" } },
+	{
+		"<leader>ca",
+		function()
+			require("actions-preview").code_actions()
+		end,
+		desc = "Code Action",
+		mode = { "n", "v" },
+	},
 	{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename Symbol" },
 	{
 		"<leader>cf",
