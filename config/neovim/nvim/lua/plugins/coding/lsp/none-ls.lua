@@ -40,7 +40,7 @@ return {
 								bufnr = bufnr,
 								async = false,
 								filter = function(c)
-									return c.name == "null-ls"
+									return c.name == "null-ls" or c.name == "none-ls"
 								end,
 							})
 						end,

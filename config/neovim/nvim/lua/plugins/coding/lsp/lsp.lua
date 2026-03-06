@@ -66,29 +66,32 @@ return {
 				virtual_text = true,
 				float = {
 					border = "rounded",
-					source = "always",
-					focusable = false,
+					source = true,
+					focusable = true,
 				},
 			})
 
-			local cmp = require("cmp")
-			local border_opts = cmp.config.window.bordered({
-				border = "rounded",
-				winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
-				max_width = math.floor(vim.o.columns * 0.4),
-				max_height = math.floor(vim.o.lines * 0.3),
-				focusable = false,
-			})
-
-			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
-			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, border_opts)
-
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 			-- Lua Language Server
 			vim.lsp.config("lua_ls", {
 				filetypes = { "lua" },
 				capabilities = capabilities,
+				settings = {
+					Lua = {
+						runtime = { version = "LuaJIT" },
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+							},
+						},
+						diagnostics = {
+							globals = { "vim" },
+						},
+					},
+				},
 			})
 
 			-- Go
@@ -117,12 +120,6 @@ return {
 				on_init = function(client)
 					client.offset_encoding = "utf-8"
 				end,
-			})
-
-			-- Docker
-			vim.lsp.config("dockerls", {
-				filetypes = { "dockerfile" },
-				capabilities = capabilities,
 			})
 
 			-- YAML
@@ -157,33 +154,29 @@ return {
 			})
 
 			-- TypeScript / JavaScript
-			vim.lsp.config("ts_ls", {
+			vim.lsp.config("vtsls", {
 				capabilities = capabilities,
 				filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
 			})
-
-			-- ESLint Language Server
-			vim.lsp.config("eslint", {
-				capabilities = capabilities,
-			})
-
-			-- Angular
-			vim.lsp.config("angularls", {})
-
-			-- HTML
-			vim.lsp.config("html", {})
 
 			-- CSS / LESS
 			vim.lsp.config("cssls", {
 				filetypes = { "css", "scss", "less" },
 			})
-
-			-- ── Enable all LSPs ───────────────────────────────────────
-			vim.lsp.enable({
-				"sourcekit",
-				"gopls",
-			})
 		end,
+	},
+
+	-- Neovim API type annotations and autocompletion for lua_ls
+	-- When removing make sure to remove the lua_ls settings above
+	{
+		"folke/lazydev.nvim",
+		ft = "lua",
+		opts = {
+			library = {
+				{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+				"lazy.nvim",
+			},
+		},
 	},
 
 	-- nvim-cmp for autocompletion
@@ -200,6 +193,7 @@ return {
 			"onsails/lspkind.nvim", -- vs-code like pictograms
 			"zbirenbaum/copilot-cmp", -- GitHub Copilot source for nvim-cmp
 			"kristijanhusak/vim-dadbod-completion", -- DB completion source for nvim-cmp
+			"folke/lazydev.nvim", -- Neovim API completions
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -208,8 +202,6 @@ return {
 
 			-- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
 			require("luasnip.loaders.from_vscode").lazy_load()
-
-			local compare = require("cmp.config.compare")
 
 			cmp.setup({
 				preselect = cmp.PreselectMode.None, -- do not preselect any item
@@ -253,31 +245,9 @@ return {
 					end, { "i", "s" }),
 				}),
 
-				sorting = {
-					comparators = {
-						-- Push Copilot items down
-						function(entry1, entry2)
-							if entry1.source.name == "copilot" then
-								return false
-							elseif entry2.source.name == "copilot" then
-								return true
-							end
-						end,
-
-						-- Keep default comparators
-						compare.offset,
-						compare.exact,
-						compare.score,
-						compare.recently_used,
-						compare.kind,
-						compare.sort_text,
-						compare.length,
-						compare.order,
-					},
-				},
-
 				-- sources for autocompletion
 				sources = cmp.config.sources({
+					{ name = "lazydev", group_index = 0 }, -- doesnt seems to work always
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" }, -- snippets
 					-- INFO: Seems annoying at the moment, so disabled for now
@@ -288,8 +258,14 @@ return {
 
 				-- configure lspkind for vs-code like pictograms in completion menu
 				window = {
-					completion = cmp.config.window.bordered(),
-					documentation = cmp.config.window.bordered(),
+					completion = cmp.config.window.bordered({
+						border = "rounded",
+						winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,CursorLine:PmenuSel,Search:None",
+					}),
+					documentation = cmp.config.window.bordered({
+						border = "rounded",
+						winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,Search:None",
+					}),
 				},
 				formatting = {
 					format = lspkind.cmp_format({
