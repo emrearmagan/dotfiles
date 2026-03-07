@@ -146,7 +146,7 @@ return {
 					{
 						icon = "󱞁 ",
 						key = "o",
-						desc = "Obsidian Vault",
+						desc = "Obsidian",
 						action = function()
 							require("snacks").picker.files({
 								cwd = vim.g.obsidian_vault,
