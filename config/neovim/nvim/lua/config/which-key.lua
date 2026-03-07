@@ -805,7 +805,8 @@ wk.add({
 		function()
 			snacks.picker.files({
 				cwd = vim.g.obsidian_vault,
-				glob = "*.md",
+				cmd = "rg",
+				args = { "--files", "-g", "*.md" },
 			})
 		end,
 		desc = "Find note",
@@ -816,7 +817,8 @@ wk.add({
 		function()
 			snacks.picker.grep({
 				cwd = vim.g.obsidian_vault,
-				glob = "*.md",
+				cmd = "rg",
+				args = { "-g", "*.md" },
 			})
 		end,
 		desc = "Search notes",

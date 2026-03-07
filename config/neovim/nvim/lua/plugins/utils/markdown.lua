@@ -37,7 +37,6 @@ return {
 			},
 			anti_conceal = {
 				enabled = true,
-				disabled_modes = { "n", "c", "t" }, -- only active in insert mode
 				above = 1,
 				below = 1,
 			},

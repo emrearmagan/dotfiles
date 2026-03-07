@@ -144,6 +144,18 @@ return {
 						action = ":DBUIFull",
 					},
 					{
+						icon = "󱞁 ",
+						key = "o",
+						desc = "Obsidian Vault",
+						action = function()
+							require("snacks").picker.files({
+								cwd = vim.g.obsidian_vault,
+								cmd = "rg",
+								args = { "--files", "-g", "*.md" },
+							})
+						end,
+					},
+					{
 						icon = " ",
 						key = "c",
 						desc = "Config",
