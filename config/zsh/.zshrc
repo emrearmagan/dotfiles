@@ -1,3 +1,6 @@
+#Only run in interative shells
+[[ ! -t 1 ]] && return
+
 source ~/.env
 source ~/.config/alias/.alias
 source ~/.config/alias/.custom
@@ -7,6 +10,8 @@ source ~/.config/alias/.functions
 
 # use vim motions
 set -o vi
+export EDITOR=nvim
+export VISUAL=nvim
 
 # ----------------------
 # Export
@@ -50,10 +55,6 @@ setopt hist_find_no_dups    # Prevent finding duplicate commands in history sear
 # ----------------------
 # Completion Styling
 # ----------------------
-# Configure case-insensitive completion matching
-# This allows tab-completion to match case-insensitively
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-
 zstyle ':autocomplete:*' inline no
 zstyle ':autocomplete:*' list-lines 5
 zstyle ':autocomplete:menu:*' select yes

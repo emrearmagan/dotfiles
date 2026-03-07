@@ -1,7 +1,7 @@
 local M = {}
 M.vault_path = vim.fn.expand("~/Library/Mobile Documents/iCloud~md~obsidian/Documents")
 M.personal = M.vault_path .. "/emrearmagan"
-M.tmp = M.vault_path .. "/tmp"
+M.scratch = M.vault_path .. "/scratch"
 
 vim.g.obsidian_vault = M.vault_path
 
@@ -21,7 +21,7 @@ return {
 		legacy_commands = false,
 		workspaces = {
 			{ name = "personal", path = M.personal },
-			{ name = "tmp", path = M.tmp },
+			{ name = "scratch", path = M.scratch },
 		},
 		note_id_func = function(title)
 			return require("obsidian.builtin").title_id(title)
