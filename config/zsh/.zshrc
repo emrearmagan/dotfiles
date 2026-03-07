@@ -18,14 +18,12 @@ export VISUAL=nvim
 # ----------------------
 #Prompt
 export PS1='%F{117}%n: %F{110}%~%f %# '
-export GOPATH=$HOME/development/go
-export GOPATH=$HOME/.go
 
-export PATH="$PATH:$GOPATH/bin"
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 
 # zsh-autosuggestions and highlighting
 fpath+=("$(brew --prefix)/share/zsh-completions")
@@ -56,7 +54,7 @@ setopt hist_find_no_dups    # Prevent finding duplicate commands in history sear
 # Completion Styling
 # ----------------------
 zstyle ':autocomplete:*' inline no
-zstyle ':autocomplete:*' list-lines 5
+zstyle ':autocomplete:*' list-lines 20
 zstyle ':autocomplete:menu:*' select yes
 zstyle ':autocomplete:list-choices:*' color cyan
 
