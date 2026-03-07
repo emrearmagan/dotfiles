@@ -189,6 +189,13 @@ wk.add({
 		desc = "Registers / Yank history",
 	},
 	{
+		"<leader>fh",
+		function()
+			snacks.picker.help()
+		end,
+		desc = "Search help",
+	},
+	{
 		"<leader>fm",
 		function()
 			snacks.picker.marks()
@@ -540,6 +547,7 @@ wk.add({
 		end,
 		desc = "Select .env for rest.nvim",
 	},
+
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                       Xcode                        │
 	-- ╰────────────────────────────────────────────────────╯
@@ -781,6 +789,39 @@ wk.add({
 	{ "<leader>af", "<cmd>AvanteFocus<cr>", desc = "Focus Panel" },
 	{ "<leader>ax", "<cmd>AvanteClear<cr>", desc = "Clear History/Cache" },
 	{ "<leader>ap", "<cmd>AvanteSwitchProvider<cr>", desc = "Switch Provider" },
+
+	-- ╭────────────────────────────────────────────────────╮
+	-- │                     Snacks / Utils                 │
+	-- ╰────────────────────────────────────────────────────╯
+	{ "<leader>o", group = "Notes" },
+
+	{ "<leader>ow", "<cmd>Obsidian workspace<CR>", desc = "Switch workspace" },
+	{ "<leader>on", "<cmd>Obsidian new<CR>", desc = "New note" },
+	{ "<leader>ot", "<cmd>Obsidian tags<CR>", desc = "Tags" },
+	{ "<leader>oo", "<cmd>Obsidian open<CR>", desc = "Open in Obsidian app" },
+	{ "<leader>ol", "<cmd>Obsidian dailies<CR>", desc = "Daily list" },
+	{
+		"<leader>of",
+		function()
+			snacks.picker.files({
+				cwd = vim.g.obsidian_vault,
+				glob = "*.md",
+			})
+		end,
+		desc = "Find note",
+	},
+
+	{
+		"<leader>og",
+		function()
+			snacks.picker.grep({
+				cwd = vim.g.obsidian_vault,
+				glob = "*.md",
+			})
+		end,
+		desc = "Search notes",
+	},
+
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Snacks / Utils                 │
 	-- ╰────────────────────────────────────────────────────╯

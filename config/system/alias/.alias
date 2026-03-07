@@ -53,6 +53,7 @@ alias lg=lazygit
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""
 alias fd='cd "$(find . -type d -not -path "*/.git/*" | fzf --no-preview)"'
+alias oo='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"'
 
 # Grep through files (please improve...)
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \

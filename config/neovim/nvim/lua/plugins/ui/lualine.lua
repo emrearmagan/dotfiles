@@ -24,6 +24,25 @@ return {
 			return " " .. vim.g.xcodebuild_device_name
 		end
 
+		local function obsidian_workspace()
+			local file = vim.fn.expand("%:p")
+			local vault = vim.g.obsidian_vault
+
+			if not file:find(vault, 1, true) then
+				return ""
+			end
+
+			-- detect workspace folder
+			local rel = file:sub(#vault + 2) -- remove vault prefix
+			local ws = rel:match("([^/]+)/")
+
+			if ws then
+				return "󱞁 " .. ws
+			end
+
+			return "󱞁 vault"
+		end
+
 		lualine.setup({
 			options = {
 				globalstatus = true, -- Single global statusline (not per window)
@@ -89,6 +108,7 @@ return {
 				},
 
 				lualine_x = {
+					{ obsidian_workspace },
 					{ "overseer" },
 					{
 						function()

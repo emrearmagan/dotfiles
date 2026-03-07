@@ -120,3 +120,4 @@ cask "notion"               # note taking
 cask "google-chrome"        # web browser
 cask "shortcat"             # mouse-free navigation
 cask "aerospace"            # tiling window manager
+cask "obsidian"             # note taking
