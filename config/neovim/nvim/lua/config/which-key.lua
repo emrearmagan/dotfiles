@@ -324,17 +324,19 @@ wk.add({
 		desc = "Workspace Diagnostics (Snacks)",
 	},
 
-	{ "<leader>cx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-	{ "<leader>cX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+	{ "<leader>cx", "<cmd>Trouble diagnostics toggle focus=false win.id=dock<cr>", desc = "Diagnostics (Trouble)" },
+	{
+		"<leader>cX",
+		"<cmd>Trouble diagnostics toggle focus=false filter.buf=0 win.id=dock<cr>",
+		desc = "Buffer Diagnostics (Trouble)",
+	},
 
 	-- Symbols / References
-	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Document Symbols (Trouble)" },
+	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false win.id=dock<cr>", desc = "Document Symbols (Trouble)" },
 	{ "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
-	{
-		"<leader>cl",
-		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-		desc = "LSP Definitions / References (Trouble)",
-	},
+
+	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
+
 	{
 		"<leader>cq",
 		function()
