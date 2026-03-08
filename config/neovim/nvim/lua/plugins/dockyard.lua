@@ -13,13 +13,19 @@ return {
 								path = "/var/log/backend.json",
 								parser = "json",
 
+								_order = { "time", "level", "message", "context" },
 								format = function(entry)
 									local ts = entry.timestamp and entry.timestamp:sub(12, 19) or "--:--:--"
 									local lvl = (entry.level or "info"):upper()
+									local ctx = (entry.data and entry.data.context) or {}
+									local user_id = ctx.user_id or "-"
+									local trace_id = ctx.trace_id or "-"
+
 									return {
 										time = ts,
 										level = lvl,
 										message = entry.message or "",
+										context = string.format("user=%s trace=%s", user_id, trace_id),
 									}
 								end,
 

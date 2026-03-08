@@ -392,7 +392,7 @@ return {
               exit 0
               ]],
 						key = "D",
-						action = ":DockyardFull",
+						action = ":Dockyard",
 						height = 5,
 						enabled = function()
 							return vim.fn.executable("docker") == 1
