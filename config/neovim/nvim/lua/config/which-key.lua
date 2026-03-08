@@ -791,7 +791,7 @@ wk.add({
 	{ "<leader>ap", "<cmd>AvanteSwitchProvider<cr>", desc = "Switch Provider" },
 
 	-- ╭────────────────────────────────────────────────────╮
-	-- │                     Snacks / Utils                 │
+	-- │                     Notes                          │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>o", group = "Notes" },
 
@@ -822,6 +822,44 @@ wk.add({
 			})
 		end,
 		desc = "Search notes",
+	},
+
+	{
+		"<leader>o.",
+		function()
+			local default
+
+			local base = { "markdown", "lua", "sql", "bash", "json" }
+			local choices = { default }
+			for _, ft in ipairs(base) do
+				if ft ~= default then
+					table.insert(choices, ft)
+				end
+			end
+
+			vim.ui.select(choices, {
+				prompt = "Scratch filetype:",
+				format_item = function(item)
+					if item == default then
+						return item .. " (default)"
+					end
+					return item
+				end,
+			}, function(choice)
+				if choice then
+					snacks.scratch({ ft = choice })
+				end
+			end)
+		end,
+		desc = "Toggle Scratch Buffer",
+	},
+
+	{
+		"<leader>oS",
+		function()
+			snacks.scratch.select()
+		end,
+		desc = "Select Scratch Buffer",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -888,20 +926,6 @@ wk.add({
 		desc = "Undo History",
 	},
 
-	{
-		"<leader>ssn",
-		function()
-			snacks.scratch()
-		end,
-		desc = "Toggle Scratch Buffer",
-	},
-	{
-		"<leader>sss",
-		function()
-			snacks.scratch.select()
-		end,
-		desc = "Select Scratch Buffer",
-	},
 	{
 		"<leader>st",
 		function()

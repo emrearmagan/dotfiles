@@ -1,15 +1,19 @@
 return {
 	"michaelb/sniprun",
+	-- otherwise run:
+	-- cd ~/.local/share/nvim/lazy/sniprun
+	-- bash ./install.sh
 	run = "bash ./install.sh",
 	cmd = { "SnipRun", "SnipInfo", "SnipLive", "SnipClose", "SnipReset", "SnipReplMemoryClean" },
 	opts = {
-		selected_interpreters = {}, --# use those instead of the default for the current filetype
+		selected_interpreters = { "Lua_nvim" },
 		repl_enable = {}, --# enable REPL-like behavior for the given interpreters
 		repl_disable = {}, --# disable REPL-like behavior for the given interpreters
 
-		display = {
-			"VirtualText", --# display results as virtual text
-		},
+		-- display = {
+		-- 	"VirtualText", --# display results as virtual text
+		-- },
+		display = { "Classic", "VirtualTextOk" },
 
 		live_display = { "VirtualTextOk" }, --# display mode used in live_mode
 

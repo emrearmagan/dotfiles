@@ -117,6 +117,37 @@ return {
 				-- wo = { wrap = true } -- Wrap notifications
 			},
 		},
+		scratch = {
+			win = {
+				keys = {
+					delete = {
+						"D",
+						function(self)
+							local file = vim.api.nvim_buf_get_name(self.buf)
+
+							vim.ui.select({ "Yes", "No" }, {
+								prompt = "Delete scratch?",
+							}, function(choice)
+								if choice == "Yes" then
+									-- First close the scratch buffer and then delete to avoid recration (because of autowrite = file)
+									self:close()
+
+									if file ~= "" then
+										vim.fn.delete(file)
+									end
+
+									vim.schedule(function()
+										require("snacks").scratch.select()
+									end)
+								end
+							end)
+						end,
+						desc = "Delete Scratch",
+						mode = "n",
+					},
+				},
+			},
+		},
 		dashboard = {
 			enabled = true,
 			width = 60,
@@ -144,7 +175,7 @@ return {
 						action = ":DBUIFull",
 					},
 					{
-						icon = "󱞁 ",
+						icon = " ",
 						key = "o",
 						desc = "Obsidian",
 						action = function()
@@ -154,6 +185,12 @@ return {
 								args = { "--files", "-g", "*.md" },
 							})
 						end,
+					},
+					{
+						icon = " ",
+						key = "s",
+						desc = "Snacks",
+						action = ":lua Snacks.scratch.select()",
 					},
 					{
 						icon = " ",

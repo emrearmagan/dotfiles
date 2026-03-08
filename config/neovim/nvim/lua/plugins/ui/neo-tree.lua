@@ -18,7 +18,7 @@ return {
 					follow_current_file = {
 						enabled = true,
 					},
-
+					close_on_open = true,
 					filtered_items = {
 						visible = false, -- Hide hidden files
 						show_hidden_count = true, -- Display count of hidden files
@@ -34,7 +34,11 @@ return {
 					mappings = {
 						["l"] = "open", -- Open file or directory
 						["<2-LeftMouse>"] = "open", -- Open with double-click
-						["<cr>"] = "open", -- Open file or folder with Enter
+						["<cr>"] = function(state)
+							local node = state.tree:get_node()
+							require("neo-tree.sources.filesystem.commands").open(state)
+							require("neo-tree.command").execute({ action = "close" })
+						end,
 						["<esc>"] = "cancel", -- Close preview or Neo-tree window
 						["h"] = "close_node", -- Collapse folder
 						["<Tab>"] = "toggle_preview", -- Toggle preview window
