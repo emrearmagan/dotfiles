@@ -37,7 +37,7 @@ brew "tldr"                 # short man pages
 brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
-brew "zsh-autocomplete"     # zsh autocomplete
+brew "fzf-tab"               # fzf based zsh autocomplete
 
 # Core Dev Tools
 brew "neovim"               # editor

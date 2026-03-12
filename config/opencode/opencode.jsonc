@@ -3,7 +3,10 @@
   "permission": {
     "edit": "ask",
     "bash": "ask",
-    "webfetch": "allow"
+    "webfetch": "allow",
+    "websearch": "allow",
+    "grep *": "allow",
+    "read": "allow",
   },
   "provider": {
     "ollama": {

@@ -23,10 +23,6 @@ wezterm.on("gui-startup", function(cmd)
 	local empty_tab = window:spawn_tab({ cwd = home })
 	empty_tab:set_title("scratch")
 
-	local stats_tab = window:spawn_tab({ cwd = home })
-	stats_tab:set_title("stats")
-	stats_tab:active_pane():send_text("btop\n")
-
 	-- activate home tab
 	window:gui_window():perform_action(act.ActivateTab(0), home_tab:active_pane())
 end)
