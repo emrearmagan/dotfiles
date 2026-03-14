@@ -529,23 +529,22 @@ wk.add({
 
 	{
 		"<leader>rhr",
-		"<cmd>vert rightbelow Rest run<cr>",
-		-- function()
-		-- 	vim.cmd("vert rightbelow Rest run")
-		-- 	local width = math.floor(vim.o.columns * 0.6) -- 40% of total width
-		-- 	vim.cmd("vertical resize " .. width)
-		-- end,
-		desc = "Run HTTP request (rest.nvim)",
+		function()
+			require("kulala").run()
+		end,
+		desc = "Run HTTP request",
 	},
 	{
 		"<leader>rhR",
-		"<cmd>vert rightbelow Rest last<cr>",
-		desc = "Rerun last HTTP request (rest.nvim)",
+		function()
+			require("kulala").replay()
+		end,
+		desc = "Rerun last HTTP request",
 	},
 	{
 		"<leader>rhe",
 		function()
-			require("telescope").extensions.rest.select_env()
+			require("kulala").set_selected_env()
 		end,
 		desc = "Select .env for rest.nvim",
 	},
