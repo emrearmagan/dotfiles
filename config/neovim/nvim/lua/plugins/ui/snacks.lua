@@ -187,10 +187,10 @@ return {
 						end,
 					},
 					{
-						icon = " ",
-						key = "s",
-						desc = "Snacks",
-						action = ":lua Snacks.scratch.select()",
+						icon = " ",
+						key = "t",
+						desc = "Todo",
+						action = ":Dooing",
 					},
 					{
 						icon = " ",

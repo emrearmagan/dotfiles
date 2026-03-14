@@ -33,7 +33,9 @@ return {
 					"vtsls", -- TypeScript & JavaScript (alternative)
 					"angularls", -- Angular
 					"cssls", -- CSS (for LESS support)
-					"marksman",
+					"marksman", -- Markdown
+
+					"sqls", -- SQL language server
 
 					-- sourcekit (Swift) is macOS native, not installable via Mason
 					-- Make sure to have Xcode installed or CLI Tools: xcode-select --install

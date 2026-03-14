@@ -45,6 +45,12 @@ return {
 					buffer = true,
 					desc = "DBExecuteSelection",
 				})
+
+				-- close DBUI tab
+				vim.keymap.set("n", "<leader>Q", "<cmd>tabclose<CR>", {
+					buffer = true,
+					desc = "Close DBUI tab",
+				})
 			end,
 		})
 

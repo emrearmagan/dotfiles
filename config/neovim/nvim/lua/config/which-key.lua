@@ -140,7 +140,7 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Tree                          │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>n", ":Neotree toggle<CR>", desc = "Toggle Tree" },
+	{ "<leader> ", ":Neotree toggle<CR>", desc = "Toggle Tree" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
@@ -795,15 +795,15 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Notes                          │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>o", group = "Notes" },
+	{ "<leader>n", group = "Notes" },
 
-	{ "<leader>ow", "<cmd>Obsidian workspace<CR>", desc = "Switch workspace" },
-	{ "<leader>on", "<cmd>Obsidian new<CR>", desc = "New note" },
-	{ "<leader>ot", "<cmd>Obsidian tags<CR>", desc = "Tags" },
-	{ "<leader>oo", "<cmd>Obsidian open<CR>", desc = "Open in Obsidian app" },
-	{ "<leader>ol", "<cmd>Obsidian dailies<CR>", desc = "Daily list" },
+	{ "<leader>nw", "<cmd>Obsidian workspace<CR>", desc = "Switch workspace" },
+	{ "<leader>nn", "<cmd>Obsidian new<CR>", desc = "New note" },
+	{ "<leader>nt", "<cmd>Obsidian tags<CR>", desc = "Tags" },
+	{ "<leader>no", "<cmd>Obsidian open<CR>", desc = "Open in Obsidian app" },
+	{ "<leader>nl", "<cmd>Obsidian dailies<CR>", desc = "Daily list" },
 	{
-		"<leader>of",
+		"<leader>nf",
 		function()
 			snacks.picker.files({
 				cwd = vim.g.obsidian_vault,
@@ -815,7 +815,7 @@ wk.add({
 	},
 
 	{
-		"<leader>og",
+		"<leader>ng",
 		function()
 			snacks.picker.grep({
 				cwd = vim.g.obsidian_vault,
@@ -824,44 +824,6 @@ wk.add({
 			})
 		end,
 		desc = "Search notes",
-	},
-
-	{
-		"<leader>o.",
-		function()
-			local default
-
-			local base = { "markdown", "lua", "sql", "bash", "json" }
-			local choices = { default }
-			for _, ft in ipairs(base) do
-				if ft ~= default then
-					table.insert(choices, ft)
-				end
-			end
-
-			vim.ui.select(choices, {
-				prompt = "Scratch filetype:",
-				format_item = function(item)
-					if item == default then
-						return item .. " (default)"
-					end
-					return item
-				end,
-			}, function(choice)
-				if choice then
-					snacks.scratch({ ft = choice })
-				end
-			end)
-		end,
-		desc = "Toggle Scratch Buffer",
-	},
-
-	{
-		"<leader>oS",
-		function()
-			snacks.scratch.select()
-		end,
-		desc = "Select Scratch Buffer",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -934,5 +896,43 @@ wk.add({
 			snacks.terminal.toggle()
 		end,
 		desc = "Floating Terminal",
+	},
+
+	{
+		"<leader>s.",
+		function()
+			local default
+
+			local base = { "markdown", "lua", "sql", "bash", "json" }
+			local choices = { default }
+			for _, ft in ipairs(base) do
+				if ft ~= default then
+					table.insert(choices, ft)
+				end
+			end
+
+			vim.ui.select(choices, {
+				prompt = "Scratch filetype:",
+				format_item = function(item)
+					if item == default then
+						return item .. " (default)"
+					end
+					return item
+				end,
+			}, function(choice)
+				if choice then
+					snacks.scratch({ ft = choice })
+				end
+			end)
+		end,
+		desc = "Toggle Scratch Buffer",
+	},
+
+	{
+		"<leader>sS",
+		function()
+			snacks.scratch.select()
+		end,
+		desc = "Select Scratch Buffer",
 	},
 })

@@ -20,7 +20,7 @@ return {
 			desc = "Open all folds",
 		},
 		{
-			"zM",
+			"zA",
 			function()
 				require("ufo").closeAllFolds()
 			end,
@@ -28,6 +28,10 @@ return {
 		},
 	},
 	config = function()
-		require("ufo").setup()
+		require("ufo").setup({
+			provider_selector = function()
+				return { "treesitter", "indent" }
+			end,
+		})
 	end,
 }
