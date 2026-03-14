@@ -38,6 +38,8 @@ brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
 brew "fzf-tab"               # fzf based zsh autocomplete
+# used for opencode. Run "rtk init -g --opencode"
+brew "rtk"                 # run tool for shell commands
 
 # Core Dev Tools
 brew "neovim"               # editor

@@ -15,12 +15,6 @@ return {
 			display_mode = "split", -- show response in split
 			split_direction = "vertical", -- right side split
 			winbar = true,
-			default_winbar_panes = { "body", "headers", "verbose", "help" },
-			report = {
-				headersHighlight = "Sky",
-				successHighlight = "Green",
-				errorHighlight = "Error",
-			},
 			win_opts = {
 				width = math.floor(vim.o.columns * 0.5),
 			},
@@ -78,6 +72,10 @@ return {
 				vim.keymap.set("n", "<leader>E", function()
 					require("kulala").set_selected_env()
 				end, vim.tbl_extend("force", cfg, { desc = "Select env" }))
+
+				vim.keymap.set("n", "<leader>C", function()
+					require("kulala").copy()
+				end, vim.tbl_extend("force", cfg, { desc = "Copy curl" }))
 			end,
 		})
 	end,
