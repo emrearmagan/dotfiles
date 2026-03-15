@@ -19,6 +19,20 @@ return {
 		file_selector = "fzf",
 		system_message = "You always respond in English unless explicitly asked",
 		providers = {
+			openrouter = {
+				__inherited_from = "openai",
+				endpoint = "https://openrouter.ai/api/v1",
+				api_key_name = "OPENROUTER_API_KEY",
+				model = "google/gemini-2.5-flash",
+				timeout = 60000,
+				model_names = {
+					"google/gemini-3-flash-preview",
+					"google/gemini-2.5-flash",
+					"minimax/minimax-m2.5",
+					"stepfun/step-3.5-flash:free",
+					"openrouter/openrouter/free",
+				},
+			},
 			ollama = {
 				__inherited_from = "openai",
 				endpoint = "https://ollama.local.emrearmagan.dev/v1",
@@ -50,6 +64,20 @@ return {
 						},
 					},
 				},
+			},
+		},
+		acp_providers = {
+			codex = {
+				command = "codex",
+				args = { "acp" },
+				env = {
+					NODE_NO_WARNINGS = "1",
+					OPENAI_API_KEY = os.getenv("OPENAI_API_KEY"),
+				},
+			},
+			opencode = {
+				command = "opencode",
+				args = { "acp" },
 			},
 		},
 	},
