@@ -195,13 +195,6 @@ wk.add({
 		end,
 		desc = "Search help",
 	},
-	{
-		"<leader>fm",
-		function()
-			snacks.picker.marks()
-		end,
-		desc = "Marks",
-	},
 
 	{
 		"<leader>fd",

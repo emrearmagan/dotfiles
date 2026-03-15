@@ -23,7 +23,7 @@ return {
 		---@type render.md.UserConfig
 		opts = {
 			render_modes = { "n", "i", "c", "t" },
-
+			completions = { lsp = { enabled = true } },
 			code = {
 				enabled = true,
 				border = "thin",
