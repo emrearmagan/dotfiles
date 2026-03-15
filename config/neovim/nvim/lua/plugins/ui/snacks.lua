@@ -326,30 +326,38 @@ return {
 							},
 						}
 					end,
-					{
-						icon = " ",
-						title = "Docker Containers",
-						indent = 2,
-						section = "terminal",
-						ttl = 60,
-						cmd = [[
-            if ! docker info >/dev/null 2>&1; then
-              echo "󰡙 Cannot connect to Docker daemon"
-            elif docker ps -q | grep -q .; then
-            docker ps --format "{{.Names}}\t{{.Status}}" \
-            | awk -F'\t' '{ printf "• %-20s — %s\n", $1, $2 }' | head -n 5
-            else
-              echo "󰡙 No running containers"
-              fi
-              exit 0
-              ]],
-						key = "D",
-						action = ":Dockyard",
-						height = 5,
-						enabled = function()
-							return vim.fn.executable("docker") == 1
-						end,
-					},
+
+					-- ─────────────────────────────
+					--  Docker SECTION
+					-- ─────────────────────────────
+					function()
+						return {
+							{
+								icon = " ",
+								title = "Docker Containers",
+								indent = 2,
+								section = "terminal",
+								ttl = 60,
+								cmd = [[
+              if ! docker info >/dev/null 2>&1; then
+                echo "󰡙 Cannot connect to Docker daemon"
+                elif docker ps -q | grep -q .; then
+                docker ps --format "{{.Names}}\t{{.Status}}" \
+                | awk -F'\t' '{ printf "• %-20s — %s\n", $1, $2 }' | head -n 5
+              else
+                echo "󰡙 No running containers"
+                fi
+                exit 0
+                ]],
+								key = "D",
+								action = ":Dockyard",
+								height = 5,
+								enabled = function()
+									return vim.fn.executable("docker") == 1
+								end,
+							},
+						}
+					end,
 				},
 
 				{ section = "startup" },
