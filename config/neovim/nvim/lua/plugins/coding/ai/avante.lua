@@ -10,14 +10,45 @@ return {
 		end
 	end,
 	event = "VeryLazy",
-	version = false,
+
+	dependencies = {
+		"nvim-lua/plenary.nvim",
+		"MunifTanjim/nui.nvim",
+		-- Optional UI improvements
+		"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+	},
 	opts = {
 		provider = "copilot",
-		mappings = {},
 		hints = { enabled = false },
 		selection = { hint_display = "none" },
 		file_selector = "fzf",
 		system_message = "You always respond in English unless explicitly asked",
+		behaviour = {
+			auto_set_highlight_group = true,
+			auto_set_keymaps = true,
+			auto_apply_diff_after_generation = false,
+			support_paste_from_clipboard = true,
+		},
+		windows = {
+			ask = {
+				floating = true, -- Open the 'AvanteAsk' prompt in a floating window
+			},
+		},
+
+		selector = {
+			provider = "snacks",
+			provider_opts = {
+				preview = false,
+			},
+		},
+
+		input = {
+			provider = "snacks",
+			provider_opts = {
+				preview = false,
+			},
+		},
+
 		providers = {
 			openrouter = {
 				__inherited_from = "openai",
@@ -67,26 +98,25 @@ return {
 			},
 		},
 		acp_providers = {
-			codex = {
-				command = "codex",
-				args = { "acp" },
-				env = {
-					NODE_NO_WARNINGS = "1",
-					OPENAI_API_KEY = os.getenv("OPENAI_API_KEY"),
-				},
-			},
 			opencode = {
 				command = "opencode",
 				args = { "acp" },
 			},
 		},
 	},
+	config = function(_, opts)
+		require("avante").setup(opts)
 
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"MunifTanjim/nui.nvim",
-		-- Optional UI improvements
-		"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-		"ibhagwan/fzf-lua", -- for file_selector provider fzf
-	},
+		vim.api.nvim_set_hl(0, "AvanteSidebarBg", { bg = "#181825" })
+		vim.api.nvim_set_hl(0, "AvanteSidebarBorder", { bg = "#181825", fg = "#6c7086" })
+		vim.api.nvim_set_hl(0, "AvanteSidebarNormal", { bg = "#181825" })
+		vim.api.nvim_set_hl(0, "AvanteReversedNormal", { bg = "#181825" }) -- chat area
+
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "Avante",
+			callback = function()
+				vim.opt_local.winhighlight = "NormalFloat:AvanteSidebarBg,FloatBorder:AvanteSidebarBorder"
+			end,
+		})
+	end,
 }
