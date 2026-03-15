@@ -190,7 +190,32 @@ return {
 						icon = " ",
 						key = "t",
 						desc = "Todo",
-						action = ":Dooing",
+						action = function()
+							-- see: https://github.com/taskbook-sh/taskbook
+							-- install with: curl --proto '=https' --tlsv1.2 -sSf https://taskbook.sh/install| sh
+							if vim.fn.executable("tb") ~= 1 then
+								vim.notify("taskbook (tb) is not installed or not in PATH", vim.log.levels.ERROR)
+								return
+							end
+
+							vim.cmd("tabnew")
+							local buf = vim.api.nvim_get_current_buf()
+							vim.bo[buf].buflisted = false
+							vim.bo[buf].bufhidden = "wipe"
+							vim.fn.termopen("tb", {
+								on_exit = function()
+									vim.schedule(function()
+										for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+											pcall(vim.api.nvim_win_close, win, true)
+										end
+										if vim.api.nvim_buf_is_valid(buf) then
+											pcall(vim.api.nvim_buf_delete, buf, { force = true })
+										end
+									end)
+								end,
+							})
+							vim.cmd("startinsert")
+						end,
 					},
 					{
 						icon = " ",
