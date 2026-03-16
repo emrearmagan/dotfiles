@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+
+# Create or reuse review worktrees for one branch across multiple repositories.
+# Opens a tmux window with one pane per created/reused worktree.
+#
+# Usage:
+#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=horizontal|vertical] [--print-window]
+#
+# Flags:
+#   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
+#                Without this flag, those repos are still created/reused.
+#   --split=...  Pane direction in tmux. Default is horizontal (left/right).
+#   --print-window  Print the tmux window target and exit without attach/switch.
+#
+# Examples:
+#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
+#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
+#   review-worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
+#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=vertical
+#   WINDOW="$(review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --print-window)"
+#
+# Folder layout (example):
+#   ~/Downloads/dev/
+#   ├── atlas.nvim/
+#   └── dockyard.nvim/
+
+set -euo pipefail
+
+if [ "$#" -lt 3 ]; then
+	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=horizontal|vertical] [--print-window]\n' "$(basename "$0")" >&2
+	exit 1
+fi
+
+BRANCH="$1"
+DESTINATION="$2"
+shift 2
+
+SKIP_SAME=0
+SPLIT="horizontal"
+PRINT_WINDOW=0
+REPOS=()
+
+for ARG in "$@"; do
+	if [ "$ARG" = "--skip-same" ]; then
+		SKIP_SAME=1
+	elif [ "$ARG" = "--print-window" ]; then
+		PRINT_WINDOW=1
+	elif [[ "$ARG" == --split=* ]]; then
+		SPLIT="${ARG#--split=}"
+	elif [[ "$ARG" = --* ]]; then
+		printf 'Unknown flag: %s\n' "$ARG" >&2
+		printf 'Supported flags: --skip-same, --split=horizontal|vertical, --print-window\n' >&2
+		exit 1
+	else
+		REPOS+=("$ARG")
+	fi
+done
+
+if [ "$SPLIT" = "horizontal" ]; then
+	SPLIT_OPT="-h"
+	LAYOUT="even-horizontal"
+elif [ "$SPLIT" = "vertical" ]; then
+	SPLIT_OPT="-v"
+	LAYOUT="even-vertical"
+else
+	printf 'Invalid split value: %s\n' "$SPLIT" >&2
+	printf 'Allowed values: horizontal, vertical\n' >&2
+	exit 1
+fi
+
+if [ "${#REPOS[@]}" -eq 0 ]; then
+	printf 'At least one repo path is required.\n' >&2
+	exit 1
+fi
+
+SESSION="reviews"
+WINDOW="pr-$BRANCH"
+BRANCH_DIR="$DESTINATION/$BRANCH"
+
+log() { printf '%-10s %s\n' "$1" "$2"; }
+
+echo
+log workspace "$BRANCH"
+log location "$BRANCH_DIR"
+echo
+
+ACTIVE_WORKTREES=()
+
+for REPO_PATH in "${REPOS[@]}"; do
+	REPO_NAME="$(basename "$REPO_PATH")"
+	WORK_DIR="$BRANCH_DIR/$REPO_NAME"
+
+	log repo "$REPO_NAME"
+	log path "$REPO_PATH"
+	log target "$WORK_DIR"
+
+	if [ ! -d "$REPO_PATH/.git" ] && [ ! -f "$REPO_PATH/.git" ]; then
+		log status "missing repo: $REPO_PATH"
+		echo
+		continue
+	fi
+
+	git -C "$REPO_PATH" fetch origin >/dev/null
+
+	# If a worktree directory was deleted manually, Git may still keep a stale
+	# registration. Prune stale entries immediately so `worktree add` can reuse
+	# the same path.
+	git -C "$REPO_PATH" worktree prune --expire now >/dev/null || true
+
+	if git -C "$REPO_PATH" ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
+		BRANCH_EXISTS=1
+		TARGET_REF="origin/$BRANCH"
+	else
+		BRANCH_EXISTS=0
+		TARGET_REF="origin/main"
+	fi
+
+	if [ "$BRANCH_EXISTS" -eq 1 ] && git -C "$REPO_PATH" diff --quiet origin/main..."$TARGET_REF"; then
+		if [ "$SKIP_SAME" -eq 1 ]; then
+			log status "no changes, skipping"
+			echo
+			continue
+		fi
+		log status "no changes, creating anyway"
+	fi
+
+	if [ "$BRANCH_EXISTS" -eq 0 ]; then
+		log status "branch missing, using origin/main"
+	fi
+
+	if [ -d "$WORK_DIR/.git" ] || [ -f "$WORK_DIR/.git" ]; then
+		log worktree "reuse"
+		git -C "$WORK_DIR" fetch origin >/dev/null
+		git -C "$WORK_DIR" reset --hard "$TARGET_REF" >/dev/null
+	else
+		log worktree "create"
+		git -C "$REPO_PATH" worktree add "$WORK_DIR" "$TARGET_REF" >/dev/null
+	fi
+
+	ACTIVE_WORKTREES+=("$WORK_DIR")
+	echo
+done
+
+if [ "${#ACTIVE_WORKTREES[@]}" -eq 0 ]; then
+	log status "no active worktrees"
+	exit 0
+fi
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+ 	tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+else
+	tmux kill-window -t "$SESSION:$WINDOW" 2>/dev/null || true
+	tmux new-window -t "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+fi
+
+WINDOW_TARGET="$SESSION:$WINDOW"
+log window "$WINDOW_TARGET"
+
+for ((i = 1; i < ${#ACTIVE_WORKTREES[@]}; i++)); do
+	tmux split-window "$SPLIT_OPT" -t "$WINDOW_TARGET" -c "${ACTIVE_WORKTREES[$i]}"
+done
+
+tmux select-layout -t "$WINDOW_TARGET" "$LAYOUT" >/dev/null
+
+if [ "$PRINT_WINDOW" -eq 1 ]; then
+	printf '%s\n' "$WINDOW_TARGET"
+	exit 0
+fi
+
+if [ -z "${TMUX:-}" ]; then
+	tmux attach -t "$WINDOW_TARGET"
+else
+	tmux switch-client -t "$SESSION"
+	tmux select-window -t "$WINDOW_TARGET"
+fi
