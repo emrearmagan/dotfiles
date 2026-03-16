@@ -4,20 +4,20 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=horizontal|vertical] [--print-window]
+#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--attach]
 #
 # Flags:
 #   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
 #                Without this flag, those repos are still created/reused.
-#   --split=...  Pane direction in tmux. Default is horizontal (left/right).
-#   --print-window  Print the tmux window target and exit without attach/switch.
+#   --split=...  Pane direction in tmux. Use h (left/right) or v (top/bottom).
+#                Default is h.
+#   --attach  Attach/switch to the created tmux window.
 #
 # Examples:
 #   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
 #   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
 #   review-worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
-#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=vertical
-#   WINDOW="$(review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --print-window)"
+#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
 #
 # Folder layout (example):
 #   ~/Downloads/dev/
@@ -27,7 +27,7 @@
 set -euo pipefail
 
 if [ "$#" -lt 3 ]; then
-	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=horizontal|vertical] [--print-window]\n' "$(basename "$0")" >&2
+	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--attach]\n' "$(basename "$0")" >&2
 	exit 1
 fi
 
@@ -36,35 +36,35 @@ DESTINATION="$2"
 shift 2
 
 SKIP_SAME=0
-SPLIT="horizontal"
-PRINT_WINDOW=0
+SPLIT="h"
+ATTACH=0
 REPOS=()
 
 for ARG in "$@"; do
 	if [ "$ARG" = "--skip-same" ]; then
 		SKIP_SAME=1
-	elif [ "$ARG" = "--print-window" ]; then
-		PRINT_WINDOW=1
+	elif [ "$ARG" = "--attach" ]; then
+		ATTACH=1
 	elif [[ "$ARG" == --split=* ]]; then
 		SPLIT="${ARG#--split=}"
 	elif [[ "$ARG" = --* ]]; then
 		printf 'Unknown flag: %s\n' "$ARG" >&2
-		printf 'Supported flags: --skip-same, --split=horizontal|vertical, --print-window\n' >&2
+		printf 'Supported flags: --skip-same, --split=h|v, --attach\n' >&2
 		exit 1
 	else
 		REPOS+=("$ARG")
 	fi
 done
 
-if [ "$SPLIT" = "horizontal" ]; then
+if [ "$SPLIT" = "h" ]; then
 	SPLIT_OPT="-h"
 	LAYOUT="even-horizontal"
-elif [ "$SPLIT" = "vertical" ]; then
+elif [ "$SPLIT" = "v" ]; then
 	SPLIT_OPT="-v"
 	LAYOUT="even-vertical"
 else
 	printf 'Invalid split value: %s\n' "$SPLIT" >&2
-	printf 'Allowed values: horizontal, vertical\n' >&2
+	printf 'Allowed values: h, v\n' >&2
 	exit 1
 fi
 
@@ -162,14 +162,13 @@ done
 
 tmux select-layout -t "$WINDOW_TARGET" "$LAYOUT" >/dev/null
 
-if [ "$PRINT_WINDOW" -eq 1 ]; then
-	printf '%s\n' "$WINDOW_TARGET"
-	exit 0
-fi
+printf '%s\n' "$WINDOW_TARGET"
 
-if [ -z "${TMUX:-}" ]; then
-	tmux attach -t "$WINDOW_TARGET"
-else
-	tmux switch-client -t "$SESSION"
-	tmux select-window -t "$WINDOW_TARGET"
+if [ "$ATTACH" -eq 1 ]; then
+	if [ -z "${TMUX:-}" ]; then
+		tmux attach -t "$WINDOW_TARGET"
+	else
+		tmux switch-client -t "$SESSION"
+		tmux select-window -t "$WINDOW_TARGET"
+	fi
 fi
