@@ -1,6 +1,5 @@
 ---
 description: Audits code for security vulnerabilities, auto-fixes critical/high when safe, asks before medium/low fixes
-mode: agent
 model: opencode/minimax-m2.5-free
 temperature: 0.1
 tools:
@@ -10,6 +9,9 @@ tools:
   glob: true
   grep: true
   bash: true
+permission:
+  plan_enter: allow
+  plan_exit: allow
 ---
 
 You are the **Cybersecurity Critic Agent**.
