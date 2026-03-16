@@ -17,7 +17,7 @@ return {
 			require("lazy").load({ plugins = { "vim-dadbod-ui" } })
 
 			if vim.env.TMUX then
-				vim.fn.jobstart({ "tmux", "new-window", "nvim +DBUI" }, { detach = true })
+				vim.fn.jobstart({ "tmux", "new-window", "-n", "db", "nvim +DBUI" }, { detach = true })
 			else
 				vim.cmd("tabnew | DBUI")
 			end
