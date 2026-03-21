@@ -26,3 +26,20 @@ vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGai
 	command = "if mode() != 'c' | checktime | endif",
 	pattern = { "*" },
 })
+
+-- Custom filetype mappings
+vim.filetype.add({
+	filename = {
+		Brewfile = "ruby",
+		[".http"] = "http",
+		[".rest"] = "rest",
+	},
+	extension = {
+		yml = "yaml",
+		http = "http",
+		rest = "rest",
+	},
+	pattern = {
+		[".*%.yml"] = "yaml",
+	},
+})

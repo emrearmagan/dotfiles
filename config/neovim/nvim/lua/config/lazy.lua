@@ -56,6 +56,6 @@ end
 require("lazy").setup({
 	spec = get_plugin_imports(),
 
-	-- automatically check for plugin updates
-	checker = { enabled = true },
+	-- automatically check for plugin updates (once per day)
+	checker = { enabled = true, notify = false },
 })

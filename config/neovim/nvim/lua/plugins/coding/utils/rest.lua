@@ -31,17 +31,6 @@ return {
 	config = function(_, opts)
 		require("kulala").setup(opts)
 
-		vim.filetype.add({
-			filename = {
-				[".http"] = "http",
-				[".rest"] = "rest",
-			},
-			extension = {
-				["http"] = "http",
-				["rest"] = "rest",
-			},
-		})
-
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = { "http", "rest" },
 			callback = function()

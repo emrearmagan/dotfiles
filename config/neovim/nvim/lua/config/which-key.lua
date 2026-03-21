@@ -784,6 +784,20 @@ wk.add({
 	{ "<leader>ax", "<cmd>AvanteClear<cr>", desc = "Clear History/Cache" },
 	{ "<leader>ap", "<cmd>AvanteSwitchProvider<cr>", desc = "Switch Provider" },
 
+	{
+		"<leader>a.",
+		"<cmd>DwightInvoke<cr>",
+		desc = "Dwight",
+		mode = { "n", "x", "v" },
+	},
+
+	{
+		"<leader>a,",
+		"<cmd>DwightCancel<cr>",
+		desc = "Dwight Cancel",
+		mode = { "n", "x", "v" },
+	},
+
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Notes                          │
 	-- ╰────────────────────────────────────────────────────╯

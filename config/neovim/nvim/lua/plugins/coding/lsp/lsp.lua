@@ -50,14 +50,6 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			-- Fix filetypes for LSP warnings
-			vim.filetype.add({
-				extension = { yml = "yaml" },
-				pattern = {
-					["*.yml"] = "yaml",
-				},
-			})
-
 			-- Auto-populate quickfix with diagnostics
 			vim.api.nvim_create_autocmd("DiagnosticChanged", {
 				callback = function()

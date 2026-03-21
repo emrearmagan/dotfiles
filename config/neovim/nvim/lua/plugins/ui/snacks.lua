@@ -302,6 +302,39 @@ return {
 					},
 
 					-- ─────────────────────────────
+					--  Dev
+					-- ─────────────────────────────
+
+					function()
+						return {
+							{
+								icon = " ",
+								key = "J",
+								desc = "JIRA",
+								action = ":AtlasJira",
+							},
+
+							{
+								icon = " ",
+								key = "B",
+								desc = "Bitbucket",
+								action = ":AtlasBitbucket",
+							},
+
+							{
+								icon = " ",
+								key = "G",
+								desc = "Github",
+								action = ":AtlasGithub",
+							},
+
+							{
+								gap = 1, -- adds space below
+							},
+						}
+					end,
+
+					-- ─────────────────────────────
 					--  GIT SECTION
 					-- ─────────────────────────────
 
