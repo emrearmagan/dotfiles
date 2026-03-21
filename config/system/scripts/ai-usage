@@ -1,0 +1,323 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/colors.sh"
+PROGRESSBAR_BIN="$SCRIPT_DIR/utils/progressbar.sh"
+
+# ---- shared utilities ----
+
+need() { command -v "$1" >/dev/null 2>&1 || {
+	echo "missing: $1" >&2
+	exit 1
+}; }
+need curl
+need jq
+
+eta() {
+	local sec="${1:-}"
+	[[ "$sec" =~ ^[0-9]+$ ]] || {
+		printf 'n/a'
+		return
+	}
+	((sec <= 0)) && {
+		printf 'now'
+		return
+	}
+	local d h m
+	d=$((sec / 86400))
+	h=$(((sec % 86400) / 3600))
+	m=$(((sec % 3600) / 60))
+	if ((d > 0)); then
+		printf '%dd %dh' "$d" "$h"
+	elif ((h > 0)); then
+		printf '%dh %dm' "$h" "$m"
+	else
+		printf '%dm' "$m"
+	fi
+}
+
+cap_first() {
+	local s="${1:-}"
+	[[ -z "$s" ]] && {
+		printf ''
+		return
+	}
+	printf '%s%s' "$(tr '[:lower:]' '[:upper:]' <<<"${s:0:1}")" "${s:1}"
+}
+
+usd() {
+	local n="${1:-}"
+	[[ "$n" =~ ^-?[0-9]+([.][0-9]+)?$ ]] || {
+		printf '%s' "$n"
+		return
+	}
+	jq -nr --argjson n "$n" '"$" + (($n * 100 | round) / 100 | tostring)'
+}
+
+progress_color() {
+	local percent="${1:-}"
+	[[ "$percent" =~ ^[0-9]+([.][0-9]+)?$ ]] || {
+		printf 'green'
+		return
+	}
+	if (($(jq -nr --argjson p "$percent" 'if $p > 70 then 1 else 0 end'))); then
+		printf 'red'
+	elif (($(jq -nr --argjson p "$percent" 'if $p > 50 then 1 else 0 end'))); then
+		printf 'yellow'
+	else
+		printf 'green'
+	fi
+}
+
+# Bar comes directly from ./progressbar.
+# Args: percent [color]
+bar() {
+	local percent="${1:-}"
+	local fill_color="${2:-}"
+	[[ "$percent" =~ ^[0-9]+([.][0-9]+)?$ ]] || {
+		printf '|                    |'
+		return
+	}
+
+	if [[ -x "$PROGRESSBAR_BIN" ]]; then
+		local pct raw
+		pct=$(jq -nr --argjson p "$percent" '($p | floor)')
+
+		if [[ -n "$fill_color" ]]; then
+			raw=$(FORCE_COLOR=1 "$PROGRESSBAR_BIN" "${pct}%" -c "$fill_color" 2>/dev/null || true)
+		else
+			raw=$(FORCE_COLOR=1 "$PROGRESSBAR_BIN" "${pct}%" 2>/dev/null || true)
+		fi
+
+		[[ -n "$raw" ]] || raw='|                    |'
+		printf '%s' "$raw"
+		return
+	fi
+
+	printf '|                    |'
+}
+
+header() { printf '%s\n' "$(colorize mauve "$1")"; }
+meta() { printf '%s' "$(colorize overlay1 "$1")"; }
+key() { printf '%s' "$(colorize teal "$1")"; }
+pace() { printf '%s' "$(colorize yellow "$1")"; }
+
+# ---- GitHub Copilot ----
+
+copilot() {
+	header '== GitHub Copilot =='
+
+	local apps="$HOME/.config/github-copilot/apps.json"
+	[[ -f "$apps" ]] || {
+		echo 'status: apps.json missing'
+		return
+	}
+
+	local token
+	token=$(sed '1s/^\xEF\xBB\xBF//' "$apps" | jq -r 'to_entries[]?.value.oauth_token' | head -n1)
+	[[ -n "$token" && "$token" != "null" ]] || {
+		echo 'status: token missing'
+		return
+	}
+
+	local r
+	r=$(curl -fsS -H "Authorization: Bearer $token" https://api.github.com/copilot_internal/user) || {
+		echo 'status: request failed'
+		return
+	}
+
+	local total left used reset login plan sku used_pct
+	total=$(jq -r '.quota_snapshots.premium_interactions.entitlement // 0' <<<"$r")
+	left=$(jq -r '.quota_snapshots.premium_interactions.remaining // 0' <<<"$r")
+	used=$(jq -r '(.quota_snapshots.premium_interactions.entitlement // 0) - (.quota_snapshots.premium_interactions.remaining // 0)' <<<"$r")
+	reset=$(jq -r '.quota_reset_date // .quota_reset_date_utc // "n/a"' <<<"$r")
+	login=$(jq -r '.login // empty' <<<"$r")
+	plan=$(jq -r '.copilot_plan // empty' <<<"$r")
+	sku=$(jq -r '.access_type_sku // empty' <<<"$r")
+
+	if [[ "$total" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$used" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$total" != "0" ]]; then
+		used_pct=$(jq -nr --argjson u "$used" --argjson t "$total" '($u * 100 / $t)')
+	else
+		used_pct=""
+	fi
+
+	printf '%s: %s/%s left %s\n' "$(key 'Premium')" "$left" "$total" "$(bar "$used_pct" "$(progress_color "$used_pct")")"
+
+	if [[ "$reset" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+		local reset_epoch now rem
+		reset_epoch=$(date -j -f '%Y-%m-%d %H:%M:%S' "$reset 00:00:00" '+%s' 2>/dev/null || true)
+		if [[ -n "$reset_epoch" ]]; then
+			now=$(date '+%s')
+			rem=$((reset_epoch - now))
+			if ((rem > 0)); then
+				printf '%s %s\n' "$(meta 'Resets in')" "$(eta "$rem")"
+			else
+				printf '%s %s\n' "$(meta 'Resets on')" "$reset"
+			fi
+		else
+			printf '%s %s\n' "$(meta 'Resets on')" "$reset"
+		fi
+	else
+		printf '%s %s\n' "$(meta 'Resets on')" "$reset"
+	fi
+
+	local plan_pretty
+	plan_pretty=$(cap_first "$plan")
+	if [[ -n "$login" && -n "$plan_pretty" && -n "$sku" ]]; then
+		printf '%s: %s (%s - %s)\n' "$(key 'Account')" "$login" "$plan_pretty" "$sku"
+	elif [[ -n "$login" && -n "$plan_pretty" ]]; then
+		printf '%s: %s (%s)\n' "$(key 'Account')" "$login" "$plan_pretty"
+	elif [[ -n "$login" ]]; then
+		printf '%s: %s\n' "$(key 'Account')" "$login"
+	fi
+}
+
+# ---- Codex ----
+
+codex() {
+	local version
+	version=$(jq -r '.latest_version // empty' "$HOME/.codex/version.json" 2>/dev/null || true)
+	[[ -n "$version" ]] || version="unknown"
+	header "== Codex $version (codex-cli) =="
+
+	local auth="$HOME/.codex/auth.json"
+	[[ -f "$auth" ]] || {
+		echo 'status: ~/.codex/auth.json missing'
+		return
+	}
+
+	local token r
+	token=$(jq -r '.tokens.access_token // empty' "$auth")
+	[[ -n "$token" ]] || {
+		echo 'status: access token missing'
+		return
+	}
+
+	r=$(curl --connect-timeout 4 --max-time 10 -fsS "https://chatgpt.com/backend-api/wham/usage" -H "Authorization: Bearer $token" -H "Accept: application/json") || {
+		echo 'status: usage request failed'
+		return
+	}
+
+	local p_used s_used p_left s_left p_reset_after s_reset_after credits email plan
+	p_used=$(jq -r '.rate_limit.primary_window.used_percent // empty' <<<"$r")
+	s_used=$(jq -r '.rate_limit.secondary_window.used_percent // empty' <<<"$r")
+	p_reset_after=$(jq -r '.rate_limit.primary_window.reset_after_seconds // empty' <<<"$r")
+	s_reset_after=$(jq -r '.rate_limit.secondary_window.reset_after_seconds // empty' <<<"$r")
+	credits=$(jq -r '.credits.balance // "n/a"' <<<"$r")
+	email=$(jq -r '.email // empty' <<<"$r")
+	plan=$(jq -r '.plan_type // empty' <<<"$r")
+
+	[[ "$p_used" =~ ^[0-9]+([.][0-9]+)?$ ]] && p_left=$(jq -nr "100 - ($p_used)") || p_left="n/a"
+	[[ "$s_used" =~ ^[0-9]+([.][0-9]+)?$ ]] && s_left=$(jq -nr "100 - ($s_used)") || s_left="n/a"
+
+	local p_left_i s_left_i
+	p_left_i=$(jq -nr --argjson n "$p_left" '($n|round)' 2>/dev/null || echo "n/a")
+	s_left_i=$(jq -nr --argjson n "$s_left" '($n|round)' 2>/dev/null || echo "n/a")
+
+	printf '%s: %s%% left %s %s\n' "$(key 'Session')" "$p_left_i" "$(bar "$p_used" "$(progress_color "$p_used")")" "$(meta "(resets in $(eta "$p_reset_after"))")"
+	printf '%s: %s%% left %s %s\n' "$(key 'Weekly')" "$s_left_i" "$(bar "$s_used" "$(progress_color "$s_used")")" "$(meta "(resets in $(eta "$s_reset_after"))")"
+
+	local pace_line=""
+	local s_window elapsed expected delta projected eta_to_100
+	s_window=$(jq -r '.rate_limit.secondary_window.limit_window_seconds // 604800' <<<"$r")
+	if [[ "$s_used" =~ ^[0-9]+$ && "$s_reset_after" =~ ^[0-9]+$ && "$s_window" =~ ^[0-9]+$ ]]; then
+		elapsed=$((s_window - s_reset_after))
+		if ((elapsed > 0)); then
+			expected=$((elapsed * 100 / s_window))
+			if ((s_used >= expected)); then
+				delta=$((s_used - expected))
+				pace_line="Pace: ${delta}% in deficit | Expected ${expected}% used"
+			else
+				delta=$((expected - s_used))
+				pace_line="Pace: ${delta}% in reserve | Expected ${expected}% used"
+			fi
+			if ((s_used > 0)); then
+				projected=$((s_used * s_window / elapsed))
+				if ((projected <= 100)); then
+					pace_line+=" | Lasts until reset"
+				else
+					eta_to_100=$(((100 - s_used) * elapsed / s_used))
+					pace_line+=" | Runs out in $(eta "$eta_to_100")"
+				fi
+			fi
+		fi
+	fi
+	[[ -n "$pace_line" ]] && printf '%s\n' "$(pace "$pace_line")"
+
+	printf '%s: %s left\n' "$(key 'Credits')" "$credits"
+
+	local plan_pretty
+	plan_pretty=$(cap_first "$plan")
+	if [[ -n "$email" && -n "$plan_pretty" ]]; then
+		printf '%s: %s (%s)\n' "$(key 'Account')" "$email" "$plan_pretty"
+	elif [[ -n "$email" ]]; then
+		printf '%s: %s\n' "$(key 'Account')" "$email"
+	fi
+}
+
+# ---- OpenRouter ----
+
+openrouter() {
+	header '== OpenRouter =='
+	[[ -n "${OPENROUTER_API_KEY:-}" ]] || {
+		echo 'status: OPENROUTER_API_KEY missing'
+		return
+	}
+
+	local r
+	r=$(curl -fsS https://openrouter.ai/api/v1/key -H "Authorization: Bearer $OPENROUTER_API_KEY") || {
+		echo 'status: request failed'
+		return
+	}
+
+	local label_key used limit left used_pct reset expires
+	local usage_daily usage_weekly usage_monthly
+	label_key=$(jq -r '.data.label // empty' <<<"$r")
+	used=$(jq -r '.data.usage // "n/a"' <<<"$r")
+	limit=$(jq -r '.data.limit // "n/a"' <<<"$r")
+	left=$(jq -r '.data.limit_remaining // empty' <<<"$r")
+	reset=$(jq -r '.data.limit_reset // empty' <<<"$r")
+	expires=$(jq -r '.data.expires_at // empty' <<<"$r")
+	usage_daily=$(jq -r '.data.usage_daily // empty' <<<"$r")
+	usage_weekly=$(jq -r '.data.usage_weekly // empty' <<<"$r")
+	usage_monthly=$(jq -r '.data.usage_monthly // empty' <<<"$r")
+
+	if [[ -z "$left" ]] && jq -e '.data.usage != null and .data.limit != null' >/dev/null 2>&1 <<<"$r"; then
+		left=$(jq -r '(.data.limit - .data.usage)' <<<"$r")
+	fi
+
+	if [[ "$used" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$limit" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$limit" != "0" ]]; then
+		used_pct=$(jq -nr --argjson u "$used" --argjson l "$limit" '($u * 100 / $l)')
+	else
+		used_pct=""
+	fi
+
+	printf '%s: %s/%s left %s\n' "$(key 'Credits')" "$(usd "$left")" "$(usd "$limit")" "$(bar "$used_pct" "$(progress_color "$used_pct")")"
+	[[ -n "$usage_daily" ]] && printf '%s: %s\n' "$(key 'Daily')" "$(usd "$usage_daily")"
+	[[ -n "$usage_weekly" ]] && printf '%s: %s\n' "$(key 'Weekly')" "$(usd "$usage_weekly")"
+	[[ -n "$usage_monthly" ]] && printf '%s: %s\n' "$(key 'Monthly')" "$(usd "$usage_monthly")"
+
+	if [[ -n "$reset" && "$reset" != "null" ]]; then
+		printf '%s %s\n' "$(meta 'Resets on')" "$reset"
+	elif [[ -n "$expires" && "$expires" != "null" ]]; then
+		printf '%s %s\n' "$(meta 'Expires on')" "$expires"
+	else
+		printf '%s %s\n' "$(meta 'Resets')" "n/a"
+	fi
+
+	[[ -n "$label_key" ]] && printf '%s: %s\n' "$(key 'Account')" "$label_key"
+}
+
+# ---- main ----
+
+main() {
+	copilot
+	printf '\n'
+	codex
+	printf '\n'
+	openrouter
+	printf '\n'
+}
+
+main "$@"
