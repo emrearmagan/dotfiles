@@ -51,7 +51,7 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 zstyle ':fzf-tab:complete:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --icons --color=always --group-directories-first -- $realpath; else bat --style=numbers --color=always --line-range=:200 -- $realpath; fi'
 
 setopt appendhistory        # Enable history appending instead of overwriting the history file
-setopt sharehistory       # Share command history across multiple terminal sessions
+# setopt sharehistory       # Share command history across multiple terminal sessions
 setopt hist_ignore_space    # Ignore commands that start with a space in history
 setopt hist_ignore_all_dups # Ignore duplicate commands in history
 setopt hist_save_no_dups    # Save only unique commands in history
