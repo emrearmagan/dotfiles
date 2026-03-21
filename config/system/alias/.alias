@@ -66,10 +66,6 @@ ff() {
   aerospace list-windows --all | fzf --no-preview --bind 'enter:execute(bash -c "aerospace focus --window-id {1}")+abort'
 }
 
-alias gh-quota='curl -s -H "Authorization: Bearer $(sed '\''1s/^\xEF\xBB\xBF//'\'' ~/.config/github-copilot/apps.json | jq -r '\''to_entries[].value.oauth_token'\'')" https://api.github.com/copilot_internal/user'
-alias or-quota='curl -s https://openrouter.ai/api/v1/key \
-  -H "Authorization: Bearer $OPENROUTER_API_KEY" | jq'
-
 # -- docker
 alias docker-clean='docker container prune -f && docker image prune -af && docker volume prune -f && docker builder prune -af'
 
