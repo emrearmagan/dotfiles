@@ -4,13 +4,15 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--attach]
+#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
 #
 # Flags:
 #   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
 #                Without this flag, those repos are still created/reused.
 #   --split=...  Pane direction in tmux. Use h (left/right) or v (top/bottom).
 #                Default is h.
+#   --session=...  tmux session name to create/reuse.
+#                  Default is worktrees.
 #   --attach  Attach/switch to the created tmux window.
 #
 # Examples:
@@ -26,8 +28,20 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/spinner.sh" spinner1
+source "$SCRIPT_DIR/utils/colors.sh"
+
+USE_SPINNER=0
+# Enable spinner only in interactive terminals with `tput` available.
+# This avoids noisy escape sequences in redirected/CI output and prevents
+# cursor-control errors when terminal capabilities are unavailable.
+if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+	USE_SPINNER=1
+fi
+
 if [ "$#" -lt 3 ]; then
-	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--attach]\n' "$(basename "$0")" >&2
+	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]\n' "$(basename "$0")" >&2
 	exit 1
 fi
 
@@ -38,6 +52,7 @@ shift 2
 SKIP_SAME=0
 SPLIT="h"
 ATTACH=0
+SESSION="worktrees"
 REPOS=()
 
 for ARG in "$@"; do
@@ -47,14 +62,21 @@ for ARG in "$@"; do
 		ATTACH=1
 	elif [[ "$ARG" == --split=* ]]; then
 		SPLIT="${ARG#--split=}"
+	elif [[ "$ARG" == --session=* ]]; then
+		SESSION="${ARG#--session=}"
 	elif [[ "$ARG" = --* ]]; then
 		printf 'Unknown flag: %s\n' "$ARG" >&2
-		printf 'Supported flags: --skip-same, --split=h|v, --attach\n' >&2
+		printf 'Supported flags: --skip-same, --split=h|v, --session=<name>, --attach\n' >&2
 		exit 1
 	else
 		REPOS+=("$ARG")
 	fi
 done
+
+if [ -z "$SESSION" ]; then
+	printf 'Session name cannot be empty.\n' >&2
+	exit 1
+fi
 
 if [ "$SPLIT" = "h" ]; then
 	SPLIT_OPT="-h"
@@ -73,16 +95,109 @@ if [ "${#REPOS[@]}" -eq 0 ]; then
 	exit 1
 fi
 
-SESSION="reviews"
-WINDOW="pr-$BRANCH"
 BRANCH_DIR="$DESTINATION/$BRANCH"
 
-log() { printf '%-10s %s\n' "$1" "$2"; }
+log() {
+	local key="$1"
+	local value="$2"
+	local key_padded
+	local key_color="teal"
+	local value_color="text"
 
-echo
-log workspace "$BRANCH"
-log location "$BRANCH_DIR"
-echo
+	key_padded="$(printf '%-10s' "$key")"
+
+	case "$key" in
+	workspace | repo | worktree | window)
+		key_color="mauve"
+		;;
+	location | path | target)
+		key_color="sky"
+		value_color="subtext1"
+		;;
+	status)
+		printf '[ %s ] %s\n' "$(colorize yellow '✖')" "$(colorize yellow "$value")"
+		return
+		;;
+	esac
+
+	printf '%s %s\n' "$(colorize "$key_color" "$key_padded")" "$(colorize "$value_color" "$value")"
+}
+
+ok() {
+	printf '[ %s ] %s\n' "$(colorize green '✔')" "$(colorize green "$1")"
+}
+
+run_step() {
+	local label="$1"
+	local command_name="$2"
+
+	if [ "$USE_SPINNER" -eq 1 ]; then
+		STEPS=("$label")
+		CMDS=("$command_name")
+		start
+	else
+		"$command_name"
+	fi
+}
+
+sanitize_token() {
+	printf '%s' "$1" | tr '/:[:space:].' '-' | tr -cd '[:alnum:]_-'
+}
+
+build_window_name() {
+	local branch_token
+	local repo_names=()
+	local repo_name
+	local repo_token
+	local repo_suffix=""
+	local window_name
+	local max_len=120
+
+	branch_token="$(sanitize_token "$BRANCH")"
+	window_name="branch-${branch_token:-branch}"
+
+	for REPO_PATH in "${REPOS[@]}"; do
+		repo_name="$(basename "$REPO_PATH")"
+		repo_token="$(sanitize_token "$repo_name")"
+		if [ -n "$repo_token" ]; then
+			repo_names+=("$repo_token")
+		fi
+	done
+
+	if [ "${#repo_names[@]}" -gt 0 ]; then
+		repo_suffix="${repo_names[0]}"
+		for ((i = 1; i < ${#repo_names[@]}; i++)); do
+			repo_suffix+=",${repo_names[$i]}"
+		done
+		window_name="$window_name[$repo_suffix]"
+	fi
+
+	if [ "${#window_name}" -gt "$max_len" ]; then
+		window_name="${window_name:0:$((max_len - 4))}-etc"
+	fi
+
+	printf '%s' "$window_name"
+}
+
+cmd_fetch_repo() { git -C "$REPO_PATH" fetch --quiet origin; }
+cmd_prune_repo() { git -C "$REPO_PATH" worktree prune --expire now >/dev/null || true; }
+cmd_fetch_worktree() { git -C "$WORK_DIR" fetch --quiet origin; }
+cmd_reset_worktree() {
+	git -C "$WORK_DIR" checkout -B "$BRANCH" "$TARGET_REF" >/dev/null 2>&1
+	if [ "$BRANCH_EXISTS" -eq 1 ]; then
+		git -C "$WORK_DIR" branch --set-upstream-to "origin/$BRANCH" "$BRANCH" >/dev/null 2>&1 || true
+	fi
+}
+cmd_add_worktree() {
+	git -C "$REPO_PATH" worktree add --quiet -B "$BRANCH" "$WORK_DIR" "$TARGET_REF" >/dev/null
+	if [ "$BRANCH_EXISTS" -eq 1 ]; then
+		git -C "$WORK_DIR" branch --set-upstream-to "origin/$BRANCH" "$BRANCH" >/dev/null 2>&1 || true
+	fi
+}
+
+WINDOW="$(build_window_name)"
+
+printf '%s\n\n' "$(colorize overlay1 "$BRANCH -> $BRANCH_DIR")"
 
 ACTIVE_WORKTREES=()
 
@@ -91,8 +206,6 @@ for REPO_PATH in "${REPOS[@]}"; do
 	WORK_DIR="$BRANCH_DIR/$REPO_NAME"
 
 	log repo "$REPO_NAME"
-	log path "$REPO_PATH"
-	log target "$WORK_DIR"
 
 	if [ ! -d "$REPO_PATH/.git" ] && [ ! -f "$REPO_PATH/.git" ]; then
 		log status "missing repo: $REPO_PATH"
@@ -100,12 +213,12 @@ for REPO_PATH in "${REPOS[@]}"; do
 		continue
 	fi
 
-	git -C "$REPO_PATH" fetch origin >/dev/null
+	run_step "Fetch $REPO_NAME" cmd_fetch_repo
 
 	# If a worktree directory was deleted manually, Git may still keep a stale
 	# registration. Prune stale entries immediately so `worktree add` can reuse
 	# the same path.
-	git -C "$REPO_PATH" worktree prune --expire now >/dev/null || true
+	run_step "Prune $REPO_NAME" cmd_prune_repo
 
 	if git -C "$REPO_PATH" ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
 		BRANCH_EXISTS=1
@@ -128,13 +241,21 @@ for REPO_PATH in "${REPOS[@]}"; do
 		log status "branch missing, using origin/main"
 	fi
 
+	if [ -e "$WORK_DIR" ] && [ ! -d "$WORK_DIR/.git" ] && [ ! -f "$WORK_DIR/.git" ]; then
+		if [ -z "$(ls -A "$WORK_DIR" 2>/dev/null)" ]; then
+			rmdir "$WORK_DIR" 2>/dev/null || true
+		else
+			log status "target exists and is not a git worktree, skipping"
+			echo
+			continue
+		fi
+	fi
+
 	if [ -d "$WORK_DIR/.git" ] || [ -f "$WORK_DIR/.git" ]; then
-		log worktree "reuse"
-		git -C "$WORK_DIR" fetch origin >/dev/null
-		git -C "$WORK_DIR" reset --hard "$TARGET_REF" >/dev/null
+		run_step "Fetch $REPO_NAME wt" cmd_fetch_worktree
+		run_step "Reset $REPO_NAME wt" cmd_reset_worktree
 	else
-		log worktree "create"
-		git -C "$REPO_PATH" worktree add "$WORK_DIR" "$TARGET_REF" >/dev/null
+		run_step "Create $REPO_NAME wt" cmd_add_worktree
 	fi
 
 	ACTIVE_WORKTREES+=("$WORK_DIR")
@@ -147,14 +268,30 @@ if [ "${#ACTIVE_WORKTREES[@]}" -eq 0 ]; then
 fi
 
 if ! tmux has-session -t "$SESSION" 2>/dev/null; then
- 	tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+	ok "creating tmux session: $SESSION"
+	tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
 else
-	tmux kill-window -t "$SESSION:$WINDOW" 2>/dev/null || true
-	tmux new-window -t "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+	ok "using existing tmux session: $SESSION"
+	WINDOW_COUNT="$(tmux list-windows -t "$SESSION:" 2>/dev/null | wc -l | tr -d ' ')"
+	if tmux list-windows -t "$SESSION:" -F '#{window_name}' 2>/dev/null | grep -Fxq "$WINDOW"; then
+		if [ "$WINDOW_COUNT" -le 1 ]; then
+			# Avoid killing the last window without recreating the session.
+			tmux kill-session -t "$SESSION" 2>/dev/null || true
+			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+		else
+			tmux kill-window -t "$SESSION:$WINDOW" 2>/dev/null || true
+			tmux new-window -t "$SESSION:" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+		fi
+	else
+		tmux new-window -t "$SESSION:" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
+	fi
 fi
 
 WINDOW_TARGET="$SESSION:$WINDOW"
-log window "$WINDOW_TARGET"
+
+printf -v SESSION_ESC '%q' "$SESSION"
+printf -v WINDOW_TARGET_ESC '%q' "$WINDOW_TARGET"
+ATTACH_CMD="tmux select-window -t $WINDOW_TARGET_ESC >/dev/null 2>&1; tmux attach -t $SESSION_ESC"
 
 for ((i = 1; i < ${#ACTIVE_WORKTREES[@]}; i++)); do
 	tmux split-window "$SPLIT_OPT" -t "$WINDOW_TARGET" -c "${ACTIVE_WORKTREES[$i]}"
@@ -162,7 +299,12 @@ done
 
 tmux select-layout -t "$WINDOW_TARGET" "$LAYOUT" >/dev/null
 
-printf '%s\n' "$WINDOW_TARGET"
+printf '%s\n' "$(colorize mauve "$WINDOW_TARGET")"
+printf '%s\n' "$(colorize overlay1 "$ATTACH_CMD")"
+
+if command -v pbcopy >/dev/null 2>&1; then
+	printf '%s\n' "$(colorize overlay1 '(attach command copied to clipboard)')"
+fi
 
 if [ "$ATTACH" -eq 1 ]; then
 	if [ -z "${TMUX:-}" ]; then
