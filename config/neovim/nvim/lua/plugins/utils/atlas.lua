@@ -4,37 +4,33 @@ return {
 	-- lazy = true,
 	config = function()
 		require("atlas").setup({
-			cache_ttl = 300,
-
 			bitbucket = {
 				user = os.getenv("BITBUCKET_USER"),
 				token = os.getenv("BITBUCKET_TOKEN"),
-				workspace = os.getenv("BITBUCKET_WORKSPACE"),
-				account_id = os.getenv("BITBUCKET_ACCOUNT_ID"),
-				repos = {
-					{ workspace = "check24", repo = "zzv-frontend" },
-					{ workspace = "check24", repo = "zzv-core" },
-					{ workspace = "check24", repo = "zzv-api" },
-					{ workspace = "check24", repo = "vv-ham-app-ios-hh-shared" },
-					{ workspace = "check24", repo = "vv-ham-app-ios-zzv" },
-					{ workspace = "check24", repo = "zzv-cypress" },
-					{ workspace = "check24", repo = "vv-ham-app-ios-gkv" },
-					{ workspace = "check24", repo = "vv-ham-app-ios-rv" },
-					{ workspace = "check24", repo = "vv-ham-app-ios-hhw" },
-				},
-				display_build_status = "user",
-				display_approvals = "user",
+        ttl = 300,
+
 				views = {
 					{
 						name = "Me",
 						key = "m",
+						layout = "plain",
+						repos = {
+							{ workspace = "emrearmaganxx", repo = "atlas" },
+							{ workspace = "emrearmaganxx", repo = "Dockyard" },
+						},
+
 						filter = function(pr, account_id)
 							return pr.author and pr.author.account_id == account_id
 						end,
 					},
 					{
-						name = "Zzv",
+						name = "Others",
 						key = "o",
+						layout = "grouped",
+						repos = {
+							{ workspace = "emrearmaganxx", repo = "atlas" },
+							{ workspace = "emrearmaganxx", repo = "Dockyard" },
+						},
 						filter = function(pr, account_id)
 							return pr.author_account_id ~= account_id and not (pr.repo and pr.repo:match("^vv%-ham%-"))
 						end,
@@ -42,6 +38,10 @@ return {
 					{
 						name = "App",
 						key = "p",
+						repos = {
+							{ workspace = "emrearmaganxx", repo = "atlas" },
+							{ workspace = "emrearmaganxx", repo = "Dockyard" },
+						},
 						filter = function(pr, account_id)
 							return pr.repo and pr.repo:match("^vv%-ham%-")
 						end,

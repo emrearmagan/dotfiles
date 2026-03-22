@@ -225,6 +225,15 @@ wk.add({
 		end,
 		desc = "Find todos",
 	},
+
+	{
+		"<leader>fq",
+		function()
+			require("snacks.picker").qflist()
+		end,
+		desc = "Quickfix List (Snacks)",
+	},
+
 	{ "<leader>fo", ":!open %:h<CR>", desc = "Open in Finder" },
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -330,13 +339,6 @@ wk.add({
 
 	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
 
-	{
-		"<leader>cq",
-		function()
-			require("snacks.picker").qflist()
-		end,
-		desc = "Quickfix List (Snacks)",
-	},
 	-- Navigation
 	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },
 	-- { "gd", "<cmd>FzfLua lsp_definitions<cr>", desc = "Go to Definition" },
@@ -462,38 +464,6 @@ wk.add({
 			neotest.output_panel.toggle()
 		end,
 		desc = "Toggle output panel",
-		mode = "n",
-	},
-
-	-- ╭────────────────────────────────────────────────────╮
-	-- │                      Runner                        │
-	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>r", icon = "󰐊", group = "Run" },
-
-	-- ───── SnipRun (quick code execution) ─────
-	{ "<leader>rs", "<cmd>SnipRun<CR>", desc = "Run code (SnipRun)", mode = "n" },
-	{
-		"<leader>rs",
-		function()
-			require("sniprun").run("v")
-		end,
-		desc = "Run selection (SnipRun)",
-		mode = "v",
-	},
-	{
-		"<leader>rS",
-		function()
-			require("sniprun").reset()
-		end,
-		desc = "Reset SnipRun",
-		mode = "n",
-	},
-	{
-		"<leader>rl",
-		function()
-			require("sniprun.live_mode").toggle()
-		end,
-		desc = "Toggle SnipRun Live Mode",
 		mode = "n",
 	},
 

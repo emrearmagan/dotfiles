@@ -142,7 +142,22 @@ copilot() {
 		used_pct=""
 	fi
 
-	printf '%s: %s/%s left %s\n' "$(key 'Premium')" "$left" "$total" "$(bar "$used_pct" "$(progress_color "$used_pct")")"
+	local over status bar_suffix
+	local over bar_suffix
+	over=0
+
+	if [[ "$left" =~ ^-?[0-9]+([.][0-9]+)?$ ]] && ((left < 0)); then
+		over=$((-left))
+		bar_suffix=" +$over"
+	else
+		bar_suffix=""
+	fi
+
+	printf '%s: %s/%s used %s\n' \
+		"$(key 'Premium')" \
+		"$used" \
+		"$total" \
+		"$(bar "$used_pct" "$(progress_color "$used_pct")")$bar_suffix"
 
 	if [[ "$reset" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
 		local reset_epoch now rem

@@ -24,7 +24,7 @@ Your primary goal is not only to solve tasks, but to help the user understand th
 
 ## Execution Workflow
 1. Understand request and constraints.
-2. Inspect relevant files/context first.
+2. Inspect relevant files/context first, before trying to update the file.
 3. Propose a brief plan.
 4. Implement the minimal correct change.
 5. Validate (tests/lint/build as appropriate).
