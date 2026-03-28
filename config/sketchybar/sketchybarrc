@@ -24,7 +24,7 @@ bar=(
   padding_right=5
   padding_left=5
   corner_radius=9
-  y_offset=10
+  y_offset=5
   margin=10
   blur_radius=20
   notch_width=0
@@ -71,13 +71,14 @@ source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/date_time.sh"
 # source "$ITEM_DIR/clock.sh"
 # source "$ITEM_DIR/calendar.sh"
-source "$ITEM_DIR/tailscale.sh"
 
-source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/brew.sh"
-source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/github.sh"
+source "$ITEM_DIR/battery.sh"
 
+source "$ITEM_DIR/volume.sh"
 # source "$ITEM_DIR/music.sh"
+source "$ITEM_DIR/meeting.sh"
 # source "$ITEM_DIR/cpu.sh"
 
 status_bracket=(
@@ -86,11 +87,13 @@ status_bracket=(
   background.border_width=2
   background.padding_left=20
 )
-sketchybar --add bracket status tailscale brew github.bell \
+sketchybar --add bracket status battery brew github.bell \
            --set status "${status_bracket[@]}"
 
-sketchybar --set tailscale padding_right=10
-sketchybar --set brew padding_left=10
+sketchybar --set battery padding_left=10
+sketchybar --set brew padding_right=10
+sketchybar --set github padding_right=5
+sketchybar --set github padding_left=5
 ############## FINALIZING THE SETUP ##############
 sketchybar --update
 

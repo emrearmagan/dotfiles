@@ -25,6 +25,7 @@ brew "btop"                 # system monitor
 brew "nmap"                 # network scanner
 brew "curl"                 # http client
 brew "wget"                 # file downloader
+brew "neur0map/tap/gpk"     # gpk
 
 # Data & Text Processing
 brew "jq"                   # json processor
@@ -37,9 +38,10 @@ brew "tldr"                 # short man pages
 brew "zsh-autosuggestions"  # zsh helper
 brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
-brew "fzf-tab"               # fzf based zsh autocomplete
+brew "fzf-tab"              # fzf based zsh autocomplete
 # used for opencode. Run "rtk init -g --opencode"
-brew "rtk"                 # run tool for shell commands
+brew "rtk"                  # run tool for shell commands
+brew "ical-buddy"           # calendar cli
 
 # Core Dev Tools
 brew "neovim"               # editor
@@ -125,3 +127,4 @@ cask "google-chrome"        # web browser
 cask "shortcat"             # mouse-free navigation
 cask "aerospace"            # tiling window manager
 cask "obsidian"             # note taking
+cask "zed"                  # code editor

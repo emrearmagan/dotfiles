@@ -7,16 +7,15 @@ return {
 			bitbucket = {
 				user = os.getenv("BITBUCKET_USER"),
 				token = os.getenv("BITBUCKET_TOKEN"),
-        ttl = 300,
+				ttl = 300,
 
 				views = {
 					{
 						name = "Me",
 						key = "m",
-						layout = "plain",
+						layout = "compact",
 						repos = {
 							{ workspace = "emrearmaganxx", repo = "atlas" },
-							{ workspace = "emrearmaganxx", repo = "Dockyard" },
 						},
 
 						filter = function(pr, account_id)
@@ -37,7 +36,8 @@ return {
 					},
 					{
 						name = "App",
-						key = "p",
+						key = "a",
+						layout = "plain",
 						repos = {
 							{ workspace = "emrearmaganxx", repo = "atlas" },
 							{ workspace = "emrearmaganxx", repo = "Dockyard" },

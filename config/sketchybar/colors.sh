@@ -10,6 +10,7 @@ MAUVE=0xffcba6f7
 RED=0xfff38ba8
 MAROON=0xffeba0ac
 PEACH=0xfffab387
+ORANGE=0xfff5a97f
 YELLOW=0xfff9e2af
 GREEN=0xffa6e3a1
 TEAL=0xff94e2d5
