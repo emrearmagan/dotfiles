@@ -1,56 +1,122 @@
 return {
 	-- "emrearmagan/atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas.nvim",
-	-- lazy = true,
 	config = function()
-		require("atlas").setup({
-			bitbucket = {
-				user = os.getenv("BITBUCKET_USER"),
-				token = os.getenv("BITBUCKET_TOKEN"),
-				ttl = 300,
+		local function open_live_command(title, cmd, on_exit)
+			local width = math.floor(vim.o.columns * 0.2)
+			local height = math.floor(vim.o.lines * 0.25)
+			local row = math.floor((vim.o.lines - height) / 2) - 1
+			local col = math.floor((vim.o.columns - width) / 2)
+			local buf = vim.api.nvim_create_buf(false, true)
+			vim.bo[buf].bufhidden = "wipe"
+			local win = vim.api.nvim_open_win(buf, true, {
+				relative = "editor",
+				style = "minimal",
+				border = "rounded",
+				title = " " .. title .. " ",
+				title_pos = "center",
+				width = width,
+				height = height,
+				row = math.max(0, row),
+				col = math.max(0, col),
+			})
+			vim.keymap.set("n", "q", function()
+				if vim.api.nvim_win_is_valid(win) then
+					vim.api.nvim_win_close(win, true)
+				end
+			end, { buffer = buf, silent = true })
+			vim.fn.jobstart(cmd, {
+				term = true,
+				on_exit = function(_, code, _)
+					vim.schedule(function()
+						if on_exit then
+							on_exit(code)
+						end
+					end)
+				end,
+			})
+		end
 
+		require("atlas").setup({
+			---@type BitbucketConfig
+			bitbucket = {
+				user = os.getenv("BITBUCKET_USER") or "",
+				token = os.getenv("BITBUCKET_TOKEN") or "",
+				cache_ttl = 300,
+				repo_paths = {
+					["emrearmaganxx/*"] = "~/development/nvim/atlas.testing/*",
+				},
+				custom_actions = {
+					{
+						id = "checkout_worktree",
+						label = "Checkout (branch-worktrees)",
+
+						---@param _ BitbucketPR
+						---@param ctx table
+						---@param done fun(ok: boolean|nil, message: string|nil)
+						run = function(_, ctx, done)
+							if not ctx.repo_path then
+								done(false, "No repo path: " .. tostring(ctx.repo_path_error))
+								return
+							end
+
+							local branch = tostring(ctx.source_branch or "")
+							if branch == "" then
+								done(false, "Missing source branch")
+								return
+							end
+
+							local destination = ctx.repo_path .. ".worktrees"
+
+							open_live_command("branch-worktrees", {
+								"branch-worktrees",
+								branch,
+								destination,
+								ctx.repo_path,
+								"--split=h",
+								"--session=worktrees",
+							}, function(code)
+								if code ~= 0 then
+									done(false, "branch-worktrees failed (exit " .. tostring(code) .. ")")
+									return
+								end
+								done(true, "Worktree ready for " .. branch)
+							end)
+						end,
+					},
+				},
+
+				---@type BitbucketViewConfig[]
 				views = {
 					{
 						name = "Me",
-						key = "m",
+						key = "M",
 						layout = "compact",
 						repos = {
 							{ workspace = "emrearmaganxx", repo = "atlas" },
 						},
 
-						filter = function(pr, account_id)
-							return pr.author and pr.author.account_id == account_id
+						---@param pr BitbucketPR
+						---@param ctx table
+						filter = function(pr, ctx)
+							local user = ctx.user or {}
+							return pr.author and pr.author.account_id == user.account_id
 						end,
 					},
 					{
 						name = "Others",
-						key = "o",
-						layout = "grouped",
-						repos = {
-							{ workspace = "emrearmaganxx", repo = "atlas" },
-							{ workspace = "emrearmaganxx", repo = "Dockyard" },
-						},
-						filter = function(pr, account_id)
-							return pr.author_account_id ~= account_id and not (pr.repo and pr.repo:match("^vv%-ham%-"))
-						end,
-					},
-					{
-						name = "App",
-						key = "a",
+						key = "O",
 						layout = "plain",
 						repos = {
 							{ workspace = "emrearmaganxx", repo = "atlas" },
-							{ workspace = "emrearmaganxx", repo = "Dockyard" },
+							{ workspace = "emrearmaganxx", repo = "dockyard" },
 						},
-						filter = function(pr, account_id)
-							return pr.repo and pr.repo:match("^vv%-ham%-")
-						end,
 					},
 				},
 			},
 
 			jira = {
-				base = os.getenv("JIRA_BASE_URL"),
+				base_url = os.getenv("JIRA_BASE_URL"),
 				email = os.getenv("JIRA_EMAIL"),
 				token = os.getenv("JIRA_TOKEN"),
 				type = os.getenv("JIRA_AUTH_TYPE") or "basic",

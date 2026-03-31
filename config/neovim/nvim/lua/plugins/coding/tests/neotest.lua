@@ -7,6 +7,8 @@ return {
 			"antoinemadec/FixCursorHold.nvim",
 			"nvim-treesitter/nvim-treesitter",
 			"stevearc/overseer.nvim",
+
+			-- Go
 			{
 				"fredrikaverpil/neotest-golang",
 				version = "*", -- Optional, but recommended; track releases
@@ -15,19 +17,33 @@ return {
 				end,
 			},
 			"nvim-neotest/neotest-jest",
-			"olimorris/neotest-phpunit",
+
+			-- Swift
+			"mmllr/neotest-swift-testing",
+
+			-- Lua. Make sure to call: luarocks install busted or brew install busted
+			"MisanthropicBit/neotest-busted",
 		},
 		lazy = true,
 		config = function()
 			-- Ensure Go bin is in PATH for Neovim (for gotestsum)
 			vim.env.PATH = vim.env.PATH .. ":" .. vim.fn.expand("~") .. "/go/bin"
 
-			local config = {
-				runner = "gotestsum", -- Optional, but recommended. Could also just use 'gotest' here and get rid of the PATH
-			}
 			require("neotest").setup({
 				adapters = {
-					require("neotest-golang")(config),
+					-- Go
+					require("neotest-golang")({
+						runner = "gotestsum",
+					}),
+
+					-- Swift
+					require("neotest-swift-testing")({}),
+
+					-- Lua (Busted)
+					require("neotest-busted")({
+						busted_command = "busted",
+						no_nvim = true,
+					}),
 				},
 
 				summary = {

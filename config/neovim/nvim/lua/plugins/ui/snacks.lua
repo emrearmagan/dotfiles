@@ -308,7 +308,7 @@ return {
 					function()
 						return {
 							{
-								icon = " ",
+								icon = "󰌃",
 								key = "J",
 								desc = "JIRA",
 								action = ":AtlasJira",

@@ -168,13 +168,6 @@ wk.add({
 		desc = "Search word under cursor",
 	},
 	{
-		"<leader>fb",
-		function()
-			snacks.picker.buffers()
-		end,
-		desc = "Find buffer",
-	},
-	{
 		"<leader>fm",
 		function()
 			snacks.picker.marks()
@@ -182,40 +175,11 @@ wk.add({
 		desc = "Marks",
 	},
 	{
-		"<leader>fy",
-		function()
-			snacks.picker.registers()
-		end,
-		desc = "Registers / Yank history",
-	},
-	{
 		"<leader>fh",
 		function()
 			snacks.picker.help()
 		end,
 		desc = "Search help",
-	},
-
-	{
-		"<leader>fd",
-		function()
-			require("fzf-lua").files({
-				prompt = "Change Dir❯ ",
-				cwd_prompt = true,
-				cmd = "find . -type d -not -path '*/\\.git/*'",
-				actions = {
-					["default"] = function(selected)
-						local raw = selected[1]
-						local path = raw:gsub("^[^%w./~]+", ""):gsub("%s+$", "")
-						path = vim.fn.fnamemodify(path, ":p")
-						vim.cmd("cd " .. vim.fn.fnameescape(path))
-						print("Changed cwd to " .. path)
-						vim.cmd("Neotree reveal")
-					end,
-				},
-			})
-		end,
-		desc = "Find directory",
 	},
 
 	{
@@ -235,6 +199,8 @@ wk.add({
 	},
 
 	{ "<leader>fo", ":!open %:h<CR>", desc = "Open in Finder" },
+	{ "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
+	{ "<leader>fS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │               Tabs / Splits / Buffers              │
@@ -336,7 +302,6 @@ wk.add({
 	-- Symbols / References
 	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false win.id=dock<cr>", desc = "Document Symbols (Trouble)" },
 	{ "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
-
 	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
 
 	-- Navigation

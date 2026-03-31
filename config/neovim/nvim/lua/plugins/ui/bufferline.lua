@@ -34,6 +34,14 @@ return {
 				-- tabs_size = 120, -- Set a fixed size for tabs
 				max_name_length = 120, -- Max length of a buffer name before truncation
 				-- max_prefix_length = 15,         -- Max length of prefix used before truncated name
+				offsets = {
+					{
+						filetype = "neo-tree",
+						text = "File Explorer",
+						text_align = "center",
+						separator = true,
+					},
+				},
 			},
 			highlights = catppuccin_bufferline,
 		})
