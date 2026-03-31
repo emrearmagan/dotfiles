@@ -4,10 +4,10 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
+#   worktrees <branch> <destination> <repo-path...> [--skip-unchaned] [--split=h|v] [--session=<name>] [--attach]
 #
 # Flags:
-#   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
+#   --skip-unchaned  Skip repos where origin/<branch> has no diff vs origin/main.
 #                Without this flag, those repos are still created/reused.
 #   --split=...  Pane direction in tmux. Use h (left/right) or v (top/bottom).
 #                Default is h.
@@ -18,7 +18,7 @@
 # Examples:
 #   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
 #   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
-#   worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
+#   worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-unchaned
 #   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
 #
 # Folder layout (example):
@@ -41,7 +41,7 @@ if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
 fi
 
 if [ "$#" -lt 3 ]; then
-	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]\n' "$(basename "$0")" >&2
+	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-unchaned] [--split=h|v] [--session=<name>] [--attach]\n' "$(basename "$0")" >&2
 	exit 1
 fi
 
@@ -56,7 +56,7 @@ SESSION="worktrees"
 REPOS=()
 
 for ARG in "$@"; do
-	if [ "$ARG" = "--skip-same" ]; then
+	if [ "$ARG" = "--skip-unchaned" ]; then
 		SKIP_SAME=1
 	elif [ "$ARG" = "--attach" ]; then
 		ATTACH=1
@@ -66,7 +66,7 @@ for ARG in "$@"; do
 		SESSION="${ARG#--session=}"
 	elif [[ "$ARG" = --* ]]; then
 		printf 'Unknown flag: %s\n' "$ARG" >&2
-		printf 'Supported flags: --skip-same, --split=h|v, --session=<name>, --attach\n' >&2
+		printf 'Supported flags: --skip-unchaned, --split=h|v, --session=<name>, --attach\n' >&2
 		exit 1
 	else
 		REPOS+=("$ARG")

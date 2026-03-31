@@ -4,16 +4,21 @@
 # then send the same OpenCode review command to every tmux pane.
 #
 # Usage:
-#   worktrees-review <branch> <destination> <repo-path...>
+#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchaned]
+#
+# Notes:
+#   - Uses tmux session: reviews
+#   - Sends a fixed OpenCode prompt to each pane
+#   - --skip-unchaned is forwarded to `worktrees`
 #
 # Example:
-#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b
+#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b --skip-unchaned
 
 set -euo pipefail
 
 usage() {
-	printf 'Usage: %s <branch> <destination> <repo-path...>\n' "$(basename "$0")" >&2
-	printf 'Example: %s KAN-1 "$HOME/reviews" ~/repo/a ~/repo/b\n' "$(basename "$0")" >&2
+	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-unchaned]\n' "$(basename "$0")" >&2
+	printf 'Example: %s KAN-1 "$HOME/reviews" ~/repo/a ~/repo/b --skip-unchaned\n' "$(basename "$0")" >&2
 }
 
 if [ "$#" -lt 3 ]; then
@@ -24,25 +29,38 @@ fi
 BRANCH="$1"
 DESTINATION="$2"
 shift 2
-REPOS=("$@")
+REPOS=()
+SKIP_SAME=0
 
-PROMPT='Code review this branch. If there are no changes on this branch, stop and report no changes.'
+for ARG in "$@"; do
+	if [ "$ARG" = "--skip-unchaned" ]; then
+		SKIP_SAME=1
+	else
+		REPOS+=("$ARG")
+	fi
+done
 
-set +e
-BW_OUTPUT="$(worktrees "$BRANCH" "$DESTINATION" "${REPOS[@]}" 2>&1)"
-BW_STATUS=$?
-set -e
-
-printf '%s\n' "$BW_OUTPUT"
-
-if [ "$BW_STATUS" -ne 0 ]; then
-	exit "$BW_STATUS"
+if [ "${#REPOS[@]}" -eq 0 ]; then
+	usage
+	exit 1
 fi
 
-WINDOW_TARGET="$(printf '%s\n' "$BW_OUTPUT" | grep -Eo '[[:alnum:]_.-]+:[^[:space:]]+' | tail -1)"
+SESSION="reviews"
+PROMPT='Code review this branch. If there are no changes on this branch, stop and report no changes.'
+
+WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
+if [ "$SKIP_SAME" -eq 1 ]; then
+	WORKTREES_ARGS+=("--skip-unchaned")
+fi
+
+if ! worktrees "${WORKTREES_ARGS[@]}"; then
+	exit 1
+fi
+
+WINDOW_TARGET="$(tmux list-windows -t "$SESSION" -F '#{window_active} #{session_name}:#{window_name}' | grep '^1 ' | head -n 1 | cut -d' ' -f2-)"
 
 if [ -z "$WINDOW_TARGET" ]; then
-	printf 'Could not determine tmux window target from worktrees output.\n' >&2
+	printf 'Could not determine active tmux window in session %s.\n' "$SESSION" >&2
 	exit 1
 fi
 
