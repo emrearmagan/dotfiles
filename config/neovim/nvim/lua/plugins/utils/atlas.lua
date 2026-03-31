@@ -49,18 +49,18 @@ return {
 				custom_actions = {
 					{
 						id = "checkout_worktree",
-						label = "Checkout (branch-worktrees)",
+						label = "Checkout (worktrees)",
 
 						---@param _ BitbucketPR
-						---@param ctx table
+						---@param ctx BitbucketCustomActionContext
 						---@param done fun(ok: boolean|nil, message: string|nil)
 						run = function(_, ctx, done)
 							if not ctx.repo_path then
-								done(false, "No repo path: " .. tostring(ctx.repo_path_error))
+								done(false, "No repo path")
 								return
 							end
 
-							local branch = tostring(ctx.source_branch or "")
+							local branch = tostring(ctx.pr.source_branch or "")
 							if branch == "" then
 								done(false, "Missing source branch")
 								return
@@ -68,8 +68,8 @@ return {
 
 							local destination = ctx.repo_path .. ".worktrees"
 
-							open_live_command("branch-worktrees", {
-								"branch-worktrees",
+						open_live_command("worktrees", {
+							"worktrees",
 								branch,
 								destination,
 								ctx.repo_path,
@@ -77,7 +77,7 @@ return {
 								"--session=worktrees",
 							}, function(code)
 								if code ~= 0 then
-									done(false, "branch-worktrees failed (exit " .. tostring(code) .. ")")
+								done(false, "worktrees failed (exit " .. tostring(code) .. ")")
 									return
 								end
 								done(true, "Worktree ready for " .. branch)

@@ -4,11 +4,8 @@ model: opencode/minimax-m2.5-free
 temperature: 0.1
 tools:
   read: true
-  write: true
-  edit: true
   glob: true
   grep: true
-  bash: true
 permission:
   plan_enter: allow
   plan_exit: allow

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Create or reuse worktrees for one branch across multiple repositories,
+# then send the same OpenCode review command to every tmux pane.
+#
+# Usage:
+#   worktrees-review <branch> <destination> <repo-path...>
+#
+# Example:
+#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b
+
+set -euo pipefail
+
+usage() {
+	printf 'Usage: %s <branch> <destination> <repo-path...>\n' "$(basename "$0")" >&2
+	printf 'Example: %s KAN-1 "$HOME/reviews" ~/repo/a ~/repo/b\n' "$(basename "$0")" >&2
+}
+
+if [ "$#" -lt 3 ]; then
+	usage
+	exit 1
+fi
+
+BRANCH="$1"
+DESTINATION="$2"
+shift 2
+REPOS=("$@")
+
+PROMPT='Code review this branch. If there are no changes on this branch, stop and report no changes.'
+
+set +e
+BW_OUTPUT="$(worktrees "$BRANCH" "$DESTINATION" "${REPOS[@]}" 2>&1)"
+BW_STATUS=$?
+set -e
+
+printf '%s\n' "$BW_OUTPUT"
+
+if [ "$BW_STATUS" -ne 0 ]; then
+	exit "$BW_STATUS"
+fi
+
+WINDOW_TARGET="$(printf '%s\n' "$BW_OUTPUT" | grep -Eo '[[:alnum:]_.-]+:[^[:space:]]+' | tail -1)"
+
+if [ -z "$WINDOW_TARGET" ]; then
+	printf 'Could not determine tmux window target from worktrees output.\n' >&2
+	exit 1
+fi
+
+ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
+COMMAND="opencode --prompt '$ESCAPED_PROMPT'"
+# COMMAND="opencode run '$ESCAPED_PROMPT'" --- cant get this to work because of the permissions...
+
+printf 'Running in each pane: %s\n' "$COMMAND"
+
+while IFS= read -r pane; do
+	tmux send-keys -t "$pane" "$COMMAND" Enter
+done < <(tmux list-panes -t "$WINDOW_TARGET" -F '#{session_name}:#{window_name}.#{pane_index}')
+
+printf 'Sent review command to panes in %s\n' "$WINDOW_TARGET"

@@ -4,7 +4,7 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   branch-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
+#   worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
 #
 # Flags:
 #   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
@@ -16,10 +16,10 @@
 #   --attach  Attach/switch to the created tmux window.
 #
 # Examples:
-#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
-#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
-#   branch-worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
-#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
+#   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
+#   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
+#   worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
+#   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
 #
 # Folder layout (example):
 #   ~/Downloads/dev/
