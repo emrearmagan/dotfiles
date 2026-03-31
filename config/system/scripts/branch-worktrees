@@ -4,7 +4,7 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   review-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
+#   branch-worktrees <branch> <destination> <repo-path...> [--skip-same] [--split=h|v] [--session=<name>] [--attach]
 #
 # Flags:
 #   --skip-same  Skip repos where origin/<branch> has no diff vs origin/main.
@@ -16,10 +16,10 @@
 #   --attach  Attach/switch to the created tmux window.
 #
 # Examples:
-#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
-#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
-#   review-worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
-#   review-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
+#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
+#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
+#   branch-worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-same
+#   branch-worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
 #
 # Folder layout (example):
 #   ~/Downloads/dev/
@@ -179,9 +179,9 @@ build_window_name() {
 	printf '%s' "$window_name"
 }
 
-cmd_fetch_repo() { git -C "$REPO_PATH" fetch --quiet origin; }
-cmd_prune_repo() { git -C "$REPO_PATH" worktree prune --expire now >/dev/null || true; }
-cmd_fetch_worktree() { git -C "$WORK_DIR" fetch --quiet origin; }
+cmd_fetch_repo() { git -C "$REPO_PATH" fetch --quiet origin >/dev/null 2>&1; }
+cmd_prune_repo() { git -C "$REPO_PATH" worktree prune --expire now >/dev/null 2>&1 || true; }
+cmd_fetch_worktree() { git -C "$WORK_DIR" fetch --quiet origin >/dev/null 2>&1; }
 cmd_reset_worktree() {
 	git -C "$WORK_DIR" checkout -B "$BRANCH" "$TARGET_REF" >/dev/null 2>&1
 	if [ "$BRANCH_EXISTS" -eq 1 ]; then
