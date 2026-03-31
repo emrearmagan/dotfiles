@@ -68,8 +68,8 @@ return {
 
 							local destination = ctx.repo_path .. ".worktrees"
 
-						open_live_command("worktrees", {
-							"worktrees",
+							open_live_command("worktrees", {
+								"worktrees",
 								branch,
 								destination,
 								ctx.repo_path,
@@ -77,10 +77,46 @@ return {
 								"--session=worktrees",
 							}, function(code)
 								if code ~= 0 then
-								done(false, "worktrees failed (exit " .. tostring(code) .. ")")
+									done(false, "worktrees failed (exit " .. tostring(code) .. ")")
 									return
 								end
 								done(true, "Worktree ready for " .. branch)
+							end)
+						end,
+					},
+					{
+						id = "code_review_worktree",
+						label = "Code Review",
+
+						---@param _ BitbucketPR
+						---@param ctx BitbucketCustomActionContext
+						---@param done fun(ok: boolean|nil, message: string|nil)
+						run = function(_, ctx, done)
+							if not ctx.repo_path then
+								done(false, "No repo path")
+								return
+							end
+
+							local branch = tostring(ctx.pr.source_branch or "")
+							if branch == "" then
+								done(false, "Missing source branch")
+								return
+							end
+
+							local destination = ctx.repo_path .. ".reviews"
+
+							open_live_command("worktrees-review", {
+								"worktrees-review",
+								branch,
+								destination,
+								ctx.repo_path,
+								"--skip-unchaned",
+							}, function(code)
+								if code ~= 0 then
+									done(false, "worktrees-review failed (exit " .. tostring(code) .. ")")
+									return
+								end
+								done(true, "Code review started for " .. branch)
 							end)
 						end,
 					},
