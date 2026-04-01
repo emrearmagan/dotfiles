@@ -51,6 +51,7 @@ brew "delta"                # git diff tool
 brew "opencode"             # ai code cli
 brew "copilot"          # ai code cli
 
+# llm install llm-openrouter
 # llm models default openrouter/openrouter/free - to simply use this as default with just llm "hi"
 brew "llm"                  # ai code cli
 

@@ -74,12 +74,8 @@
           "name": "Qwen 3 8B",
           "tools": true
         },
-        "phi4-mini:3.8b": {
-          "name": "Phi 4 Mini 3.8B",
-          "tools": true
-        },
-        "llama3.2:3b": {
-          "name": "Llama 3.2 3B",
+        "qwen3-coder:30b": {
+          "name": "Qwen 3 30B",
           "tools": true
         },
         "qwen2.5-coder:7b": {

@@ -152,12 +152,11 @@ return {
 			},
 
 			jira = {
-				base_url = os.getenv("JIRA_BASE_URL"),
-				email = os.getenv("JIRA_EMAIL"),
-				token = os.getenv("JIRA_TOKEN"),
-				type = os.getenv("JIRA_AUTH_TYPE") or "basic",
-				api_version = "3",
-				limit = 200,
+				base_url = os.getenv("JIRA_BASE_URL") or "",
+				email = os.getenv("JIRA_EMAIL") or "",
+				token = os.getenv("JIRA_TOKEN") or "",
+				cache_ttl = 300,
+
 				projects = {
 					["ZAHN"] = {
 						story_point_field = "customfield_10035",
@@ -166,6 +165,7 @@ return {
 						},
 					},
 				},
+
 				queries = {
 					["Active Sprint"] = "project = '%s' AND (sprint in openSprints()) ORDER BY status ASC, assignee ASC, Rank ASC",
 					["Next sprint"] = "project = '%s' AND (sprint in futureSprints() ) ORDER BY status ASC, assignee ASC, Rank ASC",
@@ -173,18 +173,21 @@ return {
 				},
 				views = {
 					{
-						name = "My Tasks",
-						key = "M",
-						jql = "project = '%s' AND assignee = currentUser() AND statusCategory != Done ORDER BY status ASC, assignee ASC, updated DESC",
-					},
-					{
 						name = "Active Sprint",
 						key = "S",
+						project = "KAN",
+					},
+					{
+						name = "My Tasks",
+						key = "M",
+						jql = "assignee = currentUser() AND statusCategory != Done ORDER BY status ASC, assignee ASC, updated DESC",
+						project = "KAN",
 					},
 					{
 						name = "To Do",
 						key = "T",
-						jql = "project = '%s' AND sprint in openSprints() AND statusCategory = \"To Do\" AND assignee is EMPTY ORDER BY priority ASC",
+						jql = 'sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
+						project = "KAN",
 					},
 				},
 			},

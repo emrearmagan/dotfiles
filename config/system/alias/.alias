@@ -50,6 +50,7 @@ alias pcopy=pbcopy
 alias ppaste=pbpaste
 alias v=nvim
 alias lg=lazygit
+alias cursor="cursor-agent"
 
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""

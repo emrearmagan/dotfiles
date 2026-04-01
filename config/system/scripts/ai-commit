@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/colors.sh"
+source "$SCRIPT_DIR/utils/spinner.sh" spinner1
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || {
+    printf 'Missing dependency: %s\n' "$1" >&2
+    exit 1
+  }
+}
+
+need git
+need llm
+need fzf
+need sed
+need tr
+need grep
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf 'Not inside a git repository.\n' >&2
+  exit 1
+fi
+
+DIFF="$(git diff --cached)"
+if [ -z "$DIFF" ]; then
+  printf 'No staged changes found. Stage files first.\n' >&2
+  exit 1
+fi
+
+LOGS="$(git log -n 10 --pretty=format:'%h %s')"
+
+PROMPT="Please suggest 10 commit messages, given the following diff:
+
+\`\`\`diff
+$DIFF
+\`\`\`
+
+**Criteria:**
+1. Format: Plain commit messages without prefixes like feat:, fix:, chore:, etc.
+2. Start with a verb in imperative mood (add, update, fix, remove, etc.)
+3. Be clear and concise
+4. Focus on WHAT changed and WHY
+
+**Commit Message Examples:**
+- add password validation regex
+- update user authentication flow
+- fix memory leak in data processing
+- remove deprecated API endpoints
+- refactor database connection logic
+
+**Recent Commits for Reference:**
+\`\`\`
+$LOGS
+\`\`\`
+
+**Output Format:**
+Output ONLY raw commit messages, one per line, without numbers or decorations.
+Do not include any intro, explanation, header, or footer text.
+
+**Instructions:**
+- Understand the changes in the diff
+- Think about impact (bug fixes, features, performance, refactoring, docs)
+- Abstract to higher level, don't just describe code changes
+- Generate 10 diverse messages covering different scenarios
+- Make them helpful for project history
+- DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
+
+RAW_OUT="$(mktemp)"
+
+cleanup() {
+  [ -n "$RAW_OUT" ] && rm -f "$RAW_OUT"
+}
+trap cleanup EXIT
+
+cmd_generate() {
+  llm -m openrouter/openrouter/free "$PROMPT" >"$RAW_OUT"
+}
+
+USE_SPINNER=0
+if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+  USE_SPINNER=1
+fi
+
+if [ "$USE_SPINNER" -eq 1 ]; then
+  STEPS=("Thinking")
+  CMDS=("cmd_generate")
+  start
+else
+  cmd_generate
+fi
+
+SELECTED="$(
+  tr -d '\r' <"$RAW_OUT" \
+    | sed 's/\x1b\[[0-9;]*m//g' \
+    | sed -E 's/^\s*[-*]\s+//' \
+    | sed -E 's/^\s*[0-9]+[\.)]\s*//' \
+    | grep -vE '^\s*$' \
+    | grep -vE '^(#|```|\*\*)' \
+    | fzf --height 40% --border --no-ansi --no-preview
+)"
+
+if [ -z "$SELECTED" ]; then
+  printf 'Cancelled.\n' >&2
+  exit 1
+fi
+
+if command -v pbcopy >/dev/null 2>&1; then
+  printf '%s' "$SELECTED" | pbcopy
+fi
+
+printf '%s\n' "$SELECTED" | git commit --edit -F -
