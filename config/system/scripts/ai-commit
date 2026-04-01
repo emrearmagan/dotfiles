@@ -7,10 +7,10 @@ source "$SCRIPT_DIR/utils/colors.sh"
 source "$SCRIPT_DIR/utils/spinner.sh" spinner1
 
 need() {
-  command -v "$1" >/dev/null 2>&1 || {
-    printf 'Missing dependency: %s\n' "$1" >&2
-    exit 1
-  }
+	command -v "$1" >/dev/null 2>&1 || {
+		printf 'Missing dependency: %s\n' "$1" >&2
+		exit 1
+	}
 }
 
 need git
@@ -21,14 +21,14 @@ need tr
 need grep
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  printf 'Not inside a git repository.\n' >&2
-  exit 1
+	printf 'Not inside a git repository.\n' >&2
+	exit 1
 fi
 
 DIFF="$(git diff --cached)"
 if [ -z "$DIFF" ]; then
-  printf 'No staged changes found. Stage files first.\n' >&2
-  exit 1
+	printf 'No staged changes found. Stage files first.\n' >&2
+	exit 1
 fi
 
 LOGS="$(git log -n 10 --pretty=format:'%h %s')"
@@ -72,44 +72,45 @@ Do not include any intro, explanation, header, or footer text.
 RAW_OUT="$(mktemp)"
 
 cleanup() {
-  [ -n "$RAW_OUT" ] && rm -f "$RAW_OUT"
+	[ -n "$RAW_OUT" ] && rm -f "$RAW_OUT"
 }
 trap cleanup EXIT
 
 cmd_generate() {
-  llm -m openrouter/openrouter/free "$PROMPT" >"$RAW_OUT"
+	# llm -m openrouter/openrouter/free "$PROMPT" >"$RAW_OUT"
+	llm -m cursor/auto "$PROMPT" >"$RAW_OUT"
 }
 
 USE_SPINNER=0
 if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
-  USE_SPINNER=1
+	USE_SPINNER=1
 fi
 
 if [ "$USE_SPINNER" -eq 1 ]; then
-  STEPS=("Thinking")
-  CMDS=("cmd_generate")
-  start
+	STEPS=("Thinking")
+	CMDS=("cmd_generate")
+	start
 else
-  cmd_generate
+	cmd_generate
 fi
 
 SELECTED="$(
-  tr -d '\r' <"$RAW_OUT" \
-    | sed 's/\x1b\[[0-9;]*m//g' \
-    | sed -E 's/^\s*[-*]\s+//' \
-    | sed -E 's/^\s*[0-9]+[\.)]\s*//' \
-    | grep -vE '^\s*$' \
-    | grep -vE '^(#|```|\*\*)' \
-    | fzf --height 40% --border --no-ansi --no-preview
+	tr -d '\r' <"$RAW_OUT" |
+		sed 's/\x1b\[[0-9;]*m//g' |
+		sed -E 's/^\s*[-*]\s+//' |
+		sed -E 's/^\s*[0-9]+[\.)]\s*//' |
+		grep -vE '^\s*$' |
+		grep -vE '^(#|```|\*\*)' |
+		fzf --height 40% --border --no-ansi --no-preview
 )"
 
 if [ -z "$SELECTED" ]; then
-  printf 'Cancelled.\n' >&2
-  exit 1
+	printf 'Cancelled.\n' >&2
+	exit 1
 fi
 
 if command -v pbcopy >/dev/null 2>&1; then
-  printf '%s' "$SELECTED" | pbcopy
+	printf '%s' "$SELECTED" | pbcopy
 fi
 
 printf '%s\n' "$SELECTED" | git commit --edit -F -
