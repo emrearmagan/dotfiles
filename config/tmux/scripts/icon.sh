@@ -3,42 +3,38 @@
 cmd="$1"
 title="$2"
 
-name="${title:-$cmd}"
+get_icon() {
+	case "$1" in
+	*db* | *DB*)
+		echo ""
+		;;
+	*nvim* | *vim*)
+		echo ""
+		;;
+	*lazygit* | *git*)
+		echo ""
+		;;
+	*node*)
+		echo ""
+		;;
+	*docker*)
+		echo ""
+		;;
+	*ssh*)
+		echo "󰣀"
+		;;
+	*opencode*)
+		echo "󰚩"
+		;;
+	*http*)
+		echo "󰖟"
+		;;
+	esac
+}
 
-case "$name" in
-*db* | *DB*)
-	echo ""
-	;;
+icon=$(get_icon "$title")
+if [[ -z "$icon" ]]; then
+	icon=$(get_icon "$cmd")
+fi
 
-*nvim* | *vim*)
-	echo ""
-	;;
-
-*lazygit* | *git*)
-	echo ""
-	;;
-
-*node*)
-	echo ""
-	;;
-
-*docker*)
-	echo ""
-	;;
-
-*ssh*)
-	echo "󰣀"
-	;;
-
-*zsh* | *bash* | *fish*)
-	echo ""
-	;;
-
-*opencode*)
-	echo "󰚩"
-	;;
-
-*)
-	echo ""
-	;;
-esac
+echo "${icon:-}"
