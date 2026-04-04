@@ -47,6 +47,7 @@ eval "$(zoxide init zsh)"
 zstyle ':completion:*' menu no
 zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':fzf-tab:*' fzf-flags --height=30% --layout=reverse --style=minimal --preview-window=right
+zstyle ':fzf-tab:*' fzf-bindings 'tab:accept'
 zstyle ':fzf-tab:*' switch-group ',' '.'
 zstyle ':fzf-tab:complete:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --icons --color=always --group-directories-first -- $realpath; else bat --style=numbers --color=always --line-range=:200 -- $realpath; fi'
 

@@ -1,10 +1,11 @@
 return {
 	"zerochae/dbab.nvim",
+	lazy = true,
+	cmd = { "Dbab", "DbabClose" },
 	dependencies = {
 		"MunifTanjim/nui.nvim",
-		"nvim-lua/plenary.nvim", -- Optional: for async execution
+		"nvim-lua/plenary.nvim",
 	},
-	-- For blink.cmp, the source is included in this plugin (blink_dbab)
 	config = function()
 		require("dbab").setup({
 			connections = {

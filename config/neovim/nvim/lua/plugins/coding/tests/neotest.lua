@@ -11,18 +11,19 @@ return {
 			-- Go
 			{
 				"fredrikaverpil/neotest-golang",
+				lazy = true,
 				version = "*", -- Optional, but recommended; track releases
 				build = function()
 					vim.system({ "go", "install", "gotest.tools/gotestsum@latest" }):wait() -- Optional, but recommended
 				end,
 			},
-			"nvim-neotest/neotest-jest",
+			{ "nvim-neotest/neotest-jest", lazy = true },
 
 			-- Swift
-			"mmllr/neotest-swift-testing",
+			{ "mmllr/neotest-swift-testing", lazy = true },
 
 			-- Lua. Make sure to call: luarocks install busted or brew install busted
-			"MisanthropicBit/neotest-busted",
+			{ "MisanthropicBit/neotest-busted", lazy = true },
 		},
 		lazy = true,
 		config = function()

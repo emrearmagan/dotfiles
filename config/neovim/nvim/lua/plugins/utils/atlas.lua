@@ -43,9 +43,17 @@ return {
 				user = os.getenv("BITBUCKET_USER") or "",
 				token = os.getenv("BITBUCKET_TOKEN") or "",
 				cache_ttl = 300,
-				repo_paths = {
-					["emrearmaganxx/*"] = "~/development/nvim/atlas.testing/*",
+				repo_config = {
+					settings = {
+						["emrearmaganxx/atlas"] = {
+							readme = "Atlas",
+						},
+					},
+					paths = {
+						["emrearmaganxx/*"] = "~/development/nvim/atlas.testing/*",
+					},
 				},
+
 				custom_actions = {
 					{
 						id = "checkout_worktree",
@@ -60,7 +68,7 @@ return {
 								return
 							end
 
-							local branch = tostring(ctx.pr.source_branch or "")
+							local branch = tostring(ctx.pr.source.branch or "")
 							if branch == "" then
 								done(false, "Missing source branch")
 								return
@@ -97,7 +105,7 @@ return {
 								return
 							end
 
-							local branch = tostring(ctx.pr.source_branch or "")
+							local branch = tostring(ctx.pr.source.branch or "")
 							if branch == "" then
 								done(false, "Missing source branch")
 								return
@@ -129,7 +137,8 @@ return {
 						key = "M",
 						layout = "compact",
 						repos = {
-							{ workspace = "emrearmaganxx", repo = "atlas" },
+							{ workspace = "emrearmaganxx", repo = "atlas", readme = "Atlas" },
+							{ workspace = "emrearmaganxx", repo = "dockyard" },
 						},
 
 						---@param pr BitbucketPR
@@ -157,37 +166,27 @@ return {
 				token = os.getenv("JIRA_TOKEN") or "",
 				cache_ttl = 300,
 
-				projects = {
-					["ZAHN"] = {
-						story_point_field = "customfield_10035",
-						custom_fields = {
-							{ key = "customfield_10016", label = "Acceptance Criteriaa" },
-						},
-					},
-				},
-
 				queries = {
 					["Active Sprint"] = "project = '%s' AND (sprint in openSprints()) ORDER BY status ASC, assignee ASC, Rank ASC",
 					["Next sprint"] = "project = '%s' AND (sprint in futureSprints() ) ORDER BY status ASC, assignee ASC, Rank ASC",
 					["Backlog"] = "project = '%s' AND ((issuetype IN standardIssueTypes() OR issuetype = Sub-task) AND (sprint IS EMPTY OR sprint NOT IN openSprints()) OR issuetype = Epic) AND statusCategory != Done ORDER BY status ASC, assignee ASC, Rank ASC",
 				},
+
 				views = {
 					{
 						name = "Active Sprint",
 						key = "S",
-						project = "KAN",
+						jql = "project = KAN",
 					},
 					{
 						name = "My Tasks",
 						key = "M",
-						jql = "assignee = currentUser() AND statusCategory != Done ORDER BY status ASC, assignee ASC, updated DESC",
-						project = "KAN",
+						jql = "project = KAN AND assignee = currentUser()",
 					},
 					{
 						name = "To Do",
 						key = "T",
-						jql = 'sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
-						project = "KAN",
+						jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
 					},
 				},
 			},

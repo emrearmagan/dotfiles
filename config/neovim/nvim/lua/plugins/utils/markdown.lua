@@ -37,6 +37,7 @@ return {
 			},
 			anti_conceal = {
 				enabled = true,
+				disabled_modes = { "n", "c", "t" },
 				above = 1,
 				below = 1,
 			},

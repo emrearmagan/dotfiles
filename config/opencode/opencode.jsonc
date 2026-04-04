@@ -12,13 +12,13 @@
       "*.env": "deny",
       "*.env.*": "deny",
       "*.dev.vars": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
     },
     "external_directory": {
       "*": "ask",
       "~/development/**": "allow",
       "/tmp/**": "allow",
-      "/private/tmp/**": "allow"
+      "/private/tmp/**": "allow",
     },
     "edit": "ask",
     "bash": {
@@ -30,7 +30,7 @@
       "find *": "allow",
       "rg *": "allow",
       "grep *": "allow",
-      "rtk *" : "allow",
+      "rtk *": "allow",
 
       // Git
       "git status *": "allow",
@@ -56,10 +56,16 @@
 
       // Docker
       "docker ps *": "allow",
-    }
+    },
   },
   "plugin": [
-    "superpowers@git+https://github.com/obra/superpowers.git"
+    "superpowers@git+https://github.com/obra/superpowers.git",
+
+    // https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
+    "@tarquinen/opencode-dcp@latest",
+
+    // https://github.com/mohak34/opencode-notifier
+    "@mohak34/opencode-notifier@latest",
   ],
   "model": "openai/gpt-5.3-codex",
   "provider": {
@@ -67,38 +73,38 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
       "options": {
-        "baseURL": "https://ollama.local.emrearmagan.dev/v1"
+        "baseURL": "https://ollama.local.emrearmagan.dev/v1",
       },
       "models": {
         "qwen3:8b": {
           "name": "Qwen 3 8B",
-          "tools": true
+          "tools": true,
         },
         "qwen3-coder:30b": {
           "name": "Qwen 3 30B",
-          "tools": true
+          "tools": true,
         },
         "qwen2.5-coder:7b": {
           "name": "qwen2.5-coder 7B",
-          "tools": true
-        }
-      }
-    }
+          "tools": true,
+        },
+      },
+    },
   },
   "mcp": {
     "context7": {
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
-      }
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}",
+      },
     },
     "github": {
       "type": "local",
       "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
       "environment": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PUBLIC_ACCESS_TOKEN}"
-      }
-    }
-  }
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PUBLIC_ACCESS_TOKEN}",
+      },
+    },
+  },
 }

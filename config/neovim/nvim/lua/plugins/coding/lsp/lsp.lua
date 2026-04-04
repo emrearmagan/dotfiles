@@ -24,14 +24,12 @@ return {
 					"gopls", -- Go
 					"dockerls", -- Docker
 					"yamlls", -- YAML
+					"jsonls", -- JSON
 					"ansiblels", -- Ansible
 					"bashls", -- Bash
 
-					"intelephense", --PHP
 					"html", -- HTML
-					-- "ts_ls", -- TypeScript & JavaScript
 					"vtsls", -- TypeScript & JavaScript (alternative)
-					"angularls", -- Angular
 					"cssls", -- CSS (for LESS support)
 					"marksman", -- Markdown
 
@@ -127,6 +125,17 @@ return {
 							["https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook"] = "*/playbook.yml",
 							["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
 						},
+					},
+				},
+			})
+
+			-- JSON
+			vim.lsp.config("jsonls", {
+				filetypes = { "json", "jsonc" },
+				capabilities = capabilities,
+				settings = {
+					json = {
+						validate = { enable = true },
 					},
 				},
 			})

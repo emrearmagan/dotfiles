@@ -129,3 +129,4 @@ cask "shortcat"             # mouse-free navigation
 cask "aerospace"            # tiling window manager
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
+cask "claude-code"          # ai assistant
