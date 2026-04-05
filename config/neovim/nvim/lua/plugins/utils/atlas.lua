@@ -172,6 +172,35 @@ return {
 					["Backlog"] = "project = '%s' AND ((issuetype IN standardIssueTypes() OR issuetype = Sub-task) AND (sprint IS EMPTY OR sprint NOT IN openSprints()) OR issuetype = Epic) AND statusCategory != Done ORDER BY status ASC, assignee ASC, Rank ASC",
 				},
 
+				project_config = {
+					["KAN"] = {
+						customfield_10003 = {
+							name = "Approvers",
+
+							---@param value any
+							---@return string|nil
+							format = function(value)
+								if type(value) ~= "table" or #value == 0 then
+									return nil
+								end
+
+								local names = {}
+								for _, user in ipairs(value) do
+									local name = type(user) == "table" and user.displayName or nil
+									if type(name) == "string" and name ~= "" then
+										table.insert(names, name)
+									end
+								end
+								if #names == 0 then
+									return "NONE"
+								end
+								return table.concat(names, ", ")
+							end,
+							hl_group = "AtlasTextMuted",
+							display = "table",
+						},
+					},
+				},
 				views = {
 					{
 						name = "Active Sprint",

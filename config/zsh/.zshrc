@@ -25,6 +25,7 @@ export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 export PATH="$HOME/.config/scripts:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+export LUA_PATH="lua/?.lua;lua/?/init.lua;;" # i dont know why but i need this for 'busted' to work
 
 # zsh-autosuggestions, syntax highlighting, and fzf-tab
 fpath+=("$(brew --prefix)/share/zsh-completions")

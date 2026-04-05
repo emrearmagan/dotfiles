@@ -14,7 +14,7 @@ need() {
 }
 
 need git
-need llm
+need opencode
 need fzf
 need sed
 need tr
@@ -77,8 +77,7 @@ cleanup() {
 trap cleanup EXIT
 
 cmd_generate() {
-	# llm -m openrouter/openrouter/free "$PROMPT" >"$RAW_OUT"
-	llm -m cursor/auto "$PROMPT" >"$RAW_OUT"
+	opencode run --model opencode/minimax-m2.5-free "$PROMPT" >"$RAW_OUT"
 }
 
 USE_SPINNER=0

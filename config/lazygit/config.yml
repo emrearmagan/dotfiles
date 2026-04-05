@@ -37,9 +37,7 @@ quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later
 # localConfig:
 #   enabled: true
-# Uses LLM CLI tool with OpenRouter and Cursor
-# Setup: llm install llm-openrouter && llm keys set openrouter
-# Setup: cd ~/.config/io.datasette.llm/plugins && ./install.sh
+# Uses opencode for AI commit messages
 customCommands:
   - key: "<c-o>"
     description: "Pick AI commit"
