@@ -17,4 +17,4 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
-config/opencode/opencode.jsonc
+config/opencode/opencode-notifier-state.json
