@@ -656,20 +656,20 @@ wk.add({
 		desc = "Reset Hunk",
 	},
 	{
-		"<leader>g[",
+		"[g",
 		function()
 			local gitsigns = require("gitsigns")
-			gitsigns.prev_hunk()
+			gitsigns.nav_hunk("prev")
 		end,
-		desc = "Previous Hunk",
+		desc = "Git Previous Hunk",
 	},
 	{
-		"<leader>g]",
+		"]g",
 		function()
 			local gitsigns = require("gitsigns")
-			gitsigns.next_hunk()
+			gitsigns.nav_hunk("next")
 		end,
-		desc = "Next Hunk",
+		desc = "Git Next Hunk",
 	},
 	{
 		"<leader>gB",

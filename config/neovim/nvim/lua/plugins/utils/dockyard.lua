@@ -1,14 +1,13 @@
 return {
 	dir = "/Users/emrearmagan/development/nvim/dockyard.nvim",
 	-- "emrearmagan/dockyard.nvim",
-	cmd = { "Dockyard", "DockyardFloat" },
-	lazy = true,
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"akinsho/toggleterm.nvim", -- optional
 	},
 	config = function()
 		require("dockyard").setup({
+			detect_compose = true,
 			--- @type LogLensConfig
 			loglens = {
 				containers = {

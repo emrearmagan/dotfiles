@@ -6,6 +6,26 @@ return {
 	opts = {
 		bigfile = { enabled = true },
 		explorer = { enabled = false },
+		zen = {
+			toggles = {
+				dim = true,
+				git_signs = false,
+				mini_diff_signs = false,
+			},
+
+			center = true,
+
+			show = {
+				statusline = true,
+				tabline = false,
+			},
+
+			win = {
+				style = "zen",
+				width = 0.9,
+				height = 0,
+			},
+		},
 		image = {
 			enabled = true,
 			resolve = function(path, src)
