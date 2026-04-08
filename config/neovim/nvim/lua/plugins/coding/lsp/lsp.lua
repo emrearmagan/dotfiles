@@ -109,13 +109,19 @@ return {
 			})
 
 			-- Swift (macOS native)
-			vim.lsp.config("sourcekit", {
-				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
-				filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
+			vim.lsp.enable("sourcekit", {
 				capabilities = capabilities,
+				filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
 				on_init = function(client)
 					client.offset_encoding = "utf-8"
 				end,
+				-- root_dir = function(_, callback)
+				-- 	callback(
+				-- 		require("lspconfig.util").root_pattern("Package.swift")(vim.fn.getcwd())
+				-- 			or require("lspconfig.util").find_git_ancestor(vim.fn.getcwd())
+				-- 	)
+				-- end,
+				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 			})
 
 			-- YAML
@@ -170,6 +176,8 @@ return {
 			vim.lsp.config("cssls", {
 				filetypes = { "css", "scss", "less" },
 			})
+
+			vim.lsp.enable("sourcekit")
 		end,
 	},
 
@@ -189,11 +197,12 @@ return {
 	-- nvim-cmp for autocompletion
 	{
 		"hrsh7th/nvim-cmp",
-		event = "InsertEnter",
+		event = { "InsertEnter", "CmdlineEnter" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp", -- Connects nvim-cmp with LSP
 			"hrsh7th/cmp-buffer", -- Autocomplete from open buffers
 			"hrsh7th/cmp-path", -- Autocomplete file paths
+			"hrsh7th/cmp-cmdline", -- Cmdline completion sources
 			"L3MON4D3/LuaSnip", -- snippet engine
 			"saadparwaiz1/cmp_luasnip", -- for autocompletion
 			"rafamadriz/friendly-snippets", -- useful snippets
@@ -217,7 +226,6 @@ return {
 				},
 				snippet = { -- configure how nvim-cmp interacts with snippet engine
 					expand = function(args)
-						-- vim.fn["vsnip#anonymous"](args.body)
 						luasnip.lsp_expand(args.body)
 					end,
 				},
@@ -279,6 +287,23 @@ return {
 						maxwidth = 50,
 						ellipsis_char = "...",
 					}),
+				},
+			})
+
+			-- Cmdline completion for ":" commands and "/" search.
+			cmp.setup.cmdline(":", {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = cmp.config.sources({
+					{ name = "path" },
+				}, {
+					{ name = "cmdline" },
+				}),
+			})
+
+			cmp.setup.cmdline({ "/", "?" }, {
+				mapping = cmp.mapping.preset.cmdline(),
+				sources = {
+					{ name = "buffer" },
 				},
 			})
 		end,

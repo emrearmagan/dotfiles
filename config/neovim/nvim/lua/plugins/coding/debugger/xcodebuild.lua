@@ -5,9 +5,40 @@ return {
 	{
 		"wojciech-kulik/xcodebuild.nvim",
 		dependencies = {
-			-- "j-hui/fidget.nvim", -- guarantee load order. Also installed, see figet.lua
-			"nvim-telescope/telescope.nvim", -- Used for pickers (e.g. quickfix list)
+			{
+				--- Only used for xcodebuild progress and notifications, not for LSP progress (handled by noice.nvim)
+				"j-hui/fidget.nvim",
+				opts = {
+					progress = {
+						poll_rate = false,
+						ignore_done_already = true,
+						ignore_empty_message = true,
+						lsp = {
+							progress_ringbuf_size = 0,
+							log_handler = false,
+						},
+					},
+					notification = {
+						override_vim_notify = false,
+						window = {
+							normal_hl = "Normal",
+							winblend = 100,
+							border = "none",
+							border_hl = "",
+							zindex = 45,
+							max_width = 0,
+							max_height = 0,
+							x_padding = 0,
+							y_padding = 1,
+							align = "bottom",
+							relative = "editor",
+						},
+					},
+				},
+			},
+			"folke/snacks.nvim", -- Used for pickers (e.g. quickfix list)
 			"MunifTanjim/nui.nvim", -- UI framework for floating windows
+			"nvim-treesitter/nvim-treesitter", -- (optional) for Quick tests support (required Swift parser)
 		},
 		lazy = true,
 		config = function()
@@ -18,6 +49,7 @@ return {
 					focus_simulator_on_app_launch = false,
 				},
 				logs = {
+
 					auto_open_on_success_tests = false,
 					auto_open_on_failed_tests = false,
 					auto_open_on_success_build = false,

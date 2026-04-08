@@ -44,7 +44,7 @@ return {
 			border = "rounded", -- or "none"
 			winblend = 10, -- transparency
 		},
-		notify = { enabled = true },
+		notify = { enabled = false },
 		picker = {
 			sources = {
 				files = {

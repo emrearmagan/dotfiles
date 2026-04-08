@@ -21,7 +21,10 @@ vim.env.PATH = table.concat({
 -- Auto-reload files when changed externally
 vim.opt.autoread = true
 vim.opt.updatetime = 1000 -- Reduce update time (default is 4000ms)
-
+vim.opt.cmdheight = 0
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true
 
 -- Custom filetype mappings
 vim.filetype.add({
