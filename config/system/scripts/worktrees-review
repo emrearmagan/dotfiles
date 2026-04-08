@@ -4,45 +4,98 @@
 # then send the same OpenCode review command to every tmux pane.
 #
 # Usage:
-#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchaned]
+#   worktrees-review <branch> [--skip-unchanged] [--base=<branch>] [--attach]
+#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--attach]
 #
 # Notes:
 #   - Uses tmux session: reviews
 #   - Sends a fixed OpenCode prompt to each pane
-#   - --skip-unchaned is forwarded to `worktrees`
+#   - --skip-unchanged and --base are forwarded to `worktrees`
+#   - --attach attaches after review commands are sent
+#   - branch-only mode uses current repo with destination at ./reviews
 #
-# Example:
-#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b --skip-unchaned
+# Examples:
+#   worktrees-review linux
+#   worktrees-review linux --skip-unchanged
+#   worktrees-review linux --base=develop
+#   worktrees-review linux --attach
+#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged
 
 set -euo pipefail
 
 usage() {
-	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-unchaned]\n' "$(basename "$0")" >&2
-	printf 'Example: %s KAN-1 "$HOME/reviews" ~/repo/a ~/repo/b --skip-unchaned\n' "$(basename "$0")" >&2
+	printf 'Usage:\n' >&2
+	printf '  %s <branch> [--skip-unchanged] [--base=<branch>] [--attach]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--attach]\n' "$(basename "$0")" >&2
+	printf '\nExamples:\n' >&2
+	printf '  %s linux\n' "$(basename "$0")" >&2
+	printf '  %s linux --skip-unchanged --base=develop\n' "$(basename "$0")" >&2
+	printf '  %s linux --attach\n' "$(basename "$0")" >&2
+	printf '  %s linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
+	printf '\nOptions:\n' >&2
+	printf '  -h, --help                  show help\n' >&2
+	printf '      --skip-unchanged        forward to worktrees\n' >&2
+	printf '      --base=<branch>         forward to worktrees\n' >&2
+	printf '      --attach                attach after sending review commands\n' >&2
 }
 
-if [ "$#" -lt 3 ]; then
+REPOS=()
+SKIP_SAME=0
+BASE_BRANCH=""
+ATTACH=0
+POSITIONAL=()
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+	usage
+	exit 0
+fi
+
+if [ "$#" -lt 1 ] || [[ "$1" == --* ]]; then
 	usage
 	exit 1
 fi
 
 BRANCH="$1"
-DESTINATION="$2"
-shift 2
-REPOS=()
-SKIP_SAME=0
+DESTINATION=""
+shift
 
 for ARG in "$@"; do
-	if [ "$ARG" = "--skip-unchaned" ]; then
+	if [ "$ARG" = "--skip-unchanged" ]; then
 		SKIP_SAME=1
+	elif [ "$ARG" = "--attach" ]; then
+		ATTACH=1
+	elif [[ "$ARG" == --base=* ]]; then
+		BASE_BRANCH="${ARG#--base=}"
+		if [ -z "$BASE_BRANCH" ]; then
+			printf 'Base branch cannot be empty.\n' >&2
+			usage
+			exit 1
+		fi
+	elif [[ "$ARG" == --* ]]; then
+		printf 'Unknown flag: %s\n' "$ARG" >&2
+		usage
+		exit 1
 	else
-		REPOS+=("$ARG")
+		POSITIONAL+=("$ARG")
 	fi
 done
 
-if [ "${#REPOS[@]}" -eq 0 ]; then
-	usage
-	exit 1
+if [ "${#POSITIONAL[@]}" -eq 0 ]; then
+	if ! REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+		printf 'Branch-only mode requires running inside a git repository.\n' >&2
+		exit 1
+	fi
+	DESTINATION="$REPO_ROOT/reviews"
+	REPOS=("$REPO_ROOT")
+	printf 'Using current repo: %s\n' "$REPO_ROOT"
+else
+	if [ "${#POSITIONAL[@]}" -lt 2 ]; then
+		printf 'When passing positional args after <branch>, provide both <destination> and at least one <repo-path>.\n' >&2
+		usage
+		exit 1
+	fi
+	DESTINATION="${POSITIONAL[0]}"
+	REPOS=("${POSITIONAL[@]:1}")
 fi
 
 SESSION="reviews"
@@ -50,7 +103,10 @@ PROMPT='Code review this branch. If there are no changes on this branch, stop an
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
-	WORKTREES_ARGS+=("--skip-unchaned")
+	WORKTREES_ARGS+=("--skip-unchanged")
+fi
+if [ -n "$BASE_BRANCH" ]; then
+	WORKTREES_ARGS+=("--base=$BASE_BRANCH")
 fi
 
 if ! worktrees "${WORKTREES_ARGS[@]}"; then
@@ -75,3 +131,12 @@ while IFS= read -r pane; do
 done < <(tmux list-panes -t "$WINDOW_TARGET" -F '#{session_name}:#{window_name}.#{pane_index}')
 
 printf 'Sent review command to panes in %s\n' "$WINDOW_TARGET"
+
+if [ "$ATTACH" -eq 1 ]; then
+	if [ -z "${TMUX:-}" ]; then
+		tmux attach -t "$WINDOW_TARGET"
+	else
+		tmux switch-client -t "$SESSION"
+		tmux select-window -t "$WINDOW_TARGET"
+	fi
+fi

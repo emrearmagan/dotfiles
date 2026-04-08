@@ -20,7 +20,7 @@
       "/tmp/**": "allow",
       "/private/tmp/**": "allow",
     },
-    "edit": "allow",
+    "edit": "ask",
     "bash": {
       "*": "ask",
       "ls *": "allow",

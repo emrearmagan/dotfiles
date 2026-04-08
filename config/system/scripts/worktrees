@@ -4,11 +4,16 @@
 # Opens a tmux window with one pane per created/reused worktree.
 #
 # Usage:
-#   worktrees <branch> <destination> <repo-path...> [--skip-unchaned] [--split=h|v] [--session=<name>] [--attach]
+#   worktrees <branch> <repo-path...> [--skip-unchanged] [--base=<branch>] [--split=h|v] [--session=<name>] [--attach]
+#   worktrees <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--split=h|v] [--session=<name>] [--attach]
 #
 # Flags:
-#   --skip-unchaned  Skip repos where origin/<branch> has no diff vs origin/main.
+#   --skip-unchanged  Skip repos where origin/<branch> has no diff vs origin/<base>.
 #                Without this flag, those repos are still created/reused.
+#   destination  Optional shared parent destination. When omitted, each worktree
+#                is created inside its own repo at <repo>/.worktrees/<branch>.
+#   --base=...  Base branch to diff against and to use as fallback when
+#               origin/<branch> does not exist. Default is main.
 #   --split=...  Pane direction in tmux. Use h (left/right) or v (top/bottom).
 #                Default is h.
 #   --session=...  tmux session name to create/reuse.
@@ -16,15 +21,10 @@
 #   --attach  Attach/switch to the created tmux window.
 #
 # Examples:
-#   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim
-#   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
-#   worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim --skip-unchaned
+#   worktrees dev ~/development/nvim/atlas.nvim
+#   worktrees dev ~/development/nvim/atlas.nvim ~/development/nvim/dockyard.nvim
+#   worktrees dev ~/Downloads ~/development/nvim/dockyard.nvim
 #   worktrees dev ~/Downloads ~/development/nvim/atlas.nvim --split=v
-#
-# Folder layout (example):
-#   ~/Downloads/dev/
-#   ├── atlas.nvim/
-#   └── dockyard.nvim/
 
 set -euo pipefail
 
@@ -40,24 +40,53 @@ if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
 	USE_SPINNER=1
 fi
 
-if [ "$#" -lt 3 ]; then
-	printf 'Usage: %s <branch> <destination> <repo-path...> [--skip-unchaned] [--split=h|v] [--session=<name>] [--attach]\n' "$(basename "$0")" >&2
+usage() {
+	printf 'Usage:\n' >&2
+	printf '  %s <branch> [options]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> <repo-path...> [options]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> <destination> <repo-path...> [options]\n' "$(basename "$0")" >&2
+	printf '\nExamples:\n' >&2
+	printf '  %s linux\n' "$(basename "$0")" >&2
+	printf '  %s linux ~/dev/nvim/atlas.nvim\n' "$(basename "$0")" >&2
+	printf '  %s linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
+	printf '  %s linux ~/repo/a --base=develop --split=v --attach\n' "$(basename "$0")" >&2
+	printf '\nOptions:\n' >&2
+	printf '  -h, --help                  show help\n' >&2
+	printf '      --skip-unchanged        skip repos with no diff vs origin/<base>\n' >&2
+	printf '      --base=<branch>         base branch (default: main)\n' >&2
+	printf '      --split=h|v             tmux split direction (default: h)\n' >&2
+	printf '      --session=<name>        tmux session name (default: worktrees)\n' >&2
+	printf '      --attach                attach/switch to the created tmux window\n' >&2
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+	usage
+	exit 0
+fi
+
+if [ "$#" -lt 1 ]; then
+	usage
 	exit 1
 fi
 
 BRANCH="$1"
-DESTINATION="$2"
-shift 2
+shift
 
 SKIP_SAME=0
+BASE_BRANCH="main"
 SPLIT="h"
 ATTACH=0
 SESSION="worktrees"
+INPUT_PATHS=()
 REPOS=()
+DESTINATION=""
+DESTINATION_MODE=""
 
 for ARG in "$@"; do
-	if [ "$ARG" = "--skip-unchaned" ]; then
+	if [ "$ARG" = "--skip-unchanged" ]; then
 		SKIP_SAME=1
+	elif [[ "$ARG" == --base=* ]]; then
+		BASE_BRANCH="${ARG#--base=}"
 	elif [ "$ARG" = "--attach" ]; then
 		ATTACH=1
 	elif [[ "$ARG" == --split=* ]]; then
@@ -66,15 +95,45 @@ for ARG in "$@"; do
 		SESSION="${ARG#--session=}"
 	elif [[ "$ARG" = --* ]]; then
 		printf 'Unknown flag: %s\n' "$ARG" >&2
-		printf 'Supported flags: --skip-unchaned, --split=h|v, --session=<name>, --attach\n' >&2
+		usage
 		exit 1
 	else
-		REPOS+=("$ARG")
+		INPUT_PATHS+=("$ARG")
 	fi
 done
 
+is_git_repo_path() {
+	local repo_path="$1"
+	[ -d "$repo_path/.git" ] || [ -f "$repo_path/.git" ]
+}
+
+if [ "${#INPUT_PATHS[@]}" -eq 0 ]; then
+	if ! REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+		printf 'Branch-only mode requires running inside a git repository.\n' >&2
+		exit 1
+	fi
+	DESTINATION_MODE="repo-local"
+	REPOS=("$REPO_ROOT")
+elif [ "${#INPUT_PATHS[@]}" -eq 1 ] || is_git_repo_path "${INPUT_PATHS[0]}"; then
+	DESTINATION_MODE="repo-local"
+	REPOS=("${INPUT_PATHS[@]}")
+else
+	if [ "${#INPUT_PATHS[@]}" -lt 2 ]; then
+		printf 'When destination is provided, at least one repo path is required.\n' >&2
+		exit 1
+	fi
+	DESTINATION_MODE="shared"
+	DESTINATION="${INPUT_PATHS[0]}"
+	REPOS=("${INPUT_PATHS[@]:1}")
+fi
+
 if [ -z "$SESSION" ]; then
 	printf 'Session name cannot be empty.\n' >&2
+	exit 1
+fi
+
+if [ -z "$BASE_BRANCH" ]; then
+	printf 'Base branch cannot be empty.\n' >&2
 	exit 1
 fi
 
@@ -89,13 +148,6 @@ else
 	printf 'Allowed values: h, v\n' >&2
 	exit 1
 fi
-
-if [ "${#REPOS[@]}" -eq 0 ]; then
-	printf 'At least one repo path is required.\n' >&2
-	exit 1
-fi
-
-BRANCH_DIR="$DESTINATION/$BRANCH"
 
 log() {
 	local key="$1"
@@ -197,18 +249,32 @@ cmd_add_worktree() {
 
 WINDOW="$(build_window_name)"
 
-printf '%s\n\n' "$(colorize overlay1 "$BRANCH -> $BRANCH_DIR")"
+if [ "$DESTINATION_MODE" = "shared" ]; then
+	printf '%s\n\n' "$(colorize overlay1 "$BRANCH -> $DESTINATION/$BRANCH")"
+else
+	printf '%s\n\n' "$(colorize overlay1 "$BRANCH -> <repo>/.worktrees/$BRANCH")"
+fi
 
 ACTIVE_WORKTREES=()
 
 for REPO_PATH in "${REPOS[@]}"; do
 	REPO_NAME="$(basename "$REPO_PATH")"
-	WORK_DIR="$BRANCH_DIR/$REPO_NAME"
+	if [ "$DESTINATION_MODE" = "shared" ]; then
+		WORK_DIR="$DESTINATION/$BRANCH/$REPO_NAME"
+	else
+		WORK_DIR="$REPO_PATH/.worktrees/$BRANCH"
+	fi
 
 	log repo "$REPO_NAME"
 
 	if [ ! -d "$REPO_PATH/.git" ] && [ ! -f "$REPO_PATH/.git" ]; then
 		log status "missing repo: $REPO_PATH"
+		echo
+		continue
+	fi
+
+	if ! mkdir -p "$(dirname "$WORK_DIR")"; then
+		log status "could not create parent: $(dirname "$WORK_DIR")"
 		echo
 		continue
 	fi
@@ -225,10 +291,10 @@ for REPO_PATH in "${REPOS[@]}"; do
 		TARGET_REF="origin/$BRANCH"
 	else
 		BRANCH_EXISTS=0
-		TARGET_REF="origin/main"
+		TARGET_REF="origin/$BASE_BRANCH"
 	fi
 
-	if [ "$BRANCH_EXISTS" -eq 1 ] && git -C "$REPO_PATH" diff --quiet origin/main..."$TARGET_REF"; then
+	if [ "$BRANCH_EXISTS" -eq 1 ] && git -C "$REPO_PATH" diff --quiet "origin/$BASE_BRANCH"..."$TARGET_REF"; then
 		if [ "$SKIP_SAME" -eq 1 ]; then
 			log status "no changes, skipping"
 			echo
@@ -238,7 +304,7 @@ for REPO_PATH in "${REPOS[@]}"; do
 	fi
 
 	if [ "$BRANCH_EXISTS" -eq 0 ]; then
-		log status "branch missing, using origin/main"
+		log status "branch missing, using origin/$BASE_BRANCH"
 	fi
 
 	if [ -e "$WORK_DIR" ] && [ ! -d "$WORK_DIR/.git" ] && [ ! -f "$WORK_DIR/.git" ]; then
