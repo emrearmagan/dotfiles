@@ -214,7 +214,21 @@ return {
 		config = function()
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
+			local ls_types = require("luasnip.util.types")
 			local lspkind = require("lspkind")
+
+			vim.api.nvim_set_hl(0, "LuasnipInsertNodeActive", { link = "Comment" })
+			vim.api.nvim_set_hl(0, "LuasnipChoiceNodeActive", { link = "Comment" })
+			luasnip.config.setup({
+				ext_opts = {
+					[ls_types.insertNode] = {
+						active = { hl_group = "LuasnipInsertNodeActive" },
+					},
+					[ls_types.choiceNode] = {
+						active = { hl_group = "LuasnipChoiceNodeActive" },
+					},
+				},
+			})
 
 			-- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
 			require("luasnip.loaders.from_vscode").lazy_load()
@@ -233,6 +247,8 @@ return {
 				mapping = cmp.mapping.preset.insert({
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<CR>"] = cmp.mapping.confirm({ select = false }),
+					["<C-j>"] = cmp.mapping.select_next_item(),
+					["<C-k>"] = cmp.mapping.select_prev_item(),
 
 					-- scroll completion docs
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
@@ -279,6 +295,8 @@ return {
 					}),
 					documentation = cmp.config.window.bordered({
 						border = "rounded",
+						-- max_width = 60,
+						-- max_height = 12,
 						winhighlight = "Normal:Pmenu,FloatBorder:PmenuBorder,Search:None",
 					}),
 				},

@@ -5,7 +5,7 @@ return {
 		"MunifTanjim/nui.nvim",
 	},
 	opts = {
-		popupmenu = { enabled = true },
+		popupmenu = { enabled = false },
 		notify = { enabled = true },
 		messages = { enabled = true },
 		cmdline = { enabled = true, view = "cmdline" }, -- bottom style
