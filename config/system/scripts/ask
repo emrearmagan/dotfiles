@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/spinner.sh" spinner1
+
+need() {
+	command -v "$1" >/dev/null 2>&1 || {
+		printf 'Missing dependency: %s\n' "$1" >&2
+		exit 1
+	}
+}
+
+usage() {
+	printf 'Usage: ask [--model <model>] <prompt>\n'
+}
+
+format_elapsed() {
+	local total="$1"
+	local m s
+	m=$((total / 60))
+	s=$((total % 60))
+	printf '%dm %02ds' "$m" "$s"
+}
+
+run_with_spinner() {
+	local pid="$1"
+	local verb="$2"
+	local idx=0
+	local start_time elapsed frame
+
+	start_time=$(date +%s)
+	tput civis -- invisible
+
+	while ps -p "$pid" >/dev/null 2>&1; do
+		elapsed=$(( $(date +%s) - start_time ))
+		frame="${FRAME[$idx]}"
+		printf '\r[ %s ] %s (%s)' \
+			"$(paint "$SPINNER_FRAME_COLOR" "$frame")" \
+			"$(paint "$SPINNER_TEXT_COLOR" "$verb")" \
+			"$(paint "$SPINNER_TEXT_COLOR" "$(format_elapsed "$elapsed")")"
+		sleep "$FRAME_INTERVAL"
+		idx=$(((idx + 1) % ${#FRAME[@]}))
+	done
+
+	printf '\r\033[K'
+	tput cnorm -- normal
+}
+
+MODEL="opencode/minimax-m2.5-free"
+PROMPT_PARTS=()
+
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+	--model)
+		shift
+		[ "$#" -gt 0 ] || {
+			printf 'Missing value for --model\n' >&2
+			exit 1
+		}
+		MODEL="$1"
+		;;
+	--model=*)
+		MODEL="${1#*=}"
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		PROMPT_PARTS+=("$1")
+		;;
+	esac
+	shift
+done
+
+PROMPT="${PROMPT_PARTS[*]}"
+
+[ -n "$PROMPT" ] || {
+	usage
+	exit 1
+}
+
+need opencode
+
+VERBS=(
+	"overthinking"
+	"conbabultating"
+	"osmosing"
+	"vibe-checking"
+	"brainstormulating"
+	"noodling"
+	"ponder-sprinting"
+	"meme-ifying"
+	"quantum-guessing"
+	"synapse-juggling"
+	"idea-marinating"
+	"logic-dancing"
+	"context-mining"
+	"token-wrangling"
+	"hypothesis-baking"
+	"fact-fishing"
+	"pattern-sniffing"
+	"thought-weaving"
+	"insight-foraging"
+	"answer-cooking"
+)
+
+verb_index=$((RANDOM % ${#VERBS[@]}))
+verb="${VERBS[$verb_index]}"
+
+OUT_FILE="$(mktemp)"
+ERR_FILE="$(mktemp)"
+
+cleanup() {
+	tput cnorm -- normal >/dev/null 2>&1 || true
+	rm -f "$OUT_FILE" "$ERR_FILE"
+}
+trap cleanup EXIT
+
+opencode run --model "$MODEL" "$PROMPT" >"$OUT_FILE" 2>"$ERR_FILE" &
+pid=$!
+
+if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+	run_with_spinner "$pid" "$verb"
+fi
+
+if ! wait "$pid"; then
+	if [ -s "$ERR_FILE" ]; then
+		cat "$ERR_FILE" >&2
+	fi
+	exit 1
+fi
+
+cat "$OUT_FILE"

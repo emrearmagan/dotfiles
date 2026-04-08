@@ -7,7 +7,15 @@ return {
 	},
 	config = function()
 		require("dockyard").setup({
-			detect_compose = true,
+			display = {
+				views = {
+					"compose",
+					"images",
+					"volumes",
+					"networks",
+				},
+			},
+
 			--- @type LogLensConfig
 			loglens = {
 				containers = {
@@ -27,7 +35,17 @@ return {
 							},
 						},
 
-						_order = { "time", "level", "service", "status", "request", "message", "project" },
+						_order = {
+							"time",
+							"level",
+							"service",
+							"status",
+							"request",
+							"message",
+							"project",
+							"context",
+							"session",
+						},
 						format = function(entry, ctx)
 							local ts = entry.timestamp and entry.timestamp:sub(12, 19) or "--:--:--"
 							local lvl = (entry.level or "info"):upper()
@@ -37,6 +55,7 @@ return {
 							local method = req.method or "-"
 							local path = req.path or "-"
 							local ip = req.ip or "-"
+							local ectx = entry.context or {}
 							return {
 								time = ts,
 								level = lvl,
@@ -45,22 +64,16 @@ return {
 								request = string.format("%s %s %s", method, path, ip),
 								message = entry.message or "",
 								project = ctx.name or "-",
+								context = string.format("user=%s trace=%s", ectx.user_id or "-", entry.trace_id or "-"),
+								session = ectx.session_id or "-",
 							}
 						end,
 
 						highlights = {
-							{ pattern = "%d%d:%d%d:%d%d", group = "Comment" },
-							{ pattern = "%f[%a]ERROR%f[^%a]", group = "ErrorMsg" },
-							{ pattern = "%f[%a]CRITICAL%f[^%a]", group = "ErrorMsg" },
-							{ pattern = "%f[%a]WARN%f[^%a]", group = "WarningMsg" },
-							{ pattern = "%f[%a]WARNING%f[^%a]", group = "WarningMsg" },
-							{ pattern = "%f[%a]INFO%f[^%a]", group = "Identifier" },
-							{ pattern = "%f[%a]DEBUG%f[^%a]", group = "Comment" },
-							{ pattern = "user=", group = "Identifier" },
-							{ pattern = "trace=", group = "Identifier" },
-							{ pattern = "%f[%w]u%-%w+%f[^%w]", group = "String" },
-							{ pattern = "%f[%w]tr%-%x+%f[^%w]", group = "Special" },
-							{ pattern = "%f[%d][45]%d%d%f[^%d]", group = "ErrorMsg" }, -- 4xx/5xx
+							{ pattern = "user=%S+", color = "#50fa7b" },
+							{ pattern = "trace=%S+", color = "#bd93f9" },
+							{ pattern = "user=", color = "#6272a4" },
+							{ pattern = "trace=", color = "#6272a4" },
 						},
 					},
 				},

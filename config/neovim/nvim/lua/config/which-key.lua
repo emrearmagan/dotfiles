@@ -773,9 +773,20 @@ wk.add({
 	{ "<leader>s", icon = "", group = "Snacks / Utils" },
 
 	{
-		"<leader>sD",
+		"<leader>sd",
 		function()
-			snacks.dim()
+			if snacks.dim.enabled then
+				snacks.dim.disable()
+			else
+				snacks.dim.enable()
+			end
+		end,
+		desc = "Dim",
+	},
+	{
+		"<leader>sz",
+		function()
+			snacks.zen()
 		end,
 		desc = "Dim",
 	},
