@@ -8,6 +8,38 @@ return {
 	},
 	config = function()
 		local lualine = require("lualine")
+		local custom_theme = {
+			normal = {
+				a = { fg = "#89b4fa", bg = "NONE" },
+				b = { fg = "#cdd6f4", bg = "NONE" },
+				c = { fg = "#cdd6f4", bg = "NONE" },
+			},
+			insert = {
+				a = { fg = "#a6e3a1", bg = "NONE" },
+				b = { fg = "#cdd6f4", bg = "NONE" },
+				c = { fg = "#cdd6f4", bg = "NONE" },
+			},
+			visual = {
+				a = { fg = "#cba6f7", bg = "NONE" },
+				b = { fg = "#cdd6f4", bg = "NONE" },
+				c = { fg = "#cdd6f4", bg = "NONE" },
+			},
+			replace = {
+				a = { fg = "#f38ba8", bg = "NONE" },
+				b = { fg = "#cdd6f4", bg = "NONE" },
+				c = { fg = "#cdd6f4", bg = "NONE" },
+			},
+			command = {
+				a = { fg = "#f9e2af", bg = "NONE" },
+				b = { fg = "#cdd6f4", bg = "NONE" },
+				c = { fg = "#cdd6f4", bg = "NONE" },
+			},
+			inactive = {
+				a = { fg = "#7f849c", bg = "NONE" },
+				b = { fg = "#7f849c", bg = "NONE" },
+				c = { fg = "#7f849c", bg = "NONE" },
+			},
+		}
 
 		-- Custom function to display xcodebuild device info
 		local function xcodebuild_device()
@@ -46,7 +78,7 @@ return {
 		lualine.setup({
 			options = {
 				globalstatus = true, -- Single global statusline (not per window)
-				theme = "auto", -- Auto-detect colorscheme
+				theme = custom_theme,
 				symbols = { -- Icon/symbol overrides
 					alternate_file = "#", -- Alt file marker
 					directory = "", -- Directory icon
@@ -55,8 +87,8 @@ return {
 					newfile = "[New]", -- Label for new buffers
 				},
 				disabled_buftypes = { "quickfix", "prompt" }, -- Disable lualine for these types
-				component_separators = "", -- No vertical separators
-				section_separators = { left = "", right = "" }, -- Curved section separators
+				component_separators = "",
+				section_separators = "",
 			},
 			sections = {
 				lualine_a = {
@@ -134,11 +166,15 @@ return {
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
 					{ "' ' .. vim.g.xcodebuild_last_status", color = { fg = "#a6e3a1" } },
 					-- Custom device info from earlier function
-					{ xcodebuild_device, color = { fg = "#f9e2af", bg = "#161622" } },
+					{ xcodebuild_device, color = { fg = "#f9e2af" } },
 				},
 				lualine_y = {
-					-- { project, color = { fg = "#91d7e3" } },
-					{ "branch", padding = { right = 1 } }, -- Show current git branch
+					{
+						"branch",
+						icon = "",
+						color = { fg = "#89b4fa", bg = "NONE" },
+						padding = { left = 1 },
+					},
 					{
 						"diff",
 						-- color = { fg = colors.mauve },
@@ -154,7 +190,7 @@ return {
 				lualine_z = {
 					{
 						"location",
-						padding = { left = 0, right = 1 },
+						padding = { left = 1, right = 0 },
 					}, -- Show line & column number
 				},
 			},
