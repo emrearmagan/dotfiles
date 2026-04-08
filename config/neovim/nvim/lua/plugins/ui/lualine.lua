@@ -108,6 +108,8 @@ return {
 				},
 
 				lualine_x = {
+					{ "searchcount" },
+					{ "selectioncount" },
 					{ obsidian_workspace },
 					{ "overseer" },
 					{
@@ -171,6 +173,12 @@ return {
 				"nvim-tree", -- File explorer
 				"lazy", -- Plugin manager
 				"mason", -- LSP/DAP/tool installer
+				"trouble",
+				"avante",
+				"fzf",
+				"lazy",
+				"neo-tree",
+				"overseer",
 			},
 		})
 	end,

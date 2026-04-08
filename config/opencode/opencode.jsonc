@@ -16,11 +16,11 @@
     },
     "external_directory": {
       "*": "ask",
-      "~/development/**": "allow",
+      "~/.cache/nvim/**": "allow", // Mainly for the 99 nvim plugin
       "/tmp/**": "allow",
       "/private/tmp/**": "allow",
     },
-    "edit": "ask",
+    "edit": "allow",
     "bash": {
       "*": "ask",
       "ls *": "allow",
@@ -63,11 +63,9 @@
 
     // https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
     "@tarquinen/opencode-dcp@latest",
-
-    // https://github.com/mohak34/opencode-notifier
-    "@mohak34/opencode-notifier@latest",
   ],
   "model": "openai/gpt-5.3-codex",
+  // "model": "opencode/minimax-m2.5-free",
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
@@ -78,15 +76,12 @@
       "models": {
         "qwen3:8b": {
           "name": "Qwen 3 8B",
-          "tools": true,
         },
         "qwen3-coder:30b": {
           "name": "Qwen 3 30B",
-          "tools": true,
         },
         "qwen2.5-coder:7b": {
           "name": "qwen2.5-coder 7B",
-          "tools": true,
         },
       },
     },

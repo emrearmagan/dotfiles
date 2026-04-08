@@ -126,7 +126,7 @@ return {
 
 			-- YAML
 			vim.lsp.config("yamlls", {
-				filetypes = { "yaml", "yml", "j2" },
+				filetypes = { "yaml", "j2" },
 				capabilities = capabilities,
 				settings = {
 					yaml = {
@@ -151,7 +151,7 @@ return {
 
 			-- Ansible
 			vim.lsp.config("ansiblels", {
-				filetypes = { "yaml", "yml", "ansible" },
+				filetypes = { "yaml" },
 				capabilities = capabilities,
 				settings = {
 					ansible = {
