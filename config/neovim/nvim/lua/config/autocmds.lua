@@ -55,6 +55,8 @@ vim.api.nvim_create_autocmd("FileType", {
 		"spectre_panel",
 		"startuptime",
 		"tsplayground",
+		"gitsigns-blame",
+		"DiffviewFileHistory",
 		"nvim-undotree", -- 0.12 undotree plugin
 	},
 	callback = function(event)
