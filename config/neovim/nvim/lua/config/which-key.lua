@@ -168,6 +168,7 @@ wk.add({
 		end,
 		desc = "Toggle Files",
 	},
+	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "Toggle Neotree" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │

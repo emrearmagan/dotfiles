@@ -40,17 +40,18 @@ $DIFF
 \`\`\`
 
 **Criteria:**
-1. Format: Plain commit messages without prefixes like feat:, fix:, chore:, etc.
-2. Start with a verb in imperative mood (add, update, fix, remove, etc.)
-3. Be clear and concise
-4. Focus on WHAT changed and WHY
+1. Follow Conventional Commits format: <type>(optional-scope): <subject>
+2. Use one of these types: feat, fix, refactor, perf, docs, test, chore, build, ci, style, revert
+3. Subject must be imperative, concise, lowercase, and without trailing period
+4. Focus on what changed
+5. Be clear and concise
 
 **Commit Message Examples:**
-- add password validation regex
-- update user authentication flow
-- fix memory leak in data processing
-- remove deprecated API endpoints
-- refactor database connection logic
+- feat(auth): add password validation regex
+- fix(api): prevent memory leak in request parser
+- refactor(db): simplify connection lifecycle
+- docs(readme): clarify local development setup
+- chore(nvim): update plugin keymap defaults
 
 **Recent Commits for Reference:**
 \`\`\`
@@ -66,7 +67,7 @@ Do not include any intro, explanation, header, or footer text.
 - Think about impact (bug fixes, features, performance, refactoring, docs)
 - Abstract to higher level, don't just describe code changes
 - Generate 10 diverse messages covering different scenarios
-- Make them helpful for project history
+- Make them helpful for project history"
 
 RAW_OUT="$(mktemp)"
 
