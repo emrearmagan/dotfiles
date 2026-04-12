@@ -8,9 +8,13 @@ return {
 		require("catppuccin").setup({
 			flavour = "mocha", -- or "latte", "frappe", "macchiato"
 			transparent_background = true,
+			auto_integrations = true, -- automatically load integrations
 			integrations = {
 				notify = true, -- pull in Notify* highlight groups
 				telescope = true,
+				mini = {
+					enabled = true,
+				},
 				neotree = true,
 				flash = true,
 				cmp = true,

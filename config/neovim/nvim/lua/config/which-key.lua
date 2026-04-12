@@ -141,7 +141,33 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                      Tree                          │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader> ", ":Neotree toggle<CR>", desc = "Toggle Tree" },
+	{
+		"<leader> ",
+		function()
+			local mini_files = require("mini.files")
+			local is_open = false
+
+			for _, win_id in ipairs(vim.api.nvim_list_wins()) do
+				local buf_id = vim.api.nvim_win_get_buf(win_id)
+				if vim.bo[buf_id].filetype == "minifiles" then
+					is_open = true
+					break
+				end
+			end
+
+			if is_open then
+				mini_files.close()
+				return
+			end
+
+			--- Open the current file's directory if a file is open, otherwise open the current working directory
+			local cwd = vim.fs.normalize(vim.uv.cwd())
+			local file = vim.api.nvim_buf_get_name(0)
+			local dir = file ~= "" and vim.fn.fnamemodify(file, ":p:h") or cwd
+			mini_files.open(vim.fs.normalize(dir), false)
+		end,
+		desc = "Toggle Files",
+	},
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
@@ -613,7 +639,7 @@ wk.add({
 	{
 		"<leader>gs",
 		function()
-      --- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here
+			--- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here
 			snacks.picker.git_status({
 				win = {
 					input = {
