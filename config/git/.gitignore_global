@@ -37,3 +37,5 @@ encodings.xml
 Config.swift
 .env
 .worktrees
+.reviews
+.claude/settings.local.json

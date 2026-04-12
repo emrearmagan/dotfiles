@@ -27,7 +27,7 @@ return {
 				show_close_icon = true, -- Hide top-right global close icon
 				show_buffer_close_icons = false, -- Hide close icon on each buffer tab
 				separator_style = "thin", -- Use slanted separators between tabs ("slant", "thick", "thin")
-				always_show_bufferline = false, -- Show bufferline even with only one buffer
+				always_show_bufferline = true, -- Keep tabline visible with one tab
 				color_icons = true, -- Enable colorful devicons
 				show_tab_indicators = true, -- Show tab indicator (thin underline for active tab)
 				enforce_regular_tabs = true, -- Prevent bufferline from compressing tab names

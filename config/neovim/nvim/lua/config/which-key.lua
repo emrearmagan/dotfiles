@@ -613,7 +613,25 @@ wk.add({
 	{
 		"<leader>gs",
 		function()
-			snacks.picker.git_status()
+      --- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here
+			snacks.picker.git_status({
+				win = {
+					input = {
+						keys = {
+							["<Tab>"] = { "select_and_next", mode = { "n", "i" } },
+							["<S-Tab>"] = { "select_and_prev", mode = { "n", "i" } },
+							["<C-s>"] = { "git_stage", mode = { "n", "i" } },
+						},
+					},
+					list = {
+						keys = {
+							["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
+							["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
+							["<C-s>"] = "git_stage",
+						},
+					},
+				},
+			})
 		end,
 		desc = "Git Status",
 	},
@@ -657,7 +675,7 @@ wk.add({
 		desc = "Reset Hunk",
 	},
 	{
-		"[g",
+		"[h",
 		function()
 			local gitsigns = require("gitsigns")
 			gitsigns.nav_hunk("prev")
@@ -665,7 +683,7 @@ wk.add({
 		desc = "Git Previous Hunk",
 	},
 	{
-		"]g",
+		"]h",
 		function()
 			local gitsigns = require("gitsigns")
 			gitsigns.nav_hunk("next")
@@ -722,6 +740,13 @@ wk.add({
 	},
 	{
 		"<leader>gh",
+		function()
+			snacks.picker.git_files({ untracked = true })
+		end,
+		desc = "Git Files",
+	},
+	{
+		"<leader>gH",
 		"<cmd>DiffviewFileHistory %<cr>",
 		desc = "Current File History",
 	},

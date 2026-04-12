@@ -207,7 +207,6 @@ return {
 			"saadparwaiz1/cmp_luasnip", -- for autocompletion
 			"rafamadriz/friendly-snippets", -- useful snippets
 			"onsails/lspkind.nvim", -- vs-code like pictograms
-			"zbirenbaum/copilot-cmp", -- GitHub Copilot source for nvim-cmp
 			"kristijanhusak/vim-dadbod-completion", -- DB completion source for nvim-cmp
 			"folke/lazydev.nvim", -- Neovim API completions
 		},

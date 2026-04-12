@@ -42,15 +42,19 @@ return {
 			bitbucket = {
 				user = os.getenv("BITBUCKET_USER") or "",
 				token = os.getenv("BITBUCKET_TOKEN") or "",
+				diff = {
+					open_cmd = "DiffviewOpen",
+				},
+
 				cache_ttl = 300,
 				repo_config = {
 					settings = {
-						["emrearmaganxx/atlas"] = {
-							readme = "Atlas",
+						["emrearmaganxxx/atlas"] = {
+							readme = "README.md",
 						},
 					},
 					paths = {
-						["emrearmaganxx/*"] = "~/development/nvim/atlas.testing/*",
+						["emrearmaganxxx/*"] = "~/development/nvim/atlas.testing/new/*",
 					},
 				},
 
@@ -118,7 +122,7 @@ return {
 								branch,
 								destination,
 								ctx.repo_path,
-								"--skip-unchaned",
+								"--skip-unchanged",
 							}, function(code)
 								if code ~= 0 then
 									done(false, "worktrees-review failed (exit " .. tostring(code) .. ")")
@@ -137,8 +141,8 @@ return {
 						key = "M",
 						layout = "compact",
 						repos = {
-							{ workspace = "emrearmaganxx", repo = "atlas", readme = "Atlas" },
-							{ workspace = "emrearmaganxx", repo = "dockyard" },
+							{ workspace = "emrearmaganxxx", repo = "atlas", readme = "Atlas" },
+							{ workspace = "emrearmaganxxx", repo = "new" },
 						},
 
 						---@param pr BitbucketPR
@@ -153,8 +157,8 @@ return {
 						key = "O",
 						layout = "plain",
 						repos = {
-							{ workspace = "emrearmaganxx", repo = "atlas" },
-							{ workspace = "emrearmaganxx", repo = "dockyard" },
+							{ workspace = "emrearmaganxxx", repo = "atlas" },
+							{ workspace = "emrearmaganxxx", repo = "new" },
 						},
 					},
 				},

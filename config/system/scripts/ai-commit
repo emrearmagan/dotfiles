@@ -67,7 +67,6 @@ Do not include any intro, explanation, header, or footer text.
 - Abstract to higher level, don't just describe code changes
 - Generate 10 diverse messages covering different scenarios
 - Make them helpful for project history
-- DO NOT use conventional commit prefixes (no feat:, fix:, chore:, etc.)"
 
 RAW_OUT="$(mktemp)"
 
