@@ -25,6 +25,17 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 	exit 1
 fi
 
+if [ -n "${TMUX:-}" ] && [ "${AI_COMMIT_IN_POPUP:-0}" != "1" ] && [ -t 1 ] && command -v tmux >/dev/null 2>&1; then
+	SELF_PATH="${BASH_SOURCE[0]}"
+	if [ "${SELF_PATH#/}" = "$SELF_PATH" ]; then
+		SELF_PATH="$(command -v "$SELF_PATH" 2>/dev/null || true)"
+	fi
+	if [ -n "$SELF_PATH" ]; then
+		tmux display-popup -E -w 80% -h 70% "AI_COMMIT_IN_POPUP=1 \"$SELF_PATH\""
+		exit $?
+	fi
+fi
+
 DIFF="$(git diff --cached)"
 if [ -z "$DIFF" ]; then
 	printf 'No staged changes found. Stage files first.\n' >&2
@@ -61,7 +72,7 @@ $LOGS
 **Output Format:**
 Output ONLY raw commit messages, one per line, without numbers or decorations.
 Do not include any intro, explanation, header, or footer text.
-
+kajsdlaskjdkl
 **Instructions:**
 - Understand the changes in the diff
 - Think about impact (bug fixes, features, performance, refactoring, docs)
