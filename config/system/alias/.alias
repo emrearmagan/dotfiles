@@ -11,6 +11,7 @@ alias .....="cd ../../../.."
 alias cl="clear"
 alias cd="z"
 alias find="fd"
+alias oo='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"'
 
 # ── eza-powered directory listings ───────────────────────────────────────
 # plain “ls” → detailed list (+icons, coloured), no user column
@@ -55,7 +56,6 @@ alias cursor="cursor-agent"
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""
 alias fd='cd "$(find . -type d -not -path "*/.git/*" | fzf --no-preview)"'
-alias oo='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"'
 
 # Grep through files (please improve...)
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
@@ -63,8 +63,34 @@ alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
   | awk -F: '{print \$1, \$2}' \
   | xargs -r -n2 sh -c 'nvim +\$1 \"\$0\"'"
 
-ff() {
-  aerospace list-windows --all | fzf --no-preview --bind 'enter:execute(bash -c "aerospace focus --window-id {1}")+abort'
+falias() {
+  local a
+  a=$(
+    alias \
+      | sed -E 's/=.*$//' \
+      | sort -u \
+      | fzf --no-preview --height 40% --layout=reverse --prompt='alias> '
+  ) || return
+  LBUFFER+="${a} "
+}
+zle -N falias
+bindkey '^A' falias
+
+fssh() {
+  local -a cfgs
+  local h
+  cfgs=(~/.ssh/config(N) ~/.ssh/config.d/*(N) ~/.ssh/conf.d/*(N))
+  (( ${#cfgs} )) || return
+  h=$(
+    awk '
+      tolower($1)=="host" {
+        for (i=2; i<=NF; i++) if ($i !~ /[*?]/ && $i !~ /^!/) print $i
+      }
+    ' $cfgs 2>/dev/null \
+    | sort -u \
+    | fzf --no-preview --height 40% --layout=reverse --prompt="ssh> "
+  ) || return
+  ssh "$h"
 }
 
 # -- docker
