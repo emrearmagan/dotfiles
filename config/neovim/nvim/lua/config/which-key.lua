@@ -186,7 +186,7 @@ wk.add({
 		function()
 			snacks.picker.grep({ hidden = true, no_ignore = false })
 		end,
-		desc = "Live grep",
+		desc = "Lazygit",
 	},
 	{
 		"<leader>f/",
@@ -726,16 +726,22 @@ wk.add({
 		desc = "Git Blame (panel, refocus)",
 	},
 
-	-- Diffview
+	-- Diffview / CodeDiff
+	{ "<leader>gD", group = "Diff" },
 	{
-		"<leader>gD",
+		"<leader>gDD",
 		"<cmd>DiffviewOpen<cr>",
 		desc = "Open Diffview",
 	},
 	{
-		"<leader>gC",
+		"<leader>gDC",
 		"<cmd>DiffviewClose<cr>",
 		desc = "Close Diffview",
+	},
+	{
+		"<leader>gDc",
+		"<cmd>CodeDiff<cr>",
+		desc = "Open CodeDiff",
 	},
 	{
 		"<leader>gH",
@@ -743,7 +749,7 @@ wk.add({
 		desc = "File History",
 	},
 	{
-		"<leader>go",
+		"<leader>goo",
 		function()
 			local cwd = vim.fn.getcwd()
 
@@ -764,6 +770,29 @@ wk.add({
 			end)
 		end,
 		desc = "Diff vs origin branch (pick)",
+	},
+	{
+		"<leader>goc",
+		function()
+			local cwd = vim.fn.getcwd()
+
+			local current_branch = vim.trim(vim.fn.system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }))
+			if vim.v.shell_error ~= 0 or current_branch == "" then
+				vim.notify("Git branch detection failed in current directory", vim.log.levels.WARN)
+				return
+			end
+
+			if current_branch == "HEAD" then
+				vim.notify("Detached HEAD: switch to a branch first", vim.log.levels.WARN)
+				return
+			end
+
+			helper.select_origin_branch(cwd, current_branch, function(selection)
+				local range = "origin/" .. selection .. "...HEAD"
+				vim.cmd("CodeDiff " .. range)
+			end)
+		end,
+		desc = "CodeDiff vs origin branch (pick)",
 	},
 	{
 		"<leader>gh",

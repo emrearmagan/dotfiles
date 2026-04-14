@@ -20,7 +20,7 @@ return {
 				"shfmt", -- Bash
 
 				"stylua", --- Lua
-				"luacheck", --- Lua linter
+				"selene", --- Lua linter
 			},
 			automatic_installation = true,
 		})
@@ -57,6 +57,8 @@ return {
 
 				-- Linter --
 				null_ls.builtins.diagnostics.swiftlint,
+				null_ls.builtins.diagnostics.golangci_lint,
+				null_ls.builtins.diagnostics.selene,
 			},
 		})
 	end,

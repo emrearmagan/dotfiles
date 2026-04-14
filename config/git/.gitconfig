@@ -8,21 +8,9 @@
 [core]
 	excludesfile = /Users/emrearmagan/.gitignore_global
   autocrlf = input
-  pager = delta
 
-[delta]
-    features = catppuccin
-    side-by-side = true
-    line-numbers = true
-    navigate = true
-
-[delta "catppuccin"]
-    syntax-theme = Catppuccin Mocha
-
-[difftool "sourcetree"]
-	path = 
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	trustExitCode = true
+[pager]
+  difftool = true
 
 [color]
 	# Use colors in Git commands that are capable of colored output when
@@ -47,7 +35,21 @@
 
 [diff]
 	# Detect copies as well as renames
-	renames = copies
+  renames = copies
+  external = difft
+  tool = difftastic
+
+[alias]
+    # Difftastic aliases
+    dlog = -c diff.external=difft log --ext-diff
+    dshow = -c diff.external=difft show --ext-diff
+    ddiff = -c diff.external=difft diff
+    # `git log` with patches shown with difftastic
+    dl = -c diff.external=difft log -p --ext-diff
+    # Show the most recent commit with difftastic
+    ds = -c diff.external=difft show --ext-diff
+    # `git diff` with difftastic
+    dft = -c diff.external=difft diff
 
 [help]
 	# Automatically correct and execute mistyped commands

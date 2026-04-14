@@ -31,7 +31,7 @@ git:
   autoFetch: true
   autoRefresh: true
   pagers:
-    - pager: delta --paging=never
+    - useExternalDiffGitConfig: true
 # Allow 'Esc' to quit from top level
 quitOnTopLevelReturn: true
 # Uncomment if you want per-repo overrides later

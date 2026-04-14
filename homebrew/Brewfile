@@ -18,14 +18,13 @@ brew "zoxide"               # fast cd
 brew "imagemagick"          # image processing
 brew "ghostscript"          # pdf processing
 brew "fd"                   # find alternative
-brew "git-delta"            # better git diff
+brew "difftastic"           # better diff
 
 # System & Network
 brew "btop"                 # system monitor
 brew "nmap"                 # network scanner
 brew "curl"                 # http client
 brew "wget"                 # file downloader
-brew "neur0map/tap/gpk"     # gpk
 
 # Data & Text Processing
 brew "jq"                   # json processor
@@ -126,3 +125,4 @@ cask "aerospace"            # tiling window manager
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
 cask "claude-code"          # ai assistant
+cask "momenbasel/tap/puremac"
