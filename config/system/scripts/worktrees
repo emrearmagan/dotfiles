@@ -368,10 +368,6 @@ tmux select-layout -t "$WINDOW_TARGET" "$LAYOUT" >/dev/null
 printf '%s\n' "$(colorize mauve "$WINDOW_TARGET")"
 printf '%s\n' "$(colorize overlay1 "$ATTACH_CMD")"
 
-if command -v pbcopy >/dev/null 2>&1; then
-	printf '%s\n' "$(colorize overlay1 '(attach command copied to clipboard)')"
-fi
-
 if [ "$ATTACH" -eq 1 ]; then
 	if [ -z "${TMUX:-}" ]; then
 		tmux attach -t "$WINDOW_TARGET"

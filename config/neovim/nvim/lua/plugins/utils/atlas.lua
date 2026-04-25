@@ -3,7 +3,7 @@ return {
 	dir = "/Users/emrearmagan/development/nvim/atlas.nvim",
 	config = function()
 		local function open_live_command(title, cmd, on_exit)
-			local width = math.floor(vim.o.columns * 0.2)
+			local width = math.floor(vim.o.columns * 0.4)
 			local height = math.floor(vim.o.lines * 0.25)
 			local row = math.floor((vim.o.lines - height) / 2) - 1
 			local col = math.floor((vim.o.columns - width) / 2)
@@ -38,21 +38,13 @@ return {
 		end
 
 		require("atlas").setup({
-			---@type BitbucketConfig
-			bitbucket = {
-				user = os.getenv("BITBUCKET_USER") or "",
-				token = os.getenv("BITBUCKET_TOKEN") or "",
+			---@class AtlasPullsConfig
+			pulls = {
 				diff = {
 					open_cmd = "DiffviewOpen",
 				},
 
-				cache_ttl = 300,
 				repo_config = {
-					settings = {
-						["emrearmaganxxx/atlas"] = {
-							readme = "README.md",
-						},
-					},
 					paths = {
 						["emrearmaganxxx/*"] = "~/development/nvim/atlas.testing/new/*",
 					},
@@ -63,8 +55,8 @@ return {
 						id = "checkout_worktree",
 						label = "Checkout (worktrees)",
 
-						---@param _ BitbucketPR
-						---@param ctx BitbucketCustomActionContext
+						---@param _ PullRequest
+						---@param ctx AtlasPullsCustomActionContext
 						---@param done fun(ok: boolean|nil, message: string|nil)
 						run = function(_, ctx, done)
 							if not ctx.repo_path then
@@ -100,8 +92,8 @@ return {
 						id = "code_review_worktree",
 						label = "Code Review",
 
-						---@param _ BitbucketPR
-						---@param ctx BitbucketCustomActionContext
+						---@param _ PullRequest
+						---@param ctx AtlasPullsCustomActionContext
 						---@param done fun(ok: boolean|nil, message: string|nil)
 						run = function(_, ctx, done)
 							if not ctx.repo_path then
@@ -134,92 +126,116 @@ return {
 					},
 				},
 
-				---@type BitbucketViewConfig[]
-				views = {
-					{
-						name = "Me",
-						key = "M",
-						layout = "compact",
-						repos = {
-							{ workspace = "emrearmaganxxx", repo = "atlas", readme = "Atlas" },
-							{ workspace = "emrearmaganxxx", repo = "new" },
-						},
+				providers = {
+					---@type AtlasBitbucketConfig
+					bitbucket = {
+						user = os.getenv("BITBUCKET_USER") or "",
+						token = os.getenv("BITBUCKET_TOKEN") or "",
+						cache_ttl = 300,
 
-						---@param pr BitbucketPR
-						---@param ctx table
-						filter = function(pr, ctx)
-							local user = ctx.user or {}
-							return pr.author and pr.author.account_id == user.account_id
-						end,
-					},
-					{
-						name = "Others",
-						key = "O",
-						layout = "plain",
-						repos = {
-							{ workspace = "emrearmaganxxx", repo = "atlas" },
-							{ workspace = "emrearmaganxxx", repo = "new" },
+						---@type AtlasBitbucketViewConfig[]
+						views = {
+							{
+								name = "Me",
+								key = "1",
+								layout = "compact",
+								repos = {
+									{ workspace = "emrearmaganxxx", repo = "atlas" },
+									{ workspace = "emrearmaganxxx", repo = "new" },
+								},
+
+								---@param pr PullRequest
+								---@param user PullsUser|nil
+								filter = function(pr, user)
+									return pr.author and user and pr.author.id == user.id
+								end,
+							},
+							{
+								name = "Team",
+								key = "2",
+								layout = "plain",
+								repos = {
+									{ workspace = "emrearmaganxxx", repo = "atlas" },
+									{ workspace = "emrearmaganxxx", repo = "new" },
+								},
+							},
 						},
 					},
 				},
 			},
 
-			jira = {
-				base_url = os.getenv("JIRA_BASE_URL") or "",
-				email = os.getenv("JIRA_EMAIL") or "",
-				token = os.getenv("JIRA_TOKEN") or "",
-				cache_ttl = 300,
+			---@class AtlasIssuesConfig
+			issues = {
+				fetch_parent_issues = true,
+				jira = {
+					base_url = os.getenv("JIRA_BASE_URL") or "",
+					email = os.getenv("JIRA_EMAIL") or "",
+					token = os.getenv("JIRA_TOKEN") or "",
+					cache_ttl = 300,
 
-				queries = {
-					["Active Sprint"] = "project = '%s' AND (sprint in openSprints()) ORDER BY status ASC, assignee ASC, Rank ASC",
-					["Next sprint"] = "project = '%s' AND (sprint in futureSprints() ) ORDER BY status ASC, assignee ASC, Rank ASC",
-					["Backlog"] = "project = '%s' AND ((issuetype IN standardIssueTypes() OR issuetype = Sub-task) AND (sprint IS EMPTY OR sprint NOT IN openSprints()) OR issuetype = Epic) AND statusCategory != Done ORDER BY status ASC, assignee ASC, Rank ASC",
-				},
+					queries = {
+						["Active Sprint"] = "project = '%s' AND (sprint in openSprints()) ORDER BY status ASC, assignee ASC, Rank ASC",
+						["Next sprint"] = "project = '%s' AND (sprint in futureSprints() ) ORDER BY status ASC, assignee ASC, Rank ASC",
+						["Backlog"] = "project = '%s' AND ((issuetype IN standardIssueTypes() OR issuetype = Sub-task) AND (sprint IS EMPTY OR sprint NOT IN openSprints()) OR issuetype = Epic) AND statusCategory != Done ORDER BY status ASC, assignee ASC, Rank ASC",
+					},
 
-				project_config = {
-					["KAN"] = {
-						customfield_10003 = {
-							name = "Approvers",
+					project_config = {
+						story_points_field = "customfield_100016",
+						["KAN"] = {
+							customfield_10003 = {
+								name = "Approvers",
 
-							---@param value any
-							---@return string|nil
-							format = function(value)
-								if type(value) ~= "table" or #value == 0 then
-									return nil
-								end
-
-								local names = {}
-								for _, user in ipairs(value) do
-									local name = type(user) == "table" and user.displayName or nil
-									if type(name) == "string" and name ~= "" then
-										table.insert(names, name)
+								---@param value any
+								---@return string|nil
+								format = function(value)
+									if type(value) ~= "table" or #value == 0 then
+										return nil
 									end
-								end
-								if #names == 0 then
-									return "NONE"
-								end
-								return table.concat(names, ", ")
-							end,
-							hl_group = "AtlasTextMuted",
-							display = "table",
+
+									local names = {}
+									for _, user in ipairs(value) do
+										local name = type(user) == "table" and user.displayName or nil
+										if type(name) == "string" and name ~= "" then
+											table.insert(names, name)
+										end
+									end
+									if #names == 0 then
+										return "NONE"
+									end
+									return table.concat(names, ", ")
+								end,
+								hl_group = "AtlasTextMuted",
+								display = "table",
+							},
+							customfield_10019 = {
+								name = "Other",
+
+								---@param value any
+								---@return string|nil
+								format = function(value)
+									return value
+								end,
+								hl_group = "AtlasTextMuted",
+								display = "chip",
+							},
 						},
 					},
-				},
-				views = {
-					{
-						name = "Active Sprint",
-						key = "S",
-						jql = "project = KAN",
-					},
-					{
-						name = "My Tasks",
-						key = "M",
-						jql = "project = KAN AND assignee = currentUser()",
-					},
-					{
-						name = "To Do",
-						key = "T",
-						jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
+					views = {
+						{
+							name = "Active Sprint",
+							key = "S",
+							jql = "project = KAN",
+						},
+						{
+							name = "My Tasks",
+							key = "M",
+							jql = "project = KAN AND assignee = currentUser()",
+						},
+						{
+							name = "To Do",
+							key = "T",
+							jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
+						},
 					},
 				},
 			},
