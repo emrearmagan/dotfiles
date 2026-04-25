@@ -167,6 +167,58 @@ return {
 			---@class AtlasIssuesConfig
 			issues = {
 				fetch_parent_issues = true,
+				custom_actions = {
+					{
+						id = "review_ticket",
+						label = "Review Ticket",
+
+						---@param issue Issue
+						---@param _ AtlasIssuesCustomActionContext
+						---@param done fun(ok: boolean|nil, message: string|nil)
+						run = function(issue, _, done)
+							local issue_key = tostring(issue.key or "")
+							if issue_key == "" then
+								done(false, "Missing issue key")
+								return
+							end
+
+							local summary = tostring(issue.summary or "")
+							local issue_type = issue.type and tostring(issue.type.name or "") or ""
+							local status = tostring(issue.status or "")
+							local priority = tostring(issue.priority or "")
+							local session = "ticket-review"
+							local window = issue_key:gsub("[^%w_-]", "-")
+							local prompt = table.concat({
+								"Use the ticket-review subagent to review this Jira ticket for completeness and readiness.",
+								"First fetch the full Jira issue, including description and comments if available, using the configured MCP/tools.",
+								"First describe what the ticket is asking for, then return a Jira-comment-friendly review, and end with the Summary section.",
+								"",
+								"Issue key: " .. issue_key,
+								"Summary: " .. summary,
+								"Type: " .. issue_type,
+								"Status: " .. status,
+								"Priority: " .. priority,
+							}, "\n")
+
+							open_live_command("ticket-review", {
+								"tmux-sessions",
+								"run-window",
+								session,
+								window,
+								"--",
+								"opencode",
+								"--prompt",
+								prompt,
+							}, function(code)
+								if code ~= 0 then
+									done(false, "ticket review failed to start (exit " .. tostring(code) .. ")")
+									return
+								end
+								done(true, "Ticket review started in tmux session " .. session)
+							end)
+						end,
+					},
+				},
 				jira = {
 					base_url = os.getenv("JIRA_BASE_URL") or "",
 					email = os.getenv("JIRA_EMAIL") or "",

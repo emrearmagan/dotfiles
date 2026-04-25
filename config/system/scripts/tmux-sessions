@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+
+# Create or replace tmux windows in named sessions.
+#
+# Usage:
+#   tmux-sessions run-window <session> <window> [--cwd=<path>] [--attach] [-- <command> [args...]]
+#
+# Behavior:
+#   - Creates <session> if it does not exist.
+#   - Creates <window> in <session>.
+#   - If <window> already exists, replaces it.
+#   - If replacing the last window, recreates the whole session.
+
+set -euo pipefail
+
+usage() {
+	printf 'Usage:\n' >&2
+	printf '  %s run-window <session> <window> [--cwd=<path>] [--attach] [-- <command> [args...]]\n' "$(basename "$0")" >&2
+}
+
+quote_command() {
+	local out=""
+	local arg
+
+	for arg in "$@"; do
+		printf -v arg '%q' "$arg"
+		out+="${arg} "
+	done
+
+	printf '%s' "${out% }"
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+	usage
+	exit 0
+fi
+
+if [ "${1:-}" != "run-window" ]; then
+	usage
+	exit 1
+fi
+shift
+
+if [ "$#" -lt 2 ]; then
+	usage
+	exit 1
+fi
+
+SESSION="$1"
+WINDOW="$2"
+shift 2
+
+CWD=""
+ATTACH=0
+
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+	--cwd=*)
+		CWD="${1#--cwd=}"
+		shift
+		;;
+	--attach)
+		ATTACH=1
+		shift
+		;;
+	--)
+		shift
+		break
+		;;
+	--*)
+		printf 'Unknown flag: %s\n' "$1" >&2
+		usage
+		exit 1
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+if [ -z "$SESSION" ]; then
+	printf 'Session name cannot be empty.\n' >&2
+	exit 1
+fi
+
+if [ -z "$WINDOW" ]; then
+	printf 'Window name cannot be empty.\n' >&2
+	exit 1
+fi
+
+COMMAND=""
+if [ "$#" -gt 0 ]; then
+	COMMAND="$(quote_command "$@")"
+fi
+window_exists() {
+	tmux list-windows -t "$SESSION:" -F '#{window_name}' 2>/dev/null | grep -Fxq "$WINDOW"
+}
+
+new_session() {
+	if [ -n "$COMMAND" ]; then
+		if [ -n "$CWD" ]; then
+			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "$CWD" "$COMMAND"
+		else
+			tmux new-session -d -s "$SESSION" -n "$WINDOW" "$COMMAND"
+		fi
+	else
+		if [ -n "$CWD" ]; then
+			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "$CWD"
+		else
+			tmux new-session -d -s "$SESSION" -n "$WINDOW"
+		fi
+	fi
+}
+
+new_window() {
+	if [ -n "$COMMAND" ]; then
+		if [ -n "$CWD" ]; then
+			tmux new-window -t "$SESSION:" -n "$WINDOW" -c "$CWD" "$COMMAND"
+		else
+			tmux new-window -t "$SESSION:" -n "$WINDOW" "$COMMAND"
+		fi
+	else
+		if [ -n "$CWD" ]; then
+			tmux new-window -t "$SESSION:" -n "$WINDOW" -c "$CWD"
+		else
+			tmux new-window -t "$SESSION:" -n "$WINDOW"
+		fi
+	fi
+}
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+	new_session
+elif window_exists; then
+	WINDOW_COUNT="$(tmux list-windows -t "$SESSION:" 2>/dev/null | wc -l | tr -d ' ')"
+	if [ "$WINDOW_COUNT" -le 1 ]; then
+		tmux kill-session -t "$SESSION" 2>/dev/null || true
+		new_session
+	else
+		tmux kill-window -t "$SESSION:$WINDOW" 2>/dev/null || true
+		new_window
+	fi
+else
+	new_window
+fi
+
+tmux select-window -t "$SESSION:$WINDOW" >/dev/null 2>&1 || true
+
+printf '%s:%s\n' "$SESSION" "$WINDOW"
+
+if [ "$ATTACH" -eq 1 ]; then
+	if [ -z "${TMUX:-}" ]; then
+		tmux attach -t "$SESSION:$WINDOW"
+	else
+		tmux switch-client -t "$SESSION"
+		tmux select-window -t "$SESSION:$WINDOW"
+	fi
+fi

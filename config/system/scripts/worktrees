@@ -333,27 +333,8 @@ if [ "${#ACTIVE_WORKTREES[@]}" -eq 0 ]; then
 	exit 0
 fi
 
-if ! tmux has-session -t "$SESSION" 2>/dev/null; then
-	ok "creating tmux session: $SESSION"
-	tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
-else
-	ok "using existing tmux session: $SESSION"
-	WINDOW_COUNT="$(tmux list-windows -t "$SESSION:" 2>/dev/null | wc -l | tr -d ' ')"
-	if tmux list-windows -t "$SESSION:" -F '#{window_name}' 2>/dev/null | grep -Fxq "$WINDOW"; then
-		if [ "$WINDOW_COUNT" -le 1 ]; then
-			# Avoid killing the last window without recreating the session.
-			tmux kill-session -t "$SESSION" 2>/dev/null || true
-			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
-		else
-			tmux kill-window -t "$SESSION:$WINDOW" 2>/dev/null || true
-			tmux new-window -t "$SESSION:" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
-		fi
-	else
-		tmux new-window -t "$SESSION:" -n "$WINDOW" -c "${ACTIVE_WORKTREES[0]}"
-	fi
-fi
-
-WINDOW_TARGET="$SESSION:$WINDOW"
+ok "preparing tmux window: $SESSION:$WINDOW"
+WINDOW_TARGET="$("$SCRIPT_DIR/tmux-sessions" run-window "$SESSION" "$WINDOW" --cwd="${ACTIVE_WORKTREES[0]}")"
 
 printf -v SESSION_ESC '%q' "$SESSION"
 printf -v WINDOW_TARGET_ESC '%q' "$WINDOW_TARGET"
