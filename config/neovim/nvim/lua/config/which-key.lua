@@ -9,6 +9,7 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "J", "mzJ`z", desc = "Join lines (cursor stays)", mode = "n" },
 	{ "Y", "y$", desc = "Yank to end of line", mode = "n" },
+	{ "jk", "<ESC>", desc = "Exit insert mode", mode = "i" },
 
 	-- Disable plain <Space> in normal mode so it doesn't move the cursor when used as <leader>
 	-- (prevents accidental motion if <Space> is pressed alone)

@@ -4,7 +4,6 @@ mode: subagent
 temperature: 0.1
 permission:
   edit: deny
-  bash: allow
   webfetch: allow
 ---
 
@@ -37,11 +36,11 @@ Prefer the project's configured commands over generic ones.
 
 ### 3. Assess Risk Level
 
-| Risk | Triggers |
-|------|----------|
-| **HIGH** | Auth, crypto, external calls, value transfer, validation removal, access control |
-| **MEDIUM** | Business logic, state changes, new public APIs, error handling |
-| **LOW** | Comments, tests, UI, logging, formatting |
+| Risk       | Triggers                                                                         |
+| ---------- | -------------------------------------------------------------------------------- |
+| **HIGH**   | Auth, crypto, external calls, value transfer, validation removal, access control |
+| **MEDIUM** | Business logic, state changes, new public APIs, error handling                   |
+| **LOW**    | Comments, tests, UI, logging, formatting                                         |
 
 Focus deeper analysis on HIGH risk. For critical paths, estimate blast radius: how many callers depend on the changed function?
 

@@ -331,21 +331,21 @@ return {
 								icon = "󰌃",
 								key = "J",
 								desc = "JIRA",
-								action = ":AtlasJira",
+								action = ":AtlasIssues jira",
 							},
 
 							{
 								icon = " ",
 								key = "B",
 								desc = "Bitbucket",
-								action = ":AtlasBitbucket",
+								action = ":AtlasPulls bitbucket",
 							},
 
 							{
 								icon = " ",
 								key = "G",
 								desc = "Github",
-								action = ":AtlasGithub",
+								action = ":AtlasPulls Github",
 							},
 
 							{

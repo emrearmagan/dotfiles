@@ -99,7 +99,8 @@ else
 fi
 
 SESSION="reviews"
-PROMPT='Code review this branch. If there are no changes on this branch, stop and report no changes.'
+# Skill comes from https://github.com/obra/superpowers
+PROMPT='Use the requesting-code-review skill to review this branch. First, check whether the branch has any changes versus its base branch (fallback: main). If there are no changes, stop and report: No changes on this branch. If there are changes, perform the review and return: (1) a concise summary of what changed, (2) findings grouped by severity (Critical, Important, Minor), and (3) recommended fixes.'
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then

@@ -10,7 +10,6 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias cl="clear"
 alias cd="z"
-alias find="fd"
 alias oo='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"'
 
 # ── eza-powered directory listings ───────────────────────────────────────

@@ -1,11 +1,13 @@
 source ~/.env
+
+#Only run in interative shells
+[[ ! -t 1 ]] && return
+
 source ~/.config/alias/.alias
 source ~/.config/alias/.custom
 source ~/.config/alias/.macos
 source ~/.config/alias/.functions
 
-#Only run in interative shells
-[[ ! -t 1 ]] && return
 
 # use vim motions
 set -o vi
