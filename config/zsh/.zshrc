@@ -8,7 +8,6 @@ source ~/.config/alias/.custom
 source ~/.config/alias/.macos
 source ~/.config/alias/.functions
 
-
 # use vim motions
 set -o vi
 export EDITOR=nvim

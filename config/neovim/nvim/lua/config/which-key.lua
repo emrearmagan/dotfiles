@@ -164,12 +164,28 @@ wk.add({
 			--- Open the current file's directory if a file is open, otherwise open the current working directory
 			local cwd = vim.fs.normalize(vim.uv.cwd())
 			local file = vim.api.nvim_buf_get_name(0)
-			local dir = file ~= "" and vim.fn.fnamemodify(file, ":p:h") or cwd
-			mini_files.open(vim.fs.normalize(dir), false)
+			local path = file ~= "" and file or cwd
+			mini_files.open(vim.fs.normalize(path), false)
 		end,
 		desc = "which_key_ignore",
 	},
 	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "which_key_ignore" },
+	{
+		"<leader>m",
+		function()
+			snacks.picker.marks({
+				global = true,
+				["local"] = true,
+				transform = function(item)
+					if item.label:match("^[A-Za-z]$") then
+						return item
+					end
+					return false
+				end,
+			})
+		end,
+		desc = "Marks",
+	},
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
