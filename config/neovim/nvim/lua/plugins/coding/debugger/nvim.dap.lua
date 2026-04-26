@@ -96,6 +96,7 @@ return {
 	lazy = true, -- Don't load on startup
 	dependencies = {
 		"rcarriga/nvim-dap-ui", -- UI for debugging (scopes, breakpoints, etc.)
+		"theHamsta/nvim-dap-virtual-text",
 	},
 	config = function()
 		local dap = require("dap")

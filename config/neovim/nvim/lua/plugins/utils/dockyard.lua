@@ -1,6 +1,7 @@
 return {
 	dir = "/Users/emrearmagan/development/nvim/dockyard.nvim",
 	-- "emrearmagan/dockyard.nvim",
+	event = "VeryLazy",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"akinsho/toggleterm.nvim", -- optional

@@ -1,6 +1,7 @@
 return {
 	-- "emrearmagan/atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas.nvim",
+	event = "VeryLazy",
 	config = function()
 		local function open_live_command(title, cmd, on_exit)
 			local width = math.floor(vim.o.columns * 0.4)
