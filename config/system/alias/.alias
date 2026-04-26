@@ -62,6 +62,23 @@ alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
   | awk -F: '{print \$1, \$2}' \
   | xargs -r -n2 sh -c 'nvim +\$1 \"\$0\"'"
 
+# -- docker
+alias docker-clean='docker container prune -f && docker image prune -af && docker volume prune -f && docker builder prune -af'
+
+# -- mitmproxy local proxy setup
+alias proxy-local='
+    IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
+    echo "Your IP: $IP | Proxy: $IP:8888"
+    echo "$IP" | pbcopy
+    echo " IP copied to clipboard!"
+    echo "Press Enter to start mitmproxy..."
+    read
+    mitmproxy --mode regular@8888 \
+        --ignore "~u \.png$ | ~u logo" \
+        --ssl-insecure
+        --no-http2
+'
+# -- Widgets
 falias() {
   local a
   a=$(
@@ -91,20 +108,6 @@ fssh() {
   ) || return
   ssh "$h"
 }
+zle -N fssh
+bindkey '^Xs' fssh
 
-# -- docker
-alias docker-clean='docker container prune -f && docker image prune -af && docker volume prune -f && docker builder prune -af'
-
-# -- mitmproxy local proxy setup
-alias proxy-local='
-    IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
-    echo "Your IP: $IP | Proxy: $IP:8888"
-    echo "$IP" | pbcopy
-    echo " IP copied to clipboard!"
-    echo "Press Enter to start mitmproxy..."
-    read
-    mitmproxy --mode regular@8888 \
-        --ignore "~u \.png$ | ~u logo" \
-        --ssl-insecure
-        --no-http2
-'
