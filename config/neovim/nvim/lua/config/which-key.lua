@@ -167,9 +167,9 @@ wk.add({
 			local dir = file ~= "" and vim.fn.fnamemodify(file, ":p:h") or cwd
 			mini_files.open(vim.fs.normalize(dir), false)
 		end,
-		desc = "Toggle Files",
+		desc = "which_key_ignore",
 	},
-	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "Toggle Neotree" },
+	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "which_key_ignore" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
@@ -669,6 +669,15 @@ wk.add({
 			snacks.picker.git_diff()
 		end,
 		desc = "Git Diff (Hunks)",
+	},
+	{
+		"<leader>gS",
+		function()
+			snacks.picker.git_diff({
+				base = "origin/HEAD",
+			})
+		end,
+		desc = "Git Diff Against Branch Base",
 	},
 	{
 		"<leader>gt",

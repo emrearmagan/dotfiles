@@ -47,6 +47,19 @@ return {
 		notify = { enabled = false },
 		picker = {
 			sources = {
+				git_status = {
+					preview = function(ctx)
+						Snacks.picker.preview.cmd({
+							"git",
+							"--no-pager",
+							"diff",
+							"--no-ext-diff",
+							"HEAD",
+							"--",
+							ctx.item.file,
+						}, ctx, { ft = "diff" })
+					end,
+				},
 				files = {
 					cmd = "rg",
 					hidden = true,
@@ -62,7 +75,7 @@ return {
 				},
 				git_files = {
 					cmd = "git ls-files --exclude-standard --cached --others",
-					preview = "diff", -- show git diff using delta if available
+					preview = "file",
 				},
 			},
 
@@ -376,7 +389,7 @@ return {
 								ttl = 0,
 								icon = " ",
 								title = "Git Status",
-								cmd = "git --no-pager diff --stat=40 -B -M -C",
+								cmd = "git --no-pager diff --no-ext-diff --stat=40 -B -M -C",
 								key = "S",
 								action = function()
 									--- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here

@@ -10,6 +10,7 @@ local config = {
 	use_ime = true,
 	audible_bell = "Disabled",
 	scrollback_lines = 10000,
+	enable_csi_u_key_encoding = true,
 	-- macos_forward_to_ime_modifier_mask = 'SHIFT',
 
 	-- Ensure AltGr (right Alt) works correctly for German layouts

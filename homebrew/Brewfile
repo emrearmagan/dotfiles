@@ -19,6 +19,7 @@ brew "imagemagick"          # image processing
 brew "ghostscript"          # pdf processing
 brew "fd"                   # find alternative
 brew "difftastic"           # better diff
+brew "cesarferreira/tap/rip"# kill process
 
 # System & Network
 brew "btop"                 # system monitor

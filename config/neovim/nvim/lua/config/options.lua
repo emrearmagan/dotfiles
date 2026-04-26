@@ -2,6 +2,17 @@ vim.g.mapleader = " "
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+local deprecate = vim.deprecate
+---@diagnostic disable-next-line: duplicate-set-field
+vim.deprecate = function(...)
+	local trace = debug.traceback("", 2)
+	--- lualine-ex has a deprecation warning which works for now. Simply ignore it until lualine-ex is updated to remove the deprecation warning.
+	if trace:find("lualine%-ex", 1, false) then
+		return
+	end
+	return deprecate(...)
+end
+
 -- Basic Options
 vim.opt.number = true
 vim.opt.relativenumber = true

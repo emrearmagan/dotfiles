@@ -57,5 +57,16 @@ return {
 			mods = "CMD|CTRL",
 			action = wezterm.action.ToggleFullScreen,
 		},
+		-- Pass through for custom tmux keymaps
+		{
+			key = "h",
+			mods = "CTRL|SHIFT",
+			action = act.SendKey({ key = "h", mods = "CTRL|SHIFT" }),
+		},
+		{
+			key = "l",
+			mods = "CTRL|SHIFT",
+			action = act.SendKey({ key = "l", mods = "CTRL|SHIFT" }),
+		},
 	},
 }

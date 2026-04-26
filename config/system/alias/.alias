@@ -73,7 +73,7 @@ falias() {
   LBUFFER+="${a} "
 }
 zle -N falias
-bindkey '^A' falias
+bindkey '^H' falias
 
 fssh() {
   local -a cfgs

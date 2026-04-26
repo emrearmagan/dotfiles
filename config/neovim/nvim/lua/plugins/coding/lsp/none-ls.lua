@@ -8,6 +8,16 @@ return {
 		local null_ls = require("null-ls")
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
+		local function executable(name)
+			return vim.fn.executable(name) == 1
+		end
+
+		local function add_source(sources, command, source)
+			if executable(command) then
+				sources[#sources + 1] = source
+			end
+		end
+
 		require("mason-null-ls").setup({
 			ensure_installed = {
 				"gofmt", -- Go (should come with go installed - no available in mason)
@@ -24,6 +34,30 @@ return {
 			},
 			automatic_installation = true,
 		})
+
+		local sources = {}
+		local selene = null_ls.builtins.diagnostics.selene
+		--- Formatter
+		add_source(sources, "gofmt", null_ls.builtins.formatting.gofmt)
+		add_source(sources, "goimports", null_ls.builtins.formatting.goimports)
+		add_source(sources, "swiftformat", null_ls.builtins.formatting.swiftformat)
+		add_source(sources, "prettier", null_ls.builtins.formatting.prettier)
+		add_source(sources, "stylua", null_ls.builtins.formatting.stylua)
+		add_source(sources, "shfmt", null_ls.builtins.formatting.shfmt)
+
+		--- Linter
+		add_source(sources, "swiftlint", null_ls.builtins.diagnostics.swiftlint)
+		add_source(sources, "golangci-lint", null_ls.builtins.diagnostics.golangci_lint)
+		add_source(
+			sources,
+			"selene",
+			selene.with({
+				on_output = function(params, done)
+					params.output = params.output or ""
+					return selene._opts.on_output(params, done)
+				end,
+			})
+		)
 
 		null_ls.setup({
 			-- format on save
@@ -46,20 +80,7 @@ return {
 				end
 			end,
 
-			sources = {
-				-- Formatter
-				null_ls.builtins.formatting.gofmt,
-				null_ls.builtins.formatting.goimports,
-				null_ls.builtins.formatting.swiftformat,
-				null_ls.builtins.formatting.prettier,
-				null_ls.builtins.formatting.stylua,
-				null_ls.builtins.formatting.shfmt,
-
-				-- Linter --
-				null_ls.builtins.diagnostics.swiftlint,
-				null_ls.builtins.diagnostics.golangci_lint,
-				null_ls.builtins.diagnostics.selene,
-			},
+			sources = sources,
 		})
 	end,
 }
