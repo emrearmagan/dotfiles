@@ -1,4 +1,4 @@
-alias reload='source ~/.zshrc && source ~/.zprofile'
+alias reload='exec zsh -l'
 alias tmux-reload="tmux source-file ~/.config/tmux/tmux.conf"
 
 alias cls='clear'
@@ -110,4 +110,3 @@ fssh() {
 }
 zle -N fssh
 bindkey '^Xs' fssh
-

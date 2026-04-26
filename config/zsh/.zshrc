@@ -17,9 +17,6 @@ export VISUAL=nvim
 # ----------------------
 # Export
 # ----------------------
-#Prompt
-export PS1='%F{117}%n: %F{110}%~%f %# '
-
 export PATH=/opt/homebrew/bin:$PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
@@ -42,7 +39,10 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 eval $(thefuck --alias)
-eval "$(starship init zsh)"
+if [[ -z "${__STARSHIP_INIT_DONE:-}" ]]; then
+  eval "$(starship init zsh)"
+  __STARSHIP_INIT_DONE=1
+fi
 eval "$(zoxide init zsh)"
 
 # ----------------------
