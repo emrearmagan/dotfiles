@@ -21,7 +21,7 @@ wk.add({
 		"<nop>",
 		desc = "Disable command-line window",
 		mode = "n",
-		hidden = true, -- hides it from which-key popup
+		hidden = true,
 	},
 
 	{ "<C-d>", "<C-d>zz", desc = "Half-page down & center", mode = "n" },
@@ -116,8 +116,20 @@ wk.add({
 	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
 
 	-- Diagnostic Movement
-	{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
-	{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
+	{
+		"[d",
+		function()
+			vim.diagnostic.jump({ count = -1, float = true })
+		end,
+		desc = "Previous Diagnostic",
+	},
+	{
+		"]d",
+		function()
+			vim.diagnostic.jump({ count = 1, float = true })
+		end,
+		desc = "Next Diagnostic",
+	},
 
 	-- Words Navigation (Snacks)
 	{

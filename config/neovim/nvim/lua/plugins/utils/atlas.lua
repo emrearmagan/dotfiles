@@ -48,6 +48,7 @@ return {
 				repo_config = {
 					paths = {
 						["emrearmaganxxx/*"] = "~/development/nvim/atlas.testing/new/*",
+						["emrearmagan/*"] = "~/development/nvim/*",
 					},
 				},
 
@@ -128,6 +129,41 @@ return {
 				},
 
 				providers = {
+					---@type AtlasGitHubConfig
+					github = {
+						views = {
+							{
+								name = "Neovim",
+								key = "1",
+								search = "repo:neovim/neovim sort:updated-desc",
+							},
+							{
+								name = "My PRs",
+								key = "2",
+								layout = "compact",
+								search = "author:@me sort:updated-desc",
+							},
+							{
+								name = "Best",
+								key = "3",
+								layout = "plain",
+								search = "repo:folke/lazy.nvim repo:nvim-telescope/telescope.nvim repo:hrsh7th/nvim-cmp repo:lewis6991/gitsigns.nvim repo:nvim-treesitter/nvim-treesitter sort:updated-desc",
+							},
+							{
+								name = "Review",
+								key = "4",
+								layout = "compact",
+								search = "review-requested:@me sort:updated-desc",
+							},
+							{
+								name = "Issues",
+								key = "5",
+								layout = "compact",
+								search = "sort:updated-desc is:issue",
+							},
+						},
+					},
+
 					---@type AtlasBitbucketConfig
 					bitbucket = {
 						user = os.getenv("BITBUCKET_USER") or "",
@@ -146,8 +182,9 @@ return {
 								},
 
 								---@param pr PullRequest
-								---@param user PullsUser|nil
-								filter = function(pr, user)
+								---@param ctx { user: PullsUser|nil }
+								filter = function(pr, ctx)
+									local user = ctx.user
 									return pr.author and user and pr.author.id == user.id
 								end,
 							},
@@ -220,74 +257,71 @@ return {
 						end,
 					},
 				},
-				jira = {
-					base_url = os.getenv("JIRA_BASE_URL") or "",
-					email = os.getenv("JIRA_EMAIL") or "",
-					token = os.getenv("JIRA_TOKEN") or "",
-					cache_ttl = 300,
 
-					queries = {
-						["Active Sprint"] = "project = '%s' AND (sprint in openSprints()) ORDER BY status ASC, assignee ASC, Rank ASC",
-						["Next sprint"] = "project = '%s' AND (sprint in futureSprints() ) ORDER BY status ASC, assignee ASC, Rank ASC",
-						["Backlog"] = "project = '%s' AND ((issuetype IN standardIssueTypes() OR issuetype = Sub-task) AND (sprint IS EMPTY OR sprint NOT IN openSprints()) OR issuetype = Epic) AND statusCategory != Done ORDER BY status ASC, assignee ASC, Rank ASC",
-					},
+				providers = {
+					jira = {
+						base_url = os.getenv("JIRA_BASE_URL") or "",
+						email = os.getenv("JIRA_EMAIL") or "",
+						token = os.getenv("JIRA_TOKEN") or "",
+						cache_ttl = 300,
 
-					project_config = {
-						story_points_field = "customfield_100016",
-						["KAN"] = {
-							customfield_10003 = {
-								name = "Approvers",
+						project_config = {
+							story_points_field = "customfield_100016",
+							["KAN"] = {
+								customfield_10003 = {
+									name = "Approvers",
 
-								---@param value any
-								---@return string|nil
-								format = function(value)
-									if type(value) ~= "table" or #value == 0 then
-										return nil
-									end
-
-									local names = {}
-									for _, user in ipairs(value) do
-										local name = type(user) == "table" and user.displayName or nil
-										if type(name) == "string" and name ~= "" then
-											table.insert(names, name)
+									---@param value any
+									---@return string|nil
+									format = function(value)
+										if type(value) ~= "table" or #value == 0 then
+											return nil
 										end
-									end
-									if #names == 0 then
-										return "NONE"
-									end
-									return table.concat(names, ", ")
-								end,
-								hl_group = "AtlasTextMuted",
-								display = "table",
-							},
-							customfield_10019 = {
-								name = "Other",
 
-								---@param value any
-								---@return string|nil
-								format = function(value)
-									return value
-								end,
-								hl_group = "AtlasTextMuted",
-								display = "chip",
+										local names = {}
+										for _, user in ipairs(value) do
+											local name = type(user) == "table" and user.displayName or nil
+											if type(name) == "string" and name ~= "" then
+												table.insert(names, name)
+											end
+										end
+										if #names == 0 then
+											return "NONE"
+										end
+										return table.concat(names, ", ")
+									end,
+									hl_group = "AtlasTextMuted",
+									display = "table",
+								},
+								customfield_10019 = {
+									name = "Other",
+
+									---@param value any
+									---@return string|nil
+									format = function(value)
+										return value
+									end,
+									hl_group = "AtlasTextMuted",
+									display = "chip",
+								},
 							},
 						},
-					},
-					views = {
-						{
-							name = "Active Sprint",
-							key = "S",
-							jql = "project = KAN",
-						},
-						{
-							name = "My Tasks",
-							key = "M",
-							jql = "project = KAN AND assignee = currentUser()",
-						},
-						{
-							name = "To Do",
-							key = "T",
-							jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
+						views = {
+							{
+								name = "Active Sprint",
+								key = "S",
+								jql = "project = KAN",
+							},
+							{
+								name = "My Tasks",
+								key = "M",
+								jql = "project = KAN AND assignee = currentUser()",
+							},
+							{
+								name = "To Do",
+								key = "T",
+								jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
+							},
 						},
 					},
 				},

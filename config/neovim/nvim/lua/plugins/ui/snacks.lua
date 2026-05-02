@@ -257,13 +257,6 @@ return {
 						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
 					},
 					{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
-					{
-						icon = "󰒲 ",
-						key = "L",
-						desc = "Lazy",
-						action = ":Lazy",
-						enabled = package.loaded.lazy ~= nil,
-					},
 					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
 				},
 				header = [[
@@ -363,6 +356,12 @@ return {
 
 							{
 								icon = "",
+								key = "M",
+								desc = "Docker",
+								action = ":AtlasPulls mock",
+							},
+							{
+								icon = "",
 								key = "D",
 								desc = "Docker",
 								action = ":Dockyard",
@@ -370,50 +369,6 @@ return {
 
 							{
 								gap = 1, -- adds space below
-							},
-						}
-					end,
-
-					-- ─────────────────────────────
-					--  GIT SECTION
-					-- ─────────────────────────────
-
-					function()
-						local in_git = Snacks.git.get_root() ~= nil
-
-						return {
-							{
-								section = "terminal",
-								padding = 1,
-								indent = 2,
-								ttl = 0,
-								icon = " ",
-								title = "Git Status",
-								cmd = "git --no-pager diff --no-ext-diff --stat=40 -B -M -C",
-								key = "S",
-								action = function()
-									--- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here
-									require("snacks").picker.git_status({
-										win = {
-											input = {
-												keys = {
-													["<Tab>"] = { "select_and_next", mode = { "n", "i" } },
-													["<S-Tab>"] = { "select_and_prev", mode = { "n", "i" } },
-													["<C-s>"] = { "git_stage", mode = { "n", "i" } },
-												},
-											},
-											list = {
-												keys = {
-													["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
-													["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
-													["<C-s>"] = "git_stage",
-												},
-											},
-										},
-									})
-								end,
-								height = 5,
-								enabled = in_git,
 							},
 						}
 					end,
