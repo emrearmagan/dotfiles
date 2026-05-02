@@ -1,4 +1,5 @@
 require("config.options")
+require("config.helper")
 
 require("config.lazy")
 require("config.which-key")

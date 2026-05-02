@@ -1,5 +1,30 @@
 local M = {}
 
+function M.run_in_popup(cmd)
+	vim.system({ "tmux-popup", "-d" }, {}, function()
+		vim.system({ "tmux", "send-keys", "-t", "popup", cmd, "C-m" })
+		vim.system({
+			"tmux",
+			"display-popup",
+			"-w",
+			"80%",
+			"-h",
+			"80%",
+			"-T",
+			"Shell",
+			"-E",
+			"tmux attach -t popup",
+		})
+	end)
+end
+
+vim.api.nvim_create_user_command("Popup", function(opts)
+	M.run_in_popup(opts.args)
+end, {
+	nargs = "+",
+	complete = "shellcmd",
+})
+
 function M.get_origin_branches(cwd)
 	local remote_refs = vim.fn.systemlist({
 		"git",
