@@ -9,7 +9,7 @@ return {
 		notify = { enabled = true },
 		messages = { enabled = true },
 		cmdline = {
-			enabled = true,
+			enabled = false,
 			view = "cmdline", -- bottom style
 			format = {
 				cmdline = { pattern = "^:", icon = ":", lang = "vim" },
