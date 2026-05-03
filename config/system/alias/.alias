@@ -90,7 +90,8 @@ falias() {
   LBUFFER+="${a} "
 }
 zle -N falias
-bindkey '^H' falias
+bindkey -M emacs '^Xa' falias
+bindkey -M viins '^Xa' falias
 
 fssh() {
   local -a cfgs
@@ -109,4 +110,5 @@ fssh() {
   ssh "$h"
 }
 zle -N fssh
-bindkey '^Xs' fssh
+bindkey -M emacs '^Xs' fssh
+bindkey -M viins '^Xs' fssh
