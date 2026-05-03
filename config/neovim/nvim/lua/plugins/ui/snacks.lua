@@ -359,12 +359,16 @@ return {
 								desc = "Github",
 								action = ":AtlasPulls Github",
 							},
-
 							{
-								icon = "",
-								key = "M",
-								desc = "Docker",
-								action = ":AtlasPulls mock",
+								icon = " ",
+								key = "S",
+								desc = "Git Status",
+								action = function()
+									require("snacks").picker.git_status()
+								end,
+								enabled = function()
+									return require("snacks.git").get_root() ~= nil
+								end,
 							},
 							{
 								icon = "",
