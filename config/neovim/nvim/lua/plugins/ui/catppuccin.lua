@@ -23,7 +23,7 @@ return {
 				lsp_trouble = true,
 				dadbod_ui = true,
 				snacks = {
-					enabled = true,
+					enabled = false,
 				},
 			},
 			dim_inactive = {

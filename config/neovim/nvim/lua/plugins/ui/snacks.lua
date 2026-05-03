@@ -1,8 +1,38 @@
+local function set_dashboard_highlights()
+	local ok, palettes = pcall(require, "catppuccin.palettes")
+	local fg = ok and palettes.get_palette("mocha").text or nil
+
+	if not fg then
+		local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+		fg = normal.fg and string.format("#%06x", normal.fg) or "#ffffff"
+	end
+
+	for _, group in ipairs({
+		"SnacksDashboardHeader",
+		"SnacksDashboardKey",
+		"SnacksDashboardDesc",
+		"SnacksDashboardFooter",
+		"SnacksDashboardIcon",
+		"SnacksDashboardSpecial",
+	}) do
+		vim.api.nvim_set_hl(0, group, { fg = fg })
+	end
+end
+
 return {
 	"folke/snacks.nvim",
 	event = "VimEnter",
 	lazy = false,
 	priority = 1000,
+	config = function(_, opts)
+		require("snacks").setup(opts)
+		set_dashboard_highlights()
+
+		vim.api.nvim_create_autocmd("ColorScheme", {
+			group = vim.api.nvim_create_augroup("user_snacks_dashboard_highlights", { clear = true }),
+			callback = set_dashboard_highlights,
+		})
+	end,
 	opts = {
 		bigfile = { enabled = true },
 		explorer = { enabled = false },
@@ -200,78 +230,60 @@ return {
 					require("snacks").picker[type](opts or {})
 				end,
 				keys = {
-					{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+					{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
 					{
-						icon = " ",
+						icon = " ",
 						key = "g",
 						desc = "Find Text",
 						action = ":lua Snacks.dashboard.pick('grep')",
 					},
 					{
-						icon = " ",
-						key = "d",
-						desc = "Database",
-						action = ":DBUIFull",
+						icon = " ",
+						key = "r",
+						desc = "Recent Files",
+						action = ":lua Snacks.dashboard.pick('oldfiles')",
 					},
 					{
-						icon = " ",
-						key = "n",
-						desc = "Notes",
-						action = function()
-							require("snacks").picker.files({
-								cwd = vim.g.obsidian_vault,
-								cmd = "rg",
-								args = { "--files", "-g", "*.md" },
-							})
-						end,
+						icon = " ",
+						key = "R",
+						desc = "Recent Projects",
+						action = ":lua Snacks.dashboard.pick('projects')",
 					},
 					{
-						icon = " ",
-						key = "t",
-						desc = "Todo",
-						action = function()
-							-- see: https://github.com/taskbook-sh/taskbook
-							-- install with: curl --proto '=https' --tlsv1.2 -sSf https://taskbook.sh/install| sh
-							if vim.fn.executable("tb") ~= 1 then
-								vim.notify("taskbook (tb) is not installed or not in PATH", vim.log.levels.ERROR)
-								return
-							end
-
-							vim.cmd("tabnew")
-							local buf = vim.api.nvim_get_current_buf()
-							vim.bo[buf].buflisted = false
-							vim.bo[buf].bufhidden = "wipe"
-							vim.fn.termopen("tb", {
-								on_exit = function()
-									vim.schedule(function()
-										for _, win in ipairs(vim.fn.win_findbuf(buf)) do
-											pcall(vim.api.nvim_win_close, win, true)
-										end
-										if vim.api.nvim_buf_is_valid(buf) then
-											pcall(vim.api.nvim_buf_delete, buf, { force = true })
-										end
-									end)
-								end,
-							})
-							vim.cmd("startinsert")
-						end,
+						icon = " ",
+						key = "w",
+						desc = "Workflow",
+						action = ":Workflow",
 					},
 					{
-						icon = " ",
+						icon = " ",
+						key = "s",
+						desc = "Git Status",
+						action = ":lua Snacks.picker.git_status()",
+					},
+					{
+						icon = " ",
 						key = "c",
 						desc = "Config",
 						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
 					},
-					{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
-					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
+					{ icon = " ", key = "S", desc = "Restore Session", section = "session" },
+					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
 				},
 				header = [[
-███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
-████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
-██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
-██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
-██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
-╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝]],
+ .          .
+ ';;,.        ::'
+ ,:::;,,        :ccc,
+,::c::,,,,.     :cccc,
+,cccc:;;;;;.    cllll,
+,cccc;.;;;;;,   cllll;
+:cccc; .;;;;;;. coooo;
+;llll;   ,:::::'loooo;
+;llll:    ':::::loooo:
+:oooo:     .::::llodd:
+.;ooo:       ;cclooo:.
+.;oc        'coo;.
+ .'         .,.]],
 			},
 
 			formats = {
@@ -300,90 +312,12 @@ return {
 			},
 
 			sections = {
+				{ section = "header" },
 				{
-					pane = 1,
-					{
-						section = "header",
-					},
-					{
-						section = "keys",
-						gap = 1,
-						padding = 1,
-					},
+					section = "keys",
+					gap = 1,
+					padding = 1,
 				},
-
-				{
-					pane = 2,
-					{
-						icon = " ",
-						title = "Recent Files",
-						section = "recent_files",
-						indent = 2,
-						padding = 1,
-					},
-					{
-						icon = " ",
-						title = "Projects",
-						section = "projects",
-						indent = 2,
-						padding = 1,
-					},
-
-					{
-						gap = 1, -- adds space below
-					},
-
-					-- ─────────────────────────────
-					--  Dev
-					-- ─────────────────────────────
-
-					function()
-						return {
-							{
-								icon = "󰌃",
-								key = "J",
-								desc = "JIRA",
-								action = ":AtlasIssues jira",
-							},
-
-							{
-								icon = " ",
-								key = "B",
-								desc = "Bitbucket",
-								action = ":AtlasPulls bitbucket",
-							},
-
-							{
-								icon = " ",
-								key = "G",
-								desc = "Github",
-								action = ":AtlasPulls Github",
-							},
-							{
-								icon = " ",
-								key = "S",
-								desc = "Git Status",
-								action = function()
-									require("snacks").picker.git_status()
-								end,
-								enabled = function()
-									return require("snacks.git").get_root() ~= nil
-								end,
-							},
-							{
-								icon = "",
-								key = "D",
-								desc = "Docker",
-								action = ":Dockyard",
-							},
-
-							{
-								gap = 1, -- adds space below
-							},
-						}
-					end,
-				},
-
 				{ section = "startup" },
 			},
 		},
