@@ -14,6 +14,12 @@ return {
 					},
 				},
 				enhanced_diff_hl = true, -- See ':h diffview-config-enhanced_diff_hl'
+				keymaps = {
+					view = {
+						next_hunk = "]h",
+						prev_hunk = "[h",
+					},
+				},
 				hooks = {
 					-- do not fold
 					diff_buf_win_enter = function(bufnr)

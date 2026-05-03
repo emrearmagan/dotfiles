@@ -338,6 +338,53 @@ function M.reply(pr, root_comment, body, callback)
 	end)
 end
 
+function M.submit_review(pr, event, body, callback)
+	local raw = pr and pr._raw or {}
+	local links = raw.links or {}
+	local action_url
+	local action
+
+	if event == "APPROVE" then
+		action_url = tostring(links.approve or "")
+		action = "approve"
+	elseif event == "REQUEST_CHANGES" then
+		action_url = tostring(links.request_changes or "")
+		action = "request_changes"
+	else
+		callback(nil, "Unsupported Bitbucket review event: " .. tostring(event))
+		return
+	end
+
+	if action_url == "" then
+		callback(nil, action == "approve" and "No approve URL available" or "No request changes URL available")
+		return
+	end
+
+	local function submit_action()
+		local pullrequests = require("atlas.pulls.providers.bitbucket.api.pullrequests")
+		local fn = action == "approve" and pullrequests.approve or pullrequests.request_changes
+		fn(action_url, function(result, err)
+			if err then
+				callback(
+					nil,
+					(action == "approve" and "Approve failed: " or "Request changes failed: ") .. tostring(err)
+				)
+				return
+			end
+			callback(result or true)
+		end)
+	end
+
+	local comments_api = require("atlas.pulls.providers.bitbucket.api.comments")
+	comments_api.add_comment(pr, body, function(_, err)
+		if err then
+			callback(nil, "Failed to post review comment: " .. tostring(err))
+			return
+		end
+		submit_action()
+	end)
+end
+
 function M.delete_comment(pr, comment, callback)
 	if not comment or not comment.id then
 		callback(nil, "No comment selected")

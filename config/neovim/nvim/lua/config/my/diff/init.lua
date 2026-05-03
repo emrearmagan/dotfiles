@@ -463,6 +463,34 @@ local function add_comment(context_fn, pending)
 	end)
 end
 
+local function submit_review(event, label)
+	local provider = ensure_ready()
+	if not provider then
+		return
+	end
+	if not provider.submit_review then
+		notify(vim.log.levels.WARN, "Submitting reviews is not supported for this provider")
+		return
+	end
+
+	comments_ui.input({
+		title = (" %s review "):format(label),
+		on_empty = function()
+			notify(vim.log.levels.WARN, "Empty review, cancelled")
+		end,
+		on_submit = function(body)
+			provider.submit_review(state.pr, event, body, function(_, err)
+				if err then
+					notify(vim.log.levels.ERROR, err)
+					return
+				end
+				notify(vim.log.levels.INFO, ("%s review submitted"):format(label))
+				refresh(nil, { force = true })
+			end)
+		end,
+	})
+end
+
 local function view_thread()
 	local provider = ensure_ready()
 	if not provider then
@@ -534,6 +562,14 @@ vim.keymap.set("n", "<leader>gcC", function()
 end, { desc = "Add PR comment" })
 
 vim.keymap.set("n", "<leader>gcv", view_thread, { desc = "View PR thread" })
+
+vim.keymap.set("n", "<leader>gca", function()
+	submit_review("APPROVE", "Approve")
+end, { desc = "Approve PR review" })
+
+vim.keymap.set("n", "<leader>gcr", function()
+	submit_review("REQUEST_CHANGES", "Request changes")
+end, { desc = "Request PR changes" })
 
 vim.keymap.set("n", "gx", function()
 	local provider = provider_for()

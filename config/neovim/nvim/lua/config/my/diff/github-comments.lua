@@ -690,6 +690,67 @@ mutation($pullRequestReviewId: ID!, $inReplyTo: ID!, $body: String!) {
 	vim.fn.chanclose(job_id, "stdin")
 end
 
+function M.submit_review(pr, event, body, callback)
+	if not pr.node_id then
+		callback(nil, "No GitHub PR node data cached")
+		return
+	end
+
+	local submit_query = [[
+mutation($pullRequestReviewId: ID!, $event: PullRequestReviewEvent!, $body: String!) {
+  submitPullRequestReview(input: {
+    pullRequestReviewId: $pullRequestReviewId
+    event: $event
+    body: $body
+  }) {
+    pullRequestReview { id }
+  }
+}
+]]
+
+	local function submit(review_id)
+		graphql(submit_query, {
+			pullRequestReviewId = review_id,
+			event = event,
+			body = body,
+		}, function()
+			pr.pending_review_node_id = nil
+			pr.pending_review_ids = {}
+			pr.pending_review_node_ids = {}
+			callback(true)
+		end, function(err)
+			callback(nil, "Failed to submit review: " .. err)
+		end)
+	end
+
+	if pr.pending_review_node_id then
+		submit(pr.pending_review_node_id)
+		return
+	end
+
+	local create_query = [[
+mutation($pullRequestId: ID!, $event: PullRequestReviewEvent!, $body: String!) {
+  addPullRequestReview(input: {
+    pullRequestId: $pullRequestId
+    event: $event
+    body: $body
+  }) {
+    pullRequestReview { id }
+  }
+}
+]]
+
+	graphql(create_query, {
+		pullRequestId = pr.node_id,
+		event = event,
+		body = body,
+	}, function()
+		callback(true)
+	end, function(err)
+		callback(nil, "Failed to submit review: " .. err)
+	end)
+end
+
 function M.delete_comment(_, comment, callback)
 	if not comment or not comment.id then
 		callback(nil, "No comment selected")
