@@ -1,22 +1,21 @@
 local function set_dashboard_highlights()
-	local ok, palettes = pcall(require, "catppuccin.palettes")
-	local fg = ok and palettes.get_palette("mocha").text or nil
-
-	if not fg then
-		local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
-		fg = normal.fg and string.format("#%06x", normal.fg) or "#ffffff"
-	end
-
 	for _, group in ipairs({
-		"SnacksDashboardHeader",
-		"SnacksDashboardKey",
 		"SnacksDashboardDesc",
-		"SnacksDashboardFooter",
 		"SnacksDashboardIcon",
 		"SnacksDashboardSpecial",
 	}) do
-		vim.api.nvim_set_hl(0, group, { fg = fg })
+		vim.api.nvim_set_hl(0, group, { link = "Normal" })
 	end
+
+	local comment = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+	local muted = {
+		fg = comment.fg,
+		italic = false,
+		bold = false,
+	}
+	vim.api.nvim_set_hl(0, "SnacksDashboardHeader", muted)
+	vim.api.nvim_set_hl(0, "SnacksDashboardFooter", muted)
+	vim.api.nvim_set_hl(0, "SnacksDashboardKey", muted)
 end
 
 return {
@@ -34,7 +33,41 @@ return {
 		})
 	end,
 	opts = {
-		bigfile = { enabled = true },
+		bigfile = {
+			-- consider: https://github.com/fredrikaverpil/dotfiles/blob/main/nvim-fredrik/plugin/bigfile.lua
+			enabled = true,
+			notify = true,
+			size = 1024 * 1024,
+			line_length = 500,
+			setup = function(ctx)
+				if vim.fn.exists(":NoMatchParen") ~= 0 then
+					vim.cmd("NoMatchParen")
+				end
+
+				vim.b[ctx.buf].completion = false
+				vim.b[ctx.buf].minianimate_disable = true
+				vim.b[ctx.buf].minihipatterns_disable = true
+				vim.bo[ctx.buf].swapfile = false
+				vim.bo[ctx.buf].undofile = false
+
+				Snacks.util.wo(0, {
+					foldmethod = "manual",
+					statuscolumn = "",
+					conceallevel = 0,
+				})
+
+				if vim.tbl_contains({ "json", "yaml", "xml" }, ctx.ft) then
+					vim.schedule(function()
+						if vim.api.nvim_buf_is_valid(ctx.buf) then
+							vim.bo[ctx.buf].syntax = ctx.ft
+						end
+					end)
+				else
+					pcall(vim.treesitter.stop, ctx.buf)
+					vim.cmd("syntax clear")
+				end
+			end,
+		},
 		explorer = { enabled = false },
 		zen = {
 			toggles = {
@@ -219,7 +252,6 @@ return {
 		},
 		dashboard = {
 			enabled = true,
-			width = 60,
 			row = nil,
 			col = nil,
 			pane_gap = 4,
