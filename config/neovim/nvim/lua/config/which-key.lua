@@ -1,6 +1,5 @@
 local wk = require("which-key")
 local snacks = require("snacks")
-local helper = require("config.helper")
 
 -------------------- Keybindings ------------------------
 wk.add({
@@ -635,7 +634,7 @@ wk.add({
 		function()
 			snacks.lazygit()
 		end,
-		desc = "Git Browse",
+		desc = ":Lazygit",
 	},
 	{
 		"<leader>gl",
@@ -684,14 +683,6 @@ wk.add({
 			})
 		end,
 		desc = "Git Diff Against Branch Base",
-	},
-	{
-		"<leader>gt",
-		function()
-			local gitsigns = require("gitsigns")
-			gitsigns.toggle_current_line_blame()
-		end,
-		desc = "Toggle Line Blame",
 	},
 	{
 		"<leader>gb",
@@ -743,83 +734,42 @@ wk.add({
 	},
 
 	-- Diffview / CodeDiff
-	{ "<leader>gD", group = "Diff" },
 	{
-		"<leader>gDD",
-		"<cmd>DiffviewOpen<cr>",
-		desc = "Open Diffview",
+		"<leader>gD",
+		function()
+			if vim.g.use_codediff then
+				vim.cmd("CodeDiff")
+			else
+				vim.cmd("DiffviewOpen")
+			end
+		end,
+		desc = "Open Diff",
 	},
 	{
-		"<leader>gDC",
-		"<cmd>DiffviewClose<cr>",
-		desc = "Close Diffview",
-	},
-	{
-		"<leader>gDc",
-		"<cmd>CodeDiff<cr>",
-		desc = "Open CodeDiff",
+		"<leader>gO",
+		"<cmd>GitOriginDiff<cr>",
+		desc = "Diff vs origin branch",
 	},
 	{
 		"<leader>gH",
-		"<cmd>DiffviewFileHistory<cr>",
+		function()
+			if vim.g.use_codediff then
+				vim.cmd("CodeDiff history")
+			else
+				vim.cmd("DiffviewFileHistory")
+			end
+		end,
 		desc = "File History",
 	},
 	{
-		"<leader>goo",
+		"<leader>gF",
 		function()
-			local cwd = vim.fn.getcwd()
-
-			local current_branch = vim.trim(vim.fn.system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }))
-			if vim.v.shell_error ~= 0 or current_branch == "" then
-				vim.notify("Git branch detection failed in current directory", vim.log.levels.WARN)
-				return
+			if vim.g.use_codediff then
+				vim.cmd("CodeDiff history %")
+			else
+				vim.cmd("DiffviewFileHistory %")
 			end
-
-			if current_branch == "HEAD" then
-				vim.notify("Detached HEAD: switch to a branch first", vim.log.levels.WARN)
-				return
-			end
-
-			helper.select_origin_branch(cwd, current_branch, function(selection)
-				local range = "origin/" .. selection .. "...HEAD"
-				vim.cmd("DiffviewOpen " .. range)
-			end)
 		end,
-		desc = "Diff vs origin branch (pick)",
-	},
-	{
-		"<leader>goc",
-		function()
-			local cwd = vim.fn.getcwd()
-
-			local current_branch = vim.trim(vim.fn.system({ "git", "-C", cwd, "rev-parse", "--abbrev-ref", "HEAD" }))
-			if vim.v.shell_error ~= 0 or current_branch == "" then
-				vim.notify("Git branch detection failed in current directory", vim.log.levels.WARN)
-				return
-			end
-
-			if current_branch == "HEAD" then
-				vim.notify("Detached HEAD: switch to a branch first", vim.log.levels.WARN)
-				return
-			end
-
-			helper.select_origin_branch(cwd, current_branch, function(selection)
-				local range = "origin/" .. selection .. "...HEAD"
-				vim.cmd("CodeDiff " .. range)
-			end)
-		end,
-		desc = "CodeDiff vs origin branch (pick)",
-	},
-	{
-		"<leader>gh",
-		function()
-			snacks.picker.git_files({ untracked = true })
-		end,
-		desc = "Git Files",
-	},
-	{
-		"<leader>gH",
-		"<cmd>DiffviewFileHistory %<cr>",
 		desc = "Current File History",
 	},
 

@@ -1,6 +1,7 @@
 vim.g.mapleader = " "
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+vim.g.use_codediff = true
 
 local deprecate = vim.deprecate
 ---@diagnostic disable-next-line: duplicate-set-field
