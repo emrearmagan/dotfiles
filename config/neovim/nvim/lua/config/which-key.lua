@@ -759,10 +759,10 @@ wk.add({
 				vim.cmd("DiffviewFileHistory")
 			end
 		end,
-		desc = "File History",
+		desc = "Repo History",
 	},
 	{
-		"<leader>gF",
+		"<leader>gh",
 		function()
 			if vim.g.use_codediff then
 				vim.cmd("CodeDiff history %")
@@ -770,7 +770,7 @@ wk.add({
 				vim.cmd("DiffviewFileHistory %")
 			end
 		end,
-		desc = "Current File History",
+		desc = "File History",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮

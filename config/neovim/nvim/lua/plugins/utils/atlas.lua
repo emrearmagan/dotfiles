@@ -42,7 +42,7 @@ return {
 			---@class AtlasPullsConfig
 			pulls = {
 				diff = {
-					open_cmd = "DiffviewOpen",
+					open_cmd = "CodeDiff",
 				},
 
 				repo_config = {

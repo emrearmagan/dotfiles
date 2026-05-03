@@ -2,6 +2,29 @@ return {
 	{
 		"esmuellert/codediff.nvim",
 		cmd = "CodeDiff",
+		config = function()
+			require("codediff").setup({
+				default = {
+					disable_diagnostics = false,
+				},
+				view = {
+					merge_tool = {
+						disable_diagnostics = false,
+						winbar_info = true,
+					},
+				},
+				enhanced_diff_hl = true, -- See ':h diffview-config-enhanced_diff_hl'
+				hooks = {
+					-- do not fold
+					diff_buf_win_enter = function(bufnr)
+						vim.opt_local.foldenable = false
+					end,
+
+					-- TODO: jump to first diff: https://github.com/sindrets/diffview.nvim/issues/440
+					-- TODO: enable diagnostics in diffview
+				},
+			})
+		end,
 	},
 	{
 		"sindrets/diffview.nvim",
