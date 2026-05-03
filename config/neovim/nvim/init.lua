@@ -3,7 +3,7 @@ require("config.helper")
 
 require("config.lazy")
 require("config.which-key")
-require("config.autocmds")
+require("config.my")
 
 -- Feature from Neovim 0.12 just for testing.
 vim.cmd("packadd nvim.undotree") -- enable built-in undotree plugin

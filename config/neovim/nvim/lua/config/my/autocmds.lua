@@ -2,7 +2,7 @@ local function augroup(name)
 	return vim.api.nvim_create_augroup("user_" .. name, { clear = true })
 end
 
--- Check if we need to reload the file when it changed
+-- Check if we need to reload the file when it changed.
 vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 	group = augroup("checktime"),
 	callback = function()
@@ -12,13 +12,14 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 	end,
 })
 
--- Also check on buffer enter and cursor hold
+-- Also check on buffer enter and cursor hold.
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+	group = augroup("checktime_events"),
 	command = "if mode() != 'c' | checktime | endif",
 	pattern = { "*" },
 })
 
--- Highlight on yank
+-- Highlight on yank.
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = augroup("highlight_yank"),
 	callback = function()
@@ -26,7 +27,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- resize splits if window got resized
+-- Resize splits if window got resized.
 vim.api.nvim_create_autocmd({ "VimResized" }, {
 	group = augroup("resize_splits"),
 	callback = function()
@@ -36,7 +37,7 @@ vim.api.nvim_create_autocmd({ "VimResized" }, {
 	end,
 })
 
--- close some filetypes with <q>
+-- Close some filetypes with <q>.
 vim.api.nvim_create_autocmd("FileType", {
 	group = augroup("close_with_q"),
 	pattern = {
@@ -74,10 +75,15 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- go to last loc when opening a buffer
+-- Go to last loc when opening a buffer.
 vim.api.nvim_create_autocmd("BufReadPost", {
+	group = augroup("last_location"),
 	callback = function(event)
-		local exclude = { "gitcommit" } -- don't remember position in commit messages
+		local exclude = { "gitcommit" }
+		if vim.tbl_contains(exclude, vim.bo[event.buf].filetype) then
+			return
+		end
+
 		local mark = vim.api.nvim_buf_get_mark(event.buf, '"')
 		local lcount = vim.api.nvim_buf_line_count(event.buf)
 		if mark[1] > 0 and mark[1] <= lcount then
@@ -101,40 +107,3 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		vim.opt_local.filetype = "sh"
 	end,
 })
-
-local function insert_header()
-	local filename = vim.fn.expand("%:t")
-	local author = "emrearmagan"
-
-	-- try to detect project name from git or folder
-	local handle = io.popen("basename `git rev-parse --show-toplevel 2>/dev/null`")
-	local project = handle and handle:read("*l")
-	if handle then
-		handle:close()
-	end
-	project = project or vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-
-	local date = os.date("%d.%m.%y")
-	local header = string.format(
-		[[/*
-%s
-Created at %s by %s
-Copyright © %s. All rights reserved.
-*/
-]],
-		filename,
-		date,
-		author,
-		project
-	)
-
-	-- only insert if file is empty
-	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-	if #lines == 1 and lines[1] == "" then
-		vim.api.nvim_buf_set_lines(0, 0, 0, false, vim.split(header, "\n"))
-	else
-		vim.api.nvim_buf_set_lines(0, 0, 0, false, vim.split(header .. "\n", "\n"))
-	end
-end
-
-vim.api.nvim_create_user_command("AddHeader", insert_header, {})
