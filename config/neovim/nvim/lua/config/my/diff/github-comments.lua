@@ -1,3 +1,4 @@
+-- Thanks to this amazing guy: https://github.com/fredrikaverpil/dotfiles/blob/main/nvim-fredrik/plugin/github_comments.lua
 if not vim.g.use_codediff then
 	return
 end
@@ -77,6 +78,12 @@ local function place_signs(bufnr, file_path, side, comments, pending_review_ids)
 		return
 	end
 
+	for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
+		if vim.api.nvim_win_is_valid(win) then
+			vim.wo[win].signcolumn = "yes:1"
+		end
+	end
+
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 
 	local threads = count_threads(comments, file_path)
@@ -119,8 +126,8 @@ end
 
 ---@return string? file_path
 ---@return table? session
-local function get_session_file_path()
-	local tabpage = vim.api.nvim_get_current_tabpage()
+local function get_session_file_path(tabpage)
+	tabpage = tabpage or vim.api.nvim_get_current_tabpage()
 	local ok, lifecycle = pcall(require, "codediff.ui.lifecycle")
 	if not ok then
 		return nil
@@ -149,8 +156,8 @@ local function get_session_file_path()
 end
 
 ---@param pending_review_ids table<integer, boolean>?
-local function show_signs_for_session(comments, pending_review_ids)
-	local file_path, session = get_session_file_path()
+local function show_signs_for_session(comments, pending_review_ids, tabpage)
+	local file_path, session = get_session_file_path(tabpage)
 	if not file_path or not session then
 		return
 	end
@@ -474,7 +481,141 @@ local function fetch_pending_review_comments(pr_number, pending_review_ids, call
 	end
 end
 
-local function fetch_pr_data(callback)
+local function current_codediff_session(tabpage)
+	local ok, lifecycle = pcall(require, "codediff.ui.lifecycle")
+	if not ok then
+		return nil
+	end
+
+	return lifecycle.get_session(tabpage or vim.api.nvim_get_current_tabpage())
+end
+
+local function session_has_revision(session)
+	if not session then
+		return false
+	end
+
+	local revision = tostring(session.modified_revision or "")
+	return revision ~= "" and revision ~= "WORKING" and revision ~= "STAGED"
+end
+
+local function repo_slug_from_root(root, callback)
+	vim.system({
+		"gh",
+		"repo",
+		"view",
+		"--json",
+		"owner,name",
+		"--jq",
+		'.owner.login + "\\n" + .name',
+	}, { text = true, cwd = root }, function(result)
+		vim.schedule(function()
+			if not result or result.code ~= 0 then
+				callback(nil, nil)
+				return
+			end
+
+			local repo_info = vim.split(trim(result.stdout), "\n", { plain = true, trimempty = true })
+			callback(repo_info[1], repo_info[2])
+		end)
+	end)
+end
+
+local function pr_from_codediff_revision(tabpage, callback)
+	local session = current_codediff_session(tabpage)
+	if not session or not session.git_root then
+		callback(nil, nil, nil)
+		return
+	end
+
+	local sha = tostring(session.modified_revision or "")
+	if sha == "" or sha == "WORKING" or sha == "STAGED" then
+		callback(nil, nil, nil)
+		return
+	end
+
+	repo_slug_from_root(session.git_root, function(owner, repo)
+		if not owner or not repo then
+			callback(nil, nil, nil)
+			return
+		end
+
+		local slug = owner .. "/" .. repo
+		vim.system({
+			"gh",
+			"api",
+			"repos/" .. slug .. "/commits/" .. sha .. "/pulls",
+			"-H",
+			"Accept: application/vnd.github+json",
+		}, { text = true, cwd = session.git_root }, function(result)
+			vim.schedule(function()
+				if not result or result.code ~= 0 then
+					callback(nil, nil, nil)
+					return
+				end
+
+				local ok, pulls = pcall(vim.json.decode, result.stdout or "")
+				if not ok or type(pulls) ~= "table" or #pulls == 0 then
+					callback(nil, nil, nil)
+					return
+				end
+
+				local selected = pulls[1]
+				for _, pr in ipairs(pulls) do
+					if pr.state == "open" then
+						selected = pr
+						break
+					end
+				end
+
+				local pr_number = tostring(selected.number or "")
+				if pr_number == "" then
+					callback(nil, nil, nil)
+					return
+				end
+
+				callback(pr_number, owner, repo)
+			end)
+		end)
+	end)
+end
+
+local function wait_for_codediff_pr(tabpage, attempt, callback)
+	attempt = attempt or 1
+	pr_from_codediff_revision(tabpage, function(pr_number, owner, repo)
+		if pr_number then
+			callback(pr_number, owner, repo)
+			return
+		end
+
+		if attempt >= 12 then
+			callback(nil, nil, nil)
+			return
+		end
+
+		vim.defer_fn(function()
+			wait_for_codediff_pr(tabpage, attempt + 1, callback)
+		end, 100)
+	end)
+end
+
+local function pr_from_current_branch(callback)
+	vim.system({ "gh", "pr", "view", "--json", "number", "--jq", ".number" }, { text = true }, function(pr_result)
+		vim.schedule(function()
+			local pr_number = pr_result and pr_result.code == 0 and trim(pr_result.stdout) or ""
+			if pr_number == "" then
+				callback(nil)
+				return
+			end
+
+			repo_slug_from_root(nil, function(owner, repo)
+				callback(pr_number, owner, repo)
+			end)
+		end)
+	end)
+end
+
+local function fetch_pr_data(callback, tabpage)
 	local function add_visible_comments(comments)
 		cached_comments = merge_comments(cached_comments, comments)
 		callback(cached_comments, cached_pending_review_ids)
@@ -493,89 +634,103 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 }
 ]]
 
-	vim.system({ "gh", "pr", "view", "--json", "number", "--jq", ".number" }, { text = true }, function(pr_result)
-		vim.schedule(function()
-			local pr_number = pr_result and pr_result.code == 0 and trim(pr_result.stdout) or ""
-			if pr_number == "" then
-				notify(vim.log.levels.WARN, "No current GitHub PR found")
+	local function fetch_with_pr(pr_number, owner, repo)
+		cached_pr_number = pr_number
+		cached_comments = {}
+		cached_pending_review_ids = {}
+		cached_pending_review_node_id = nil
+		cached_pending_review_node_ids = {}
+		fetch_diff_files(pr_number)
+		notify(vim.log.levels.INFO, "Loading PR comments...")
+
+		local loaded = {
+			review_comments = false,
+			pending_comments = false,
+			notified = false,
+		}
+
+		local function notify_loaded()
+			if loaded.notified or not loaded.review_comments or not loaded.pending_comments then
 				return
 			end
 
-			cached_pr_number = pr_number
-			cached_comments = {}
-			cached_pending_review_ids = {}
+			loaded.notified = true
+			notify(vim.log.levels.INFO, ("Loaded %d PR comments"):format(#cached_comments))
+		end
+
+		fetch_review_comments(pr_number, function(comments)
+			add_visible_comments(comments)
+			loaded.review_comments = true
+			notify_loaded()
+		end)
+
+		if not owner or not repo then
+			notify(vim.log.levels.WARN, "Failed to detect GitHub repository")
+			return
+		end
+
+		graphql(query, { owner = owner, repo = repo, pr = tonumber(pr_number) }, function(data)
+			local pr = data.repository and data.repository.pullRequest
+			if not pr then
+				loaded.pending_comments = true
+				notify_loaded()
+				return
+			end
+
+			cached_pr_node_id = pr.id
 			cached_pending_review_node_id = nil
 			cached_pending_review_node_ids = {}
-			fetch_diff_files(pr_number)
 
-			fetch_review_comments(pr_number, function(comments)
-				add_visible_comments(comments)
+			local pending = {}
+			for _, review in ipairs(pr.reviews and pr.reviews.nodes or {}) do
+				if review.state == "PENDING" then
+					pending[review.databaseId] = true
+					cached_pending_review_node_id = review.id
+					cached_pending_review_node_ids[review.databaseId] = review.id
+				end
+			end
+			cached_pending_review_ids = pending
+
+			fetch_pending_review_comments(pr_number, cached_pending_review_ids, function(pending_comments)
+				add_visible_comments(pending_comments)
+				loaded.pending_comments = true
+				notify_loaded()
 			end)
+		end, function(err)
+			notify(vim.log.levels.WARN, "Failed to fetch pending review ids: " .. err)
+			loaded.pending_comments = true
+			notify_loaded()
+		end)
+	end
 
-			vim.system({
-				"gh",
-				"repo",
-				"view",
-				"--json",
-				"owner,name",
-				"--jq",
-				'.owner.login + "\\n" + .name',
-			}, { text = true }, function(repo_result)
-				vim.schedule(function()
-					if not repo_result or repo_result.code ~= 0 then
-						notify(vim.log.levels.WARN, "Failed to detect GitHub repository")
-						return
-					end
+	wait_for_codediff_pr(tabpage, 1, function(pr_number, owner, repo)
+		if pr_number and owner and repo then
+			fetch_with_pr(pr_number, owner, repo)
+			return
+		end
 
-					local repo_info = vim.split(trim(repo_result.stdout), "\n", { plain = true, trimempty = true })
-					local owner = repo_info[1]
-					local repo = repo_info[2]
-					if not owner or not repo then
-						notify(vim.log.levels.WARN, "Failed to parse GitHub repository")
-						return
-					end
+		pr_from_current_branch(function(branch_pr, branch_owner, branch_repo)
+			if not branch_pr or not branch_owner or not branch_repo then
+				notify(vim.log.levels.WARN, "No GitHub PR found")
+				return
+			end
 
-					graphql(query, { owner = owner, repo = repo, pr = tonumber(pr_number) }, function(data)
-						local pr = data.repository and data.repository.pullRequest
-						if not pr then
-							return
-						end
-
-						cached_pr_node_id = pr.id
-						cached_pending_review_node_id = nil
-						cached_pending_review_node_ids = {}
-
-						local pending = {}
-						for _, review in ipairs(pr.reviews and pr.reviews.nodes or {}) do
-							if review.state == "PENDING" then
-								pending[review.databaseId] = true
-								cached_pending_review_node_id = review.id
-								cached_pending_review_node_ids[review.databaseId] = review.id
-							end
-						end
-						cached_pending_review_ids = pending
-
-						fetch_pending_review_comments(pr_number, cached_pending_review_ids, function(pending_comments)
-							add_visible_comments(pending_comments)
-						end)
-					end, function(err)
-						notify(vim.log.levels.WARN, "Failed to fetch pending review ids: " .. err)
-					end)
-				end)
-			end)
+			fetch_with_pr(branch_pr, branch_owner, branch_repo)
 		end)
 	end)
 end
 
-local function refresh()
+local function refresh(tabpage)
+	local target_tabpage = tabpage or vim.api.nvim_get_current_tabpage()
 	fetch_pr_data(function(comments, pending)
-		show_signs_for_session(comments, pending)
-	end)
+		show_signs_for_session(comments, pending, target_tabpage)
+	end, target_tabpage)
 end
 
-local function show_cached()
+local function show_cached(tabpage)
+	local target_tabpage = tabpage or vim.api.nvim_get_current_tabpage()
 	if cached_comments and #cached_comments > 0 then
-		show_signs_for_session(cached_comments, cached_pending_review_ids)
+		show_signs_for_session(cached_comments, cached_pending_review_ids, target_tabpage)
 	end
 end
 
@@ -1000,21 +1155,27 @@ local group = vim.api.nvim_create_augroup("pr_comment_signs", { clear = true })
 
 vim.api.nvim_create_autocmd("User", {
 	group = group,
-	pattern = "CodeDiffOpen",
-	callback = refresh,
-})
-
-vim.api.nvim_create_autocmd("User", {
-	group = group,
 	pattern = "CodeDiffVirtualFileLoaded",
-	callback = show_cached,
+	callback = function(event)
+		local tabpage = event.data and event.data.tabpage or vim.api.nvim_get_current_tabpage()
+		show_cached(tabpage)
+	end,
 })
 
 vim.api.nvim_create_autocmd("User", {
 	group = group,
 	pattern = "CodeDiffFileSelect",
-	callback = function()
-		vim.defer_fn(show_cached, 100)
+	callback = function(event)
+		local tabpage = event.data and event.data.tabpage or vim.api.nvim_get_current_tabpage()
+		local session = current_codediff_session(tabpage)
+
+		if session_has_revision(session) then
+			refresh(tabpage)
+		end
+
+		vim.defer_fn(function()
+			show_cached(tabpage)
+		end, 100)
 	end,
 })
 
