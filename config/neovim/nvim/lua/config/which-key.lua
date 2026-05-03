@@ -182,22 +182,7 @@ wk.add({
 		desc = "which_key_ignore",
 	},
 	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "which_key_ignore" },
-	{
-		"<leader>m",
-		function()
-			snacks.picker.marks({
-				global = true,
-				["local"] = true,
-				transform = function(item)
-					if item.label:match("^[A-Za-z]$") then
-						return item
-					end
-					return false
-				end,
-			})
-		end,
-		desc = "Marks",
-	},
+	{ "<leader>m", "<cmd>MyMarks<CR>", desc = "Marks" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
@@ -224,13 +209,7 @@ wk.add({
 		end,
 		desc = "Search word under cursor",
 	},
-	{
-		"<leader>fm",
-		function()
-			snacks.picker.marks()
-		end,
-		desc = "Marks",
-	},
+	{ "<leader>fm", "<cmd>MyAllMarks<CR>", desc = "Marks" },
 	{
 		"<leader>fh",
 		function()
@@ -241,9 +220,7 @@ wk.add({
 
 	{
 		"<leader>ft",
-		function()
-			vim.cmd("TodoTelescope")
-		end,
+		"<cmd>MyTodoList<CR>",
 		desc = "Find todos",
 	},
 
