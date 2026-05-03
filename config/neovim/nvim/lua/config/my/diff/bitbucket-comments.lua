@@ -1,3 +1,4 @@
+-- Currently makes heavy use of atlas.nvim: https://github.com/emrearmagan/atlas.nvim
 if not vim.g.use_codediff then
 	return {}
 end
