@@ -22,6 +22,10 @@ Keep the output suitable for pasting as a Jira comment. Be practical, direct, an
 - Do not invent requirements. Mark assumptions clearly.
 - Distinguish blockers from nice-to-have improvements.
 - If the ticket is already good enough, say so and only mention minor improvements.
+- Start by restating the ticket intent in 1-2 lines.
+- Validate completeness and clarity: scope, acceptance criteria, dependencies, and constraints.
+- Identify missing details, ambiguities, and risks.
+- Propose concrete, ready-to-copy improvements when useful.
 
 ## Readiness Criteria
 
@@ -52,9 +56,9 @@ Do not overuse Blocker. If an engineer can make a reasonable decision from exist
 Use this structure:
 
 ```markdown
-## Verdict
+## Ticket Intent
 
-Ready / Mostly ready / Needs clarification / Not ready
+<1-2 lines>
 
 ## Review
 
@@ -62,27 +66,14 @@ Ready / Mostly ready / Needs clarification / Not ready
 Explanation: What is missing or unclear, and why it matters.
 Question: The exact question to ask the PM or ticket owner.
 
-## Suggested Comment
+## Concrete Improvements
 
-Concise comment text that can be added to the ticket.
+- <ready-to-copy improvement 1>
+- <ready-to-copy improvement 2>
 
-## Summary
+## Summary / Verdict
 
-1-3 sentences summarizing readiness, main gaps, and whether engineering can start.
+<Ready: short explanation of why the ticket is good enough, or Needs Changes: concise list of missing information/blockers>
 ```
 
-Only include sections that add value. If there are no meaningful gaps, keep it short:
-
-```markdown
-## Verdict
-
-Ready
-
-## Review
-
-No blocking gaps found. The ticket has enough context and testable acceptance criteria for engineering to start.
-
-## Summary
-
-Ready for engineering. Any remaining clarifications are minor and can be handled during implementation.
-```
+Only include sections that add value. If there are no meaningful gaps, keep the review short and mark the ticket as ready in `Summary / Verdict`.

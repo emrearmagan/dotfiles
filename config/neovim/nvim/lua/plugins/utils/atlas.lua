@@ -227,9 +227,8 @@ return {
 							local session = "ticket-review"
 							local window = issue_key:gsub("[^%w_-]", "-")
 							local prompt = table.concat({
-								"Use the ticket-review subagent to review this Jira ticket for completeness and readiness.",
-								"First fetch the full Jira issue, including description and comments if available, using the configured MCP/tools.",
-								"First describe what the ticket is asking for, then return a Jira-comment-friendly review, and end with the Summary section.",
+								"Use the ticket-review subagent to review this Jira ticket.",
+								"Fetch the full Jira issue content if Jira MCP/tools are available.",
 								"",
 								"Issue key: " .. issue_key,
 								"Summary: " .. summary,
