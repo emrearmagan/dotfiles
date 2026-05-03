@@ -46,6 +46,7 @@ return {
 		},
 		notify = { enabled = false },
 		picker = {
+			matcher = { smartcase = false },
 			sources = {
 				git_status = {
 					preview = function(ctx)
@@ -151,6 +152,11 @@ return {
 			},
 		},
 		scratch = {
+			filekey = {
+				cwd = true,
+				branch = false,
+				count = false,
+			},
 			win = {
 				keys = {
 					delete = {

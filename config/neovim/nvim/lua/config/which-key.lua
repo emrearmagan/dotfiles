@@ -290,6 +290,7 @@ wk.add({
 	{ "<leader>qs", ":w<CR>", desc = "Save file", mode = "n" },
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{ "<leader>qx", ":x<CR>", desc = "Save & close file", mode = "n" },
+	{ "<leader>qr", "<cmd>restart<CR>", desc = "Restart Neovim", mode = "n" },
 	{ "<leader>qQ", ":q!<CR>", desc = "Quit without saving", mode = "n" },
 	{ "<leader>qW", ":wq<CR>", desc = "Save and quit", mode = "n" },
 	{ "<leader>qA", ":wqa<CR>", desc = "Save all & quit", mode = "n" },

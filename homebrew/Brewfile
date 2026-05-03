@@ -99,8 +99,9 @@ brew "xcbeautify"           # xcode build formatter (duplicate)
 # Otherwise manually run:
 #   brew services start sketchybar
 #   brew services start borders
-brew "borders"              # window borders
-brew "sketchybar"           # status bar
+brew "borders"                 # window borders
+brew "sketchybar"              # status bar
+brew "floatpane/matcha/matcha" # email client
 
 # ───────────────────────────────
 # Applications (Casks)

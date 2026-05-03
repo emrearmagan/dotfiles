@@ -133,15 +133,15 @@ return {
 					github = {
 						views = {
 							{
-								name = "Neovim",
-								key = "1",
-								search = "repo:neovim/neovim sort:updated-desc",
-							},
-							{
 								name = "My PRs",
-								key = "2",
+								key = "1",
 								layout = "compact",
 								search = "author:@me sort:updated-desc",
+							},
+							{
+								name = "Neovim",
+								key = "2",
+								search = "repo:neovim/neovim sort:updated-desc",
 							},
 							{
 								name = "Best",
