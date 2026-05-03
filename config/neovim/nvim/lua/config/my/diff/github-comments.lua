@@ -5,15 +5,20 @@ end
 
 local comments_ui = require("config.my.diff.comments")
 
+local M = {}
 local ns = vim.api.nvim_create_namespace("pr_comments")
 
 local cached_comments = {}
 local cached_pending_review_ids = {}
 local cached_diff_files = {}
 local cached_pr_number = nil
+local cached_pr_url = nil
 local cached_pr_node_id = nil
 local cached_pending_review_node_id = nil
 local cached_pending_review_node_ids = {}
+local cached_session_key = nil
+local loading_session_key = nil
+local placed_sign_keys = {}
 
 local function notify(level, msg)
 	vim.notify("[GitHub comments] " .. tostring(msg), level)
@@ -83,6 +88,19 @@ local function place_signs(bufnr, file_path, side, comments, pending_review_ids)
 			vim.wo[win].signcolumn = "yes:1"
 		end
 	end
+
+	local sign_key = table.concat({
+		tostring(bufnr),
+		file_path,
+		side,
+		tostring(#(comments or {})),
+		tostring(vim.tbl_count(pending_review_ids or {})),
+	}, ":")
+	local existing_signs = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+	if placed_sign_keys[bufnr] == sign_key and #existing_signs > 0 then
+		return
+	end
+	placed_sign_keys[bufnr] = sign_key
 
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 
@@ -499,6 +517,44 @@ local function session_has_revision(session)
 	return revision ~= "" and revision ~= "WORKING" and revision ~= "STAGED"
 end
 
+local function session_cache_key(session)
+	if not session then
+		return nil
+	end
+
+	local root = tostring(session.git_root or "")
+	local revision = tostring(session.modified_revision or "")
+	if root == "" or revision == "" or revision == "WORKING" or revision == "STAGED" then
+		return nil
+	end
+
+	return root .. ":" .. revision
+end
+
+local function provider_from_git_root(root)
+	if type(root) ~= "string" or root == "" then
+		return nil
+	end
+
+	local result = vim.system({ "git", "-C", root, "remote", "get-url", "origin" }, { text = true }):wait()
+	if not result or result.code ~= 0 then
+		return nil
+	end
+
+	local url = trim(result.stdout)
+	if url:find("github", 1, false) then
+		return "github"
+	end
+	if url:find("bitbucket", 1, false) then
+		return "bitbucket"
+	end
+end
+
+function M.can_handle()
+	local session = current_codediff_session()
+	return session ~= nil and provider_from_git_root(session.git_root) == "github"
+end
+
 local function repo_slug_from_root(root, callback)
 	vim.system({
 		"gh",
@@ -615,7 +671,13 @@ local function pr_from_current_branch(callback)
 	end)
 end
 
-local function fetch_pr_data(callback, tabpage)
+local function fetch_pr_data(callback, tabpage, on_done)
+	local function done()
+		if on_done then
+			on_done()
+		end
+	end
+
 	local function add_visible_comments(comments)
 		cached_comments = merge_comments(cached_comments, comments)
 		callback(cached_comments, cached_pending_review_ids)
@@ -636,10 +698,12 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 
 	local function fetch_with_pr(pr_number, owner, repo)
 		cached_pr_number = pr_number
+		cached_pr_url = owner and repo and ("https://github.com/%s/%s/pull/%s"):format(owner, repo, pr_number) or nil
 		cached_comments = {}
 		cached_pending_review_ids = {}
 		cached_pending_review_node_id = nil
 		cached_pending_review_node_ids = {}
+		placed_sign_keys = {}
 		fetch_diff_files(pr_number)
 		notify(vim.log.levels.INFO, "Loading PR comments...")
 
@@ -656,6 +720,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 
 			loaded.notified = true
 			notify(vim.log.levels.INFO, ("Loaded %d PR comments"):format(#cached_comments))
+			done()
 		end
 
 		fetch_review_comments(pr_number, function(comments)
@@ -666,6 +731,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 
 		if not owner or not repo then
 			notify(vim.log.levels.WARN, "Failed to detect GitHub repository")
+			done()
 			return
 		end
 
@@ -712,6 +778,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 		pr_from_current_branch(function(branch_pr, branch_owner, branch_repo)
 			if not branch_pr or not branch_owner or not branch_repo then
 				notify(vim.log.levels.WARN, "No GitHub PR found")
+				done()
 				return
 			end
 
@@ -720,15 +787,42 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 	end)
 end
 
-local function refresh(tabpage)
+local function refresh(tabpage, opts)
+	opts = opts or {}
 	local target_tabpage = tabpage or vim.api.nvim_get_current_tabpage()
-	fetch_pr_data(function(comments, pending)
-		show_signs_for_session(comments, pending, target_tabpage)
-	end, target_tabpage)
+	local session = current_codediff_session(target_tabpage)
+	local key = session_cache_key(session)
+
+	if opts.force ~= true and key and cached_session_key == key and cached_pr_number then
+		show_signs_for_session(cached_comments, cached_pending_review_ids, target_tabpage)
+		return
+	end
+
+	if key and loading_session_key == key then
+		return
+	end
+
+	loading_session_key = key
+	fetch_pr_data(
+		function(comments, pending)
+			cached_session_key = key
+			show_signs_for_session(comments, pending, target_tabpage)
+		end,
+		target_tabpage,
+		function()
+			if loading_session_key == key then
+				loading_session_key = nil
+			end
+		end
+	)
 end
 
 local function show_cached(tabpage)
 	local target_tabpage = tabpage or vim.api.nvim_get_current_tabpage()
+	local session = current_codediff_session(target_tabpage)
+	if not session or provider_from_git_root(session.git_root) ~= "github" then
+		return
+	end
 	if cached_comments and #cached_comments > 0 then
 		show_signs_for_session(cached_comments, cached_pending_review_ids, target_tabpage)
 	end
@@ -936,7 +1030,7 @@ mutation($pullRequestReviewId: ID!, $path: String!, $body: String!, $line: Int!,
 		graphql(thread_query, variables, function()
 			local msg = is_new_review and "Review started" or "Review comment added"
 			notify(vim.log.levels.INFO, ("%s on %s:%d-%d"):format(msg, file_path, start_line, end_line))
-			refresh()
+			refresh(nil, { force = true })
 		end, function(err)
 			notify(vim.log.levels.ERROR, "Failed to add review thread: " .. err)
 		end)
@@ -975,6 +1069,39 @@ mutation($pullRequestId: ID!) {
 	end)
 end
 
+local function post_instant_comment(file_path, start_line, end_line, side, body)
+	if not cached_pr_node_id then
+		notify(vim.log.levels.ERROR, "No PR data cached. Open CodeDiff for a PR first.")
+		return
+	end
+
+	local variables = thread_variables(file_path, start_line, end_line, side, body)
+	variables.pullRequestId = cached_pr_node_id
+
+	local query = [[
+mutation($pullRequestId: ID!, $path: String!, $body: String!, $line: Int!, $side: DiffSide!, $startSide: DiffSide, $startLine: Int) {
+  addPullRequestReviewThread(input: {
+    pullRequestId: $pullRequestId
+    path: $path
+    body: $body
+    line: $line
+    side: $side
+    startSide: $startSide
+    startLine: $startLine
+  }) {
+    thread { id }
+  }
+}
+]]
+
+	graphql(query, variables, function()
+		notify(vim.log.levels.INFO, ("Comment posted on %s:%d-%d"):format(file_path, start_line, end_line))
+		refresh(nil, { force = true })
+	end, function(err)
+		notify(vim.log.levels.ERROR, "Failed to post comment: " .. err)
+	end)
+end
+
 local function post_reply(root_comment, body)
 	if not cached_pr_number then
 		notify(vim.log.levels.ERROR, "No PR data cached. Open CodeDiff for a PR first.")
@@ -1007,7 +1134,7 @@ mutation($pullRequestReviewId: ID!, $inReplyTo: ID!, $body: String!) {
 			body = body,
 		}, function()
 			notify(vim.log.levels.INFO, "Reply added to pending review")
-			refresh()
+			refresh(nil, { force = true })
 		end, function(err)
 			notify(vim.log.levels.ERROR, "Failed to post pending reply: " .. err)
 		end)
@@ -1035,7 +1162,7 @@ mutation($pullRequestReviewId: ID!, $inReplyTo: ID!, $body: String!) {
 					return
 				end
 				notify(vim.log.levels.INFO, "Reply posted")
-				refresh()
+				refresh(nil, { force = true })
 			end)
 		end,
 	})
@@ -1056,6 +1183,7 @@ local function remove_cached_comment(comment_id)
 		end
 	end
 	cached_comments = remaining
+	placed_sign_keys = {}
 end
 
 local function delete_comment(comment, on_done)
@@ -1086,7 +1214,7 @@ local function delete_comment(comment, on_done)
 				if on_done then
 					on_done()
 				end
-				refresh()
+				refresh(nil, { force = true })
 			end)
 		end,
 	})
@@ -1118,7 +1246,7 @@ local function open_thread_viewer(thread_comments, root_comment, file_path, side
 	})
 end
 
-local function pr_comment(context)
+local function pr_comment(context, pending)
 	local file_path, start_line, end_line, side = context()
 	if not file_path then
 		return
@@ -1129,9 +1257,13 @@ local function pr_comment(context)
 		return
 	end
 
-	local title = "Pending review comment"
+	local title = pending and "Pending review comment" or "PR comment"
 	open_comment_popup(title, file_path, start_line, end_line, side, function(body)
-		post_review_comment(file_path, start_line, end_line, side, body)
+		if pending then
+			post_review_comment(file_path, start_line, end_line, side, body)
+		else
+			post_instant_comment(file_path, start_line, end_line, side, body)
+		end
 	end)
 end
 
@@ -1169,7 +1301,7 @@ vim.api.nvim_create_autocmd("User", {
 		local tabpage = event.data and event.data.tabpage or vim.api.nvim_get_current_tabpage()
 		local session = current_codediff_session(tabpage)
 
-		if session_has_revision(session) then
+		if session_has_revision(session) and provider_from_git_root(session.git_root) == "github" then
 			refresh(tabpage)
 		end
 
@@ -1179,12 +1311,51 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
-vim.keymap.set("v", "<leader>gdc", function()
-	pr_comment(get_visual_diff_context)
-end, { desc = "Add pending PR comment" })
+vim.api.nvim_create_autocmd("WinEnter", {
+	group = group,
+	callback = function()
+		if cached_comments and #cached_comments > 0 then
+			vim.schedule(function()
+				show_cached(vim.api.nvim_get_current_tabpage())
+			end)
+		end
+	end,
+})
 
-vim.keymap.set("n", "<leader>gdc", function()
-	pr_comment(get_current_line_diff_context)
-end, { desc = "Add pending PR comment" })
+function M.add_comment_visual()
+	pr_comment(get_visual_diff_context, true)
+end
 
-vim.keymap.set("n", "<leader>gdv", view_thread, { desc = "View PR thread" })
+function M.add_comment_line()
+	pr_comment(get_current_line_diff_context, true)
+end
+
+function M.add_pending_comment_visual()
+	pr_comment(get_visual_diff_context, true)
+end
+
+function M.add_pending_comment_line()
+	pr_comment(get_current_line_diff_context, true)
+end
+
+function M.add_instant_comment_visual()
+	pr_comment(get_visual_diff_context, false)
+end
+
+function M.add_instant_comment_line()
+	pr_comment(get_current_line_diff_context, false)
+end
+
+function M.view_thread()
+	view_thread()
+end
+
+function M.open_pr()
+	if not cached_pr_url or cached_pr_url == "" then
+		notify(vim.log.levels.WARN, "No PR URL cached")
+		return
+	end
+	vim.ui.open(cached_pr_url)
+end
+
+return M

@@ -39,6 +39,7 @@ local function setup_highlights()
 		bg = comment.bg,
 		italic = false,
 	})
+	vim.api.nvim_set_hl(0, "DiffCommentsPending", { fg = "#f5a97f", bold = true })
 	for idx, color in ipairs(palette) do
 		vim.api.nvim_set_hl(0, ("DiffCommentsAuthor%02d"):format(idx), { fg = color, bold = true })
 	end
@@ -155,9 +156,11 @@ end
 local function render_comment(lines, line_to_comment, spans, comment, width)
 	local start = #lines + 1
 	local author = comment.user or comment.author or "unknown"
-	local left_text = "@" .. author
+	local author_text = "@" .. author
+	local pending_text = comment.pending and " PENDING" or ""
+	local left_text = author_text .. pending_text
 	local right_text = comment.right_text or relative_time(comment.created_at)
-	local header = "@" .. author
+	local header = left_text
 	if right_text ~= "" then
 		local left_width = vim.api.nvim_strwidth(left_text)
 		local right_width = vim.api.nvim_strwidth(right_text)
@@ -170,9 +173,17 @@ local function render_comment(lines, line_to_comment, spans, comment, width)
 	table.insert(spans, {
 		line = header_line,
 		start_col = 0,
-		end_col = #left_text,
+		end_col = #author_text,
 		hl_group = author_hl(author),
 	})
+	if pending_text ~= "" then
+		table.insert(spans, {
+			line = header_line,
+			start_col = #author_text + 1,
+			end_col = #left_text,
+			hl_group = "DiffCommentsPending",
+		})
+	end
 	if right_text ~= "" then
 		table.insert(spans, {
 			line = header_line,
@@ -213,7 +224,7 @@ function M.open(comments, opts)
 	local spans = {}
 	for index, comment in ipairs(comments) do
 		if index > 1 then
-			table.insert(lines, "-------")
+			table.insert(lines, string.rep("─", width))
 			table.insert(spans, {
 				line = #lines - 1,
 				start_col = 0,
