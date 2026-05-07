@@ -3,7 +3,10 @@ if not vim.g.use_codediff then
 	return {}
 end
 
-local M = { name = "bitbucket" }
+local M = {
+	name = "bitbucket",
+	allow_out_of_diff_comments = true,
+}
 
 local function trim(value)
 	if type(value) ~= "string" then

@@ -17,6 +17,7 @@ local state = {
 	diff_files = {},
 	session_key = nil,
 	loading_key = nil,
+	loaded_key = nil,
 	placed_sign_keys = {},
 }
 
@@ -119,16 +120,30 @@ local function place_signs(bufnr, file_path, side, comments)
 		return
 	end
 
-	for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
-		if vim.api.nvim_win_is_valid(win) then
-			vim.wo[win].signcolumn = "yes:1"
-		end
-	end
-
 	local pending_count = 0
 	for _, comment in ipairs(comments or {}) do
 		if comment.pending then
 			pending_count = pending_count + 1
+		end
+	end
+
+	local threads = count_threads(comments, file_path)
+	local line_count = vim.api.nvim_buf_line_count(bufnr)
+	local has_signs = false
+	for key in pairs(threads) do
+		local line_str, comment_side = key:match("^(%d+):(.+)$")
+		if comment_side == side then
+			local line = tonumber(line_str)
+			if line and line >= 1 and line <= line_count then
+				has_signs = true
+				break
+			end
+		end
+	end
+
+	for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
+		if vim.api.nvim_win_is_valid(win) then
+			vim.wo[win].signcolumn = has_signs and "yes:1" or "auto"
 		end
 	end
 
@@ -146,8 +161,6 @@ local function place_signs(bufnr, file_path, side, comments)
 	state.placed_sign_keys[bufnr] = sign_key
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 
-	local threads = count_threads(comments, file_path)
-	local line_count = vim.api.nvim_buf_line_count(bufnr)
 	local line_has_published = {}
 	local line_has_pending = {}
 
@@ -206,6 +219,7 @@ local function reset_for(provider, key)
 	state.comments = {}
 	state.diff_files = {}
 	state.session_key = key
+	state.loaded_key = nil
 	state.placed_sign_keys = {}
 end
 
@@ -217,7 +231,7 @@ local function refresh(tabpage, opts)
 	end
 
 	local key = session_key(session, provider.name)
-	if opts.force ~= true and key and state.session_key == key and state.pr then
+	if opts.force ~= true and key and state.session_key == key and state.loaded_key == key then
 		show_cached(tabpage)
 		return
 	end
@@ -255,6 +269,7 @@ local function refresh(tabpage, opts)
 				return
 			end
 			state.loading_key = nil
+			state.loaded_key = key
 			show_cached(tabpage)
 			notify(vim.log.levels.INFO, ("Loaded %d PR comments"):format(#state.comments))
 		end
@@ -445,7 +460,10 @@ local function add_comment(context_fn, pending)
 	if not context then
 		return
 	end
-	if not lines_in_diff(context.file_path, context.start_line, context.end_line, context.side) then
+	if
+		not provider.allow_out_of_diff_comments
+		and not lines_in_diff(context.file_path, context.start_line, context.end_line, context.side)
+	then
 		notify(vim.log.levels.WARN, "Selected lines are outside the diff")
 		return
 	end

@@ -112,3 +112,8 @@ fssh() {
 zle -N fssh
 bindkey -M emacs '^Xs' fssh
 bindkey -M viins '^Xs' fssh
+
+alias git-log="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias git-sync="git fetch --prune && git pull && git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -d"
+alias gb='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
+alias gs='git status --short --branch'
