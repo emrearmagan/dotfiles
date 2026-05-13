@@ -266,10 +266,19 @@ wk.add({
 	{ "<leader>qs", ":w<CR>", desc = "Save file", mode = "n" },
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{ "<leader>qx", ":x<CR>", desc = "Save & close file", mode = "n" },
-	{ "<leader>qr", "<cmd>restart<CR>", desc = "Restart Neovim", mode = "n" },
 	{ "<leader>qQ", ":q!<CR>", desc = "Quit without saving", mode = "n" },
 	{ "<leader>qW", ":wq<CR>", desc = "Save and quit", mode = "n" },
 	{ "<leader>qA", ":wqa<CR>", desc = "Save all & quit", mode = "n" },
+	{
+		"<leader>qr",
+		function()
+			local session = vim.fn.stdpath("state") .. "/restart_session.vim"
+			vim.cmd("mksession! " .. vim.fn.fnameescape(session))
+			vim.cmd("restart source " .. vim.fn.fnameescape(session))
+		end,
+		desc = "Restart Neovim",
+	},
+
 	{
 		"<leader>qM",
 		function()
