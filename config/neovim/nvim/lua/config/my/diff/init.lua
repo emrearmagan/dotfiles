@@ -563,43 +563,55 @@ local function view_thread()
 	})
 end
 
-vim.keymap.set("v", "<leader>gcc", function()
-	add_comment(visual_context, true)
-end, { desc = "Add pending PR comment" })
-
-vim.keymap.set("n", "<leader>gcc", function()
-	add_comment(current_context, true)
-end, { desc = "Add pending PR comment" })
-
-vim.keymap.set("v", "<leader>gcC", function()
-	add_comment(visual_context, false)
-end, { desc = "Add PR comment" })
-
-vim.keymap.set("n", "<leader>gcC", function()
-	add_comment(current_context, false)
-end, { desc = "Add PR comment" })
-
-vim.keymap.set("n", "<leader>gcv", view_thread, { desc = "View PR thread" })
-
-vim.keymap.set("n", "<leader>gca", function()
-	submit_review("APPROVE", "Approve")
-end, { desc = "Approve PR review" })
-
-vim.keymap.set("n", "<leader>gcr", function()
-	submit_review("REQUEST_CHANGES", "Request changes")
-end, { desc = "Request PR changes" })
-
-vim.keymap.set("n", "gx", function()
-	local provider = provider_for()
-	if provider and provider == state.provider and state.pr and provider.pr_url then
-		local url = provider.pr_url(state.pr)
-		if url and url ~= "" then
-			vim.ui.open(url)
-			return
-		end
+local function attach_keymaps(buf)
+	if not buf or not vim.api.nvim_buf_is_valid(buf) then
+		return
 	end
-	vim.cmd.normal({ "gx", bang = true })
-end, { desc = "Open PR" })
+	if vim.b[buf].my_diff_keymaps then
+		return
+	end
+	vim.b[buf].my_diff_keymaps = true
+
+	local opts = { buffer = buf, silent = true }
+
+	vim.keymap.set("v", "<leader>gcc", function()
+		add_comment(visual_context, true)
+	end, vim.tbl_extend("force", opts, { desc = "Add pending PR comment" }))
+
+	vim.keymap.set("n", "<leader>gcc", function()
+		add_comment(current_context, true)
+	end, vim.tbl_extend("force", opts, { desc = "Add pending PR comment" }))
+
+	vim.keymap.set("v", "<leader>gcC", function()
+		add_comment(visual_context, false)
+	end, vim.tbl_extend("force", opts, { desc = "Add PR comment" }))
+
+	vim.keymap.set("n", "<leader>gcC", function()
+		add_comment(current_context, false)
+	end, vim.tbl_extend("force", opts, { desc = "Add PR comment" }))
+
+	vim.keymap.set("n", "<leader>gcv", view_thread, vim.tbl_extend("force", opts, { desc = "View PR thread" }))
+
+	vim.keymap.set("n", "<leader>gca", function()
+		submit_review("APPROVE", "Approve")
+	end, vim.tbl_extend("force", opts, { desc = "Approve PR review" }))
+
+	vim.keymap.set("n", "<leader>gcr", function()
+		submit_review("REQUEST_CHANGES", "Request changes")
+	end, vim.tbl_extend("force", opts, { desc = "Request PR changes" }))
+
+	vim.keymap.set("n", "gx", function()
+		local provider = provider_for()
+		if provider and provider == state.provider and state.pr and provider.pr_url then
+			local url = provider.pr_url(state.pr)
+			if url and url ~= "" then
+				vim.ui.open(url)
+				return
+			end
+		end
+		vim.cmd.normal({ "gx", bang = true })
+	end, vim.tbl_extend("force", opts, { desc = "Open PR" }))
+end
 
 local group = vim.api.nvim_create_augroup("my_diff_comments", { clear = true })
 
@@ -617,6 +629,11 @@ vim.api.nvim_create_autocmd("User", {
 	callback = function(event)
 		local tabpage = tabpage_from_event(event)
 		refresh(tabpage)
+		local session = current_session(tabpage)
+		if session then
+			attach_keymaps(session.original_bufnr)
+			attach_keymaps(session.modified_bufnr)
+		end
 		vim.defer_fn(function()
 			show_cached(tabpage)
 		end, 100)

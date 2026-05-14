@@ -23,7 +23,6 @@ local actions = {
 		label = " GitLab Issues",
 		command = "AtlasIssues GitLab",
 	},
-
 	{
 		label = " Docker",
 		command = "Dockyard",
@@ -33,14 +32,8 @@ local actions = {
 		command = "DBUIFull",
 	},
 	{
-		label = "󰠮  Notes",
-		run = function()
-			require("snacks").picker.files({
-				cwd = vim.g.obsidian_vault,
-				cmd = "rg",
-				args = { "--files", "-g", "*.md" },
-			})
-		end,
+		label = " Config",
+		command = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
 	},
 	{
 		label = "󰄬  Todo",

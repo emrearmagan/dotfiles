@@ -133,33 +133,66 @@ return {
 					github = {
 						views = {
 							{
-								name = "My PRs",
+								name = "Review",
 								key = "1",
+								layout = "compact",
+								search = "is:pr user:emrearmagan is:pr sort:updated-desc",
+							},
+							{
+								name = "My PRs",
+								key = "2",
 								layout = "compact",
 								search = "author:@me sort:updated-desc",
 							},
 							{
 								name = "Neovim",
-								key = "2",
+								key = "3",
+								layout = "plain",
 								search = "repo:neovim/neovim sort:updated-desc",
 							},
 							{
 								name = "Best",
-								key = "3",
+								key = "4",
 								layout = "plain",
 								search = "repo:folke/lazy.nvim repo:nvim-telescope/telescope.nvim repo:hrsh7th/nvim-cmp repo:lewis6991/gitsigns.nvim repo:nvim-treesitter/nvim-treesitter sort:updated-desc",
 							},
 							{
-								name = "Review",
-								key = "4",
-								layout = "compact",
-								search = "review-requested:@me sort:updated-desc",
+								name = "K8s",
+								key = "5",
+								layout = "plain",
+								search = 'repo:kubernetes/kubernetes "InPlacePodVerticalScaling] Fix Static CPU"',
 							},
 							{
-								name = "Issues",
-								key = "5",
-								layout = "compact",
-								search = "sort:updated-desc is:issue",
+								name = "Rust1",
+								key = "6",
+								layout = "plain",
+								search = "repo:rust-lang/rust 112049",
+							},
+							{
+								name = "Rust2",
+								key = "7",
+								layout = "plain",
+								search = "repo:rust-lang/rust 113382",
+							},
+						},
+					},
+					gitlab = {
+						base_url = "https://gitlab.com",
+						token = vim.env.GITLAB_TOKEN,
+						cache_ttl = 300,
+						views = {
+							{ name = "Assigned", key = "1", scope = "assigned_to_me" },
+							{ name = "Created", key = "2", scope = "created_by_me" },
+							{
+								name = "GitLab",
+								key = "3",
+								group = "gitlab-org",
+							},
+							{
+								name = "GitLab",
+								key = "4",
+								layout = "plain",
+								group = "gitlab-org",
 							},
 						},
 					},
@@ -258,6 +291,48 @@ return {
 				},
 
 				providers = {
+					github = {
+						views = {
+							{
+								name = "Issues",
+								key = "1",
+								layout = "compact",
+								search = "is:issue user:emrearmagan is:open sort:updated-desc",
+							},
+							{
+								name = "Issues (all)",
+								key = "2",
+								layout = "plain",
+								search = "is:issue user:emrearmagan sort:updated-desc",
+							},
+							{
+								name = "Issues",
+								key = "3",
+								search = "is:issue repo:neovim/neovim is:open sort:updated-desc",
+							},
+							{
+								name = "Tracked Issues",
+								key = "4",
+								search = "repo:neovim/neovim is:issue 32280 19624 sort:updated-desc",
+							},
+						},
+					},
+					gitlab = {
+						base_url = "https://gitlab.com",
+						token = vim.env.GITLAB_TOKEN,
+						-- views = {
+						-- 	{ name = "Assigned", key = "1", scope = "assigned_to_me", state = "opened" },
+						-- 	{ name = "Created", key = "2", scope = "created_by_me", state = "opened" },
+						-- 	{
+						-- 		name = "Reviewing",
+						-- 		key = "3",
+						-- 		scope = "all",
+						-- 		state = "opened",
+						-- 		extra_params = { reviewer_id = "Me" },
+						-- 	},
+						-- },
+					},
+
 					jira = {
 						base_url = os.getenv("JIRA_BASE_URL") or "",
 						email = os.getenv("JIRA_EMAIL") or "",
@@ -308,17 +383,18 @@ return {
 						views = {
 							{
 								name = "Active Sprint",
-								key = "S",
+								key = "1",
 								jql = "project = KAN",
 							},
 							{
 								name = "My Tasks",
-								key = "M",
+								key = "2",
+								layout = "compact",
 								jql = "project = KAN AND assignee = currentUser()",
 							},
 							{
 								name = "To Do",
-								key = "T",
+								key = "3",
 								jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
 							},
 						},

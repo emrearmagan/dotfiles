@@ -295,9 +295,9 @@ return {
 					},
 					{
 						icon = " ",
-						key = "c",
-						desc = "Config",
-						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+						key = "n",
+						desc = "Notes",
+						action = ":lua Snacks.picker.files({ cwd = vim.g.obsidian_vault, cmd = 'rg', args = { '--files', '-g', '*.md' } })",
 					},
 					{ icon = " ", key = "S", desc = "Restore Session", section = "session" },
 					{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
