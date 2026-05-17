@@ -24,7 +24,7 @@ return {
 				mode = "buffers", -- Show buffers (not tabs)
 				numbers = "none", -- No numbering shown on buffers
 				diagnostics = "nvim_lsp", -- Show LSP diagnostic indicators (errors/warnings)
-				show_close_icon = true, -- Hide top-right global close icon
+				show_close_icon = false, -- Hide top-right global close icon
 				show_buffer_close_icons = false, -- Hide close icon on each buffer tab
 				separator_style = "thin", -- Use slanted separators between tabs ("slant", "thick", "thin")
 				always_show_bufferline = true, -- Keep tabline visible with one tab
