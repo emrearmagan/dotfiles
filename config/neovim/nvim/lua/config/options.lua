@@ -23,7 +23,8 @@ vim.opt.shiftwidth = 2 -- Number of spaces for indentation
 vim.opt.expandtab = true -- Convert tabs to spaces
 vim.opt.scrolloff = 8 -- Lines to keep above and below the cursor
 vim.opt.clipboard = "unnamedplus" -- Sync yank with clipboard
-vim.opt.fillchars = { eob = " " } -- Hide ~ on empty lines
+vim.opt.fillchars = { eob = " ", fold = " " } -- Hide ~ on empty lines, no fold fill
+
 vim.env.PATH = table.concat({
 	"/opt/homebrew/bin",
 	vim.fn.expand("~/.luarocks/bin"),
