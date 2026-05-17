@@ -269,7 +269,7 @@ wk.add({
 			end)
 			vim.cmd(open and "cclose" or "copen")
 		end,
-		desc = "Toggle quickfix",
+		desc = "Quickfix",
 	},
 	{
 		"<leader>qa",
@@ -284,7 +284,7 @@ wk.add({
 			}, "a")
 			vim.notify("Added to quickfix")
 		end,
-		desc = "Add line to quickfix",
+		desc = "Quickfix: Add current line",
 	},
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{

@@ -79,12 +79,27 @@ vim.api.nvim_create_autocmd("FileType", {
 	group = augroup("qf_remove_entry"),
 	pattern = "qf",
 	callback = function(event)
+		local opts = { buffer = event.buf, silent = true, desc = "Remove qf entry" }
+
 		vim.keymap.set("n", "dd", function()
 			local row = vim.fn.line(".")
 			local list = vim.fn.getqflist()
 			table.remove(list, row)
 			vim.fn.setqflist(list, "r")
-		end, { buffer = event.buf, silent = true, desc = "Remove qf entry" })
+		end, opts)
+
+		vim.keymap.set("x", "d", function()
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
+			local s, e = vim.fn.line("'<"), vim.fn.line("'>")
+			if s > e then
+				s, e = e, s
+			end
+			local list = vim.fn.getqflist()
+			for i = e, s, -1 do
+				table.remove(list, i)
+			end
+			vim.fn.setqflist(list, "r")
+		end, opts)
 	end,
 })
 

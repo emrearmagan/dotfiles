@@ -8,8 +8,12 @@ end
 vim.api.nvim_create_autocmd("BufReadPost", {
 	group = augroup("last_location"),
 	callback = function(event)
-		local exclude = { "gitcommit" }
-		if vim.tbl_contains(exclude, vim.bo[event.buf].filetype) then
+		local bo = vim.bo[event.buf]
+		if bo.buftype ~= "" then
+			return
+		end
+		local exclude = { "gitcommit", "snacks_dashboard", "dashboard", "alpha", "starter" }
+		if vim.tbl_contains(exclude, bo.filetype) then
 			return
 		end
 

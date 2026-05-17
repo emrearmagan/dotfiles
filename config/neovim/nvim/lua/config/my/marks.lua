@@ -8,9 +8,46 @@ vim.api.nvim_create_user_command("MyMarks", function()
 			end
 			return false
 		end,
+		actions = {
+			del_mark = function(picker, item)
+				if item and item.label then
+					pcall(vim.cmd, "delmarks " .. item.label)
+				end
+				picker:close()
+				vim.schedule(function()
+					vim.cmd("MyMarks")
+				end)
+			end,
+		},
+		win = {
+			input = {
+				keys = {
+					["<C-d>"] = { "del_mark", mode = { "n", "i" }, desc = "Delete mark" },
+				},
+			},
+		},
 	})
 end, {})
 
 vim.api.nvim_create_user_command("MyAllMarks", function()
-	require("snacks.picker").marks()
+	require("snacks.picker").marks({
+		actions = {
+			del_mark = function(picker, item)
+				if item and item.label then
+					pcall(vim.cmd, "delmarks " .. item.label)
+				end
+				picker:close()
+				vim.schedule(function()
+					vim.cmd("MyAllMarks")
+				end)
+			end,
+		},
+		win = {
+			input = {
+				keys = {
+					["<C-d>"] = { "del_mark", mode = { "n", "i" }, desc = "Delete mark" },
+				},
+			},
+		},
+	})
 end, {})
