@@ -75,6 +75,19 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup("qf_remove_entry"),
+	pattern = "qf",
+	callback = function(event)
+		vim.keymap.set("n", "dd", function()
+			local row = vim.fn.line(".")
+			local list = vim.fn.getqflist()
+			table.remove(list, row)
+			vim.fn.setqflist(list, "r")
+		end, { buffer = event.buf, silent = true, desc = "Remove qf entry" })
+	end,
+})
+
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	group = augroup("json_conceal"),
 	pattern = { "json", "jsonc", "json5" },
@@ -102,7 +115,7 @@ function _G.qftf(info)
 	end
 	local limit = 31
 	local fname_fmt_short = "%-" .. limit .. "s"
-	local fname_fmt_long = "…%." .. (limit - 1) .. "s"
+	local fname_fmt_long = "..%." .. (limit - 1) .. "s"
 	local valid_fmt = "%s │%5d:%-3d│%s %s"
 	local ret = {}
 	for i = info.start_idx, info.end_idx do

@@ -58,11 +58,24 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 	group = qf_group,
 	callback = function()
 		local items = vim.fn.getqflist()
-		if #items > 0 then
-			vim.fn.writefile({ vim.json.encode(items) }, qf_path())
-		else
+		if #items == 0 then
 			pcall(os.remove, qf_path())
+			return
 		end
+		local serializable = {}
+		for _, it in ipairs(items) do
+			table.insert(serializable, {
+				filename = it.bufnr > 0 and vim.api.nvim_buf_get_name(it.bufnr) or nil,
+				lnum = it.lnum,
+				end_lnum = it.end_lnum,
+				col = it.col,
+				end_col = it.end_col,
+				text = it.text,
+				type = it.type,
+				valid = it.valid,
+			})
+		end
+		vim.fn.writefile({ vim.json.encode(serializable) }, qf_path())
 	end,
 })
 vim.api.nvim_create_autocmd("VimEnter", {
@@ -73,8 +86,15 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			return
 		end
 		local ok, items = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), "\n"))
-		if ok and type(items) == "table" then
-			vim.fn.setqflist(items)
+		if not ok or type(items) ~= "table" then
+			return
 		end
+		for _, it in ipairs(items) do
+			if it.filename and it.filename ~= "" then
+				it.bufnr = vim.fn.bufadd(it.filename)
+				it.filename = nil
+			end
+		end
+		vim.fn.setqflist(items)
 	end,
 })

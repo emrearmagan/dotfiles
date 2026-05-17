@@ -261,14 +261,32 @@ wk.add({
 	-- │                 Quick / File Actions               │
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>q", group = "Quick / File" },
-	{ "<leader>qq", ":bd<CR>", desc = "Close buffer", mode = "n" },
-	{ "<leader>qa", ":BufferLineCloseOthers<CR>", desc = "Close all except current", mode = "n" },
-	{ "<leader>qs", ":w<CR>", desc = "Save file", mode = "n" },
+	{
+		"<leader>qq",
+		function()
+			local open = vim.iter(vim.api.nvim_list_wins()):any(function(w)
+				return vim.bo[vim.api.nvim_win_get_buf(w)].buftype == "quickfix"
+			end)
+			vim.cmd(open and "cclose" or "copen")
+		end,
+		desc = "Toggle quickfix",
+	},
+	{
+		"<leader>qa",
+		function()
+			vim.fn.setqflist({
+				{
+					bufnr = vim.api.nvim_get_current_buf(),
+					lnum = vim.fn.line("."),
+					col = vim.fn.col("."),
+					text = vim.api.nvim_get_current_line(),
+				},
+			}, "a")
+			vim.notify("Added to quickfix")
+		end,
+		desc = "Add line to quickfix",
+	},
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
-	{ "<leader>qx", ":x<CR>", desc = "Save & close file", mode = "n" },
-	{ "<leader>qQ", ":q!<CR>", desc = "Quit without saving", mode = "n" },
-	{ "<leader>qW", ":wq<CR>", desc = "Save and quit", mode = "n" },
-	{ "<leader>qA", ":wqa<CR>", desc = "Save all & quit", mode = "n" },
 	{
 		"<leader>qr",
 		function()
@@ -346,6 +364,7 @@ wk.add({
 	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false win.id=dock<cr>", desc = "Document Symbols (Trouble)" },
 	{ "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
 	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
+	{ "<leader>cq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
 
 	-- Navigation
 	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },
