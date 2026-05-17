@@ -156,23 +156,12 @@ return {
 								layout = "plain",
 								search = "repo:folke/lazy.nvim repo:nvim-telescope/telescope.nvim repo:hrsh7th/nvim-cmp repo:lewis6991/gitsigns.nvim repo:nvim-treesitter/nvim-treesitter sort:updated-desc",
 							},
-							{
-								name = "K8s",
-								key = "5",
-								layout = "plain",
-								search = 'repo:kubernetes/kubernetes "InPlacePodVerticalScaling] Fix Static CPU"',
-							},
-							{
-								name = "Rust1",
-								key = "6",
-								layout = "plain",
-								search = "repo:rust-lang/rust 112049",
-							},
-							{
-								name = "Rust2",
-								key = "7",
-								layout = "plain",
-								search = "repo:rust-lang/rust 113382",
+						},
+						bookmarks = {
+							items = {
+								["Review requested"] = "is:pr is:open review-requested:@me sort:updated-desc",
+								["Recently merged"] = "is:pr is:merged author:@me sort:updated-desc",
+								["Drafts"] = "is:pr is:draft author:@me",
 							},
 						},
 					},
@@ -188,19 +177,20 @@ return {
 								key = "3",
 								group = "gitlab-org",
 							},
-							{
-								name = "GitLab",
-								key = "4",
-								layout = "plain",
-								group = "gitlab-org",
+						},
+						bookmarks = {
+							items = {
+								["Reviewing"] = { scope = "all", extra_params = { reviewer_id = "Me" } },
+								["GitLab Org"] = { group = "gitlab-org" },
+								["Merged by me"] = { scope = "all", state = "merged", author_username = "emrearmagan" },
 							},
 						},
 					},
 
 					---@type AtlasBitbucketConfig
 					bitbucket = {
-						user = os.getenv("BITBUCKET_USER") or "",
-						token = os.getenv("BITBUCKET_TOKEN") or "",
+						user = vim.env.BITBUCKET_USER,
+						token = vim.env.BITBUCKET_TOKEN,
 						cache_ttl = 300,
 
 						---@type AtlasBitbucketViewConfig[]
@@ -316,28 +306,57 @@ return {
 								search = "repo:neovim/neovim is:issue 32280 19624 sort:updated-desc",
 							},
 						},
+						bookmarks = {
+							items = {
+								["Assigned to me"] = "is:issue is:open assignee:@me",
+								["Mentions"] = "is:issue is:open mentions:@me",
+								["Recently closed"] = "is:issue is:closed author:@me sort:updated-desc",
+								["Bugs (neovim)"] = "is:issue is:open repo:neovim/neovim label:bug sort:reactions-desc",
+							},
+						},
 					},
 					gitlab = {
 						base_url = "https://gitlab.com",
 						token = vim.env.GITLAB_TOKEN,
-						-- views = {
-						-- 	{ name = "Assigned", key = "1", scope = "assigned_to_me", state = "opened" },
-						-- 	{ name = "Created", key = "2", scope = "created_by_me", state = "opened" },
-						-- 	{
-						-- 		name = "Reviewing",
-						-- 		key = "3",
-						-- 		scope = "all",
-						-- 		state = "opened",
-						-- 		extra_params = { reviewer_id = "Me" },
-						-- 	},
-						-- },
+						views = {
+							{ name = "Assigned", key = "1", scope = "assigned_to_me", state = "opened" },
+							{ name = "Created", key = "2", scope = "created_by_me", state = "opened" },
+							{
+								name = "Reviewing",
+								key = "3",
+								scope = "all",
+								state = "opened",
+							},
+						},
+						bookmarks = {
+							items = {
+								["Assigned open"] = { scope = "assigned_to_me", state = "opened" },
+								["Created closed"] = { scope = "created_by_me", state = "closed" },
+								["No labels"] = {
+									scope = "all",
+									state = "opened",
+									extra_params = { ["not[labels]"] = "*" },
+								},
+							},
+						},
 					},
 
 					jira = {
-						base_url = os.getenv("JIRA_BASE_URL") or "",
-						email = os.getenv("JIRA_EMAIL") or "",
-						token = os.getenv("JIRA_TOKEN") or "",
+						base_url = vim.env.JIRA_BASE_URL,
+						email = vim.env.JIRA_EMAIL,
+						token = vim.env.JIRA_TOKEN,
 						cache_ttl = 300,
+
+						bookmarks = {
+							-- key = "J", -- default
+							-- label = "JQL", -- default
+							items = {
+								["Backlog"] = "project = KAN AND statusCategory != Done AND (sprint IS EMPTY OR sprint NOT IN openSprints()) ORDER BY Rank ASC",
+								["Next sprint"] = "project = KAN AND sprint in futureSprints() ORDER BY Rank ASC",
+								["My open"] = "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC",
+								["Recently updated"] = "project = KAN ORDER BY updated DESC",
+							},
+						},
 
 						project_config = {
 							story_points_field = "customfield_100016",

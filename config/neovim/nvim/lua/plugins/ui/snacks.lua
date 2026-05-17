@@ -98,7 +98,12 @@ return {
 				end
 			end,
 		},
-		indent = { enabled = true },
+		indent = {
+			enabled = true,
+			indent = { enabled = true, char = "▏", hl = "Whitespace" },
+			scope = { enabled = true, only_current = true, hl = "Conceal" },
+			chunk = { enabled = false },
+		},
 		input = { enabled = false },
 		notifier = {
 			enabled = true,
