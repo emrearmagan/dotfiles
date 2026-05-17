@@ -1,4 +1,5 @@
 require("config.my.autocmds")
+require("config.my.session")
 require("config.my.add-header")
 require("config.my.cursor-animation")
 require("config.my.marks")

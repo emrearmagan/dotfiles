@@ -75,46 +75,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Go to last loc when opening a buffer.
-vim.api.nvim_create_autocmd("BufReadPost", {
-	group = augroup("last_location"),
-	callback = function(event)
-		local exclude = { "gitcommit" }
-		if vim.tbl_contains(exclude, vim.bo[event.buf].filetype) then
-			return
-		end
-
-		local mark = vim.api.nvim_buf_get_mark(event.buf, '"')
-		local lcount = vim.api.nvim_buf_line_count(event.buf)
-		if mark[1] > 0 and mark[1] <= lcount then
-			pcall(vim.api.nvim_win_set_cursor, 0, mark)
-		end
-	end,
-})
-
--- Remember folds (and cursor) per file across sessions.
-vim.opt.viewoptions = { "folds", "cursor", "curdir" }
-
-local fold_group = augroup("remember_folds")
-vim.api.nvim_create_autocmd("BufWinLeave", {
-	group = fold_group,
-	pattern = "?*",
-	callback = function()
-		if vim.bo.buftype == "" and vim.bo.filetype ~= "" then
-			vim.cmd("silent! mkview 1")
-		end
-	end,
-})
-vim.api.nvim_create_autocmd("BufWinEnter", {
-	group = fold_group,
-	pattern = "?*",
-	callback = function()
-		if vim.bo.buftype == "" and vim.bo.filetype ~= "" then
-			vim.cmd("silent! loadview 1")
-		end
-	end,
-})
-
 vim.api.nvim_create_autocmd({ "FileType" }, {
 	group = augroup("json_conceal"),
 	pattern = { "json", "jsonc", "json5" },
