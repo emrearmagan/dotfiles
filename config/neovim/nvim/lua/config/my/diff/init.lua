@@ -3,6 +3,7 @@ if not vim.g.use_codediff then
 end
 
 local comments_ui = require("config.my.diff.comments")
+local keymaps = require("config.my.diff.keymaps")
 
 local providers = {
 	require("config.my.diff.bitbucket-comments"),
@@ -563,54 +564,155 @@ local function view_thread()
 	})
 end
 
-local function attach_keymaps(buf)
-	if not buf or not vim.api.nvim_buf_is_valid(buf) then
-		return
+local function comment_lines_in_current_buf()
+	local file_path, session = session_file_path()
+	if not file_path or not session then
+		return nil
 	end
-	if vim.b[buf].my_diff_keymaps then
-		return
+	local buf = vim.api.nvim_get_current_buf()
+	local side = buf == session.original_bufnr and "LEFT"
+		or buf == session.modified_bufnr and "RIGHT"
+		or nil
+	if not side then
+		return nil
 	end
-	vim.b[buf].my_diff_keymaps = true
 
-	local opts = { buffer = buf, silent = true }
-
-	vim.keymap.set("v", "<leader>gcc", function()
-		add_comment(visual_context, true)
-	end, vim.tbl_extend("force", opts, { desc = "Add pending PR comment" }))
-
-	vim.keymap.set("n", "<leader>gcc", function()
-		add_comment(current_context, true)
-	end, vim.tbl_extend("force", opts, { desc = "Add pending PR comment" }))
-
-	vim.keymap.set("v", "<leader>gcC", function()
-		add_comment(visual_context, false)
-	end, vim.tbl_extend("force", opts, { desc = "Add PR comment" }))
-
-	vim.keymap.set("n", "<leader>gcC", function()
-		add_comment(current_context, false)
-	end, vim.tbl_extend("force", opts, { desc = "Add PR comment" }))
-
-	vim.keymap.set("n", "<leader>gcv", view_thread, vim.tbl_extend("force", opts, { desc = "View PR thread" }))
-
-	vim.keymap.set("n", "<leader>gca", function()
-		submit_review("APPROVE", "Approve")
-	end, vim.tbl_extend("force", opts, { desc = "Approve PR review" }))
-
-	vim.keymap.set("n", "<leader>gcr", function()
-		submit_review("REQUEST_CHANGES", "Request changes")
-	end, vim.tbl_extend("force", opts, { desc = "Request PR changes" }))
-
-	vim.keymap.set("n", "gx", function()
-		local provider = provider_for()
-		if provider and provider == state.provider and state.pr and provider.pr_url then
-			local url = provider.pr_url(state.pr)
-			if url and url ~= "" then
-				vim.ui.open(url)
-				return
+	local seen = {}
+	local lines = {}
+	for _, c in ipairs(state.comments or {}) do
+		if c.path == file_path and (c.side or "RIGHT") == side and not c.in_reply_to_id then
+			local line = resolve_line(c, side)
+			if line and not seen[line] then
+				seen[line] = true
+				table.insert(lines, line)
 			end
 		end
-		vim.cmd.normal({ "gx", bang = true })
-	end, vim.tbl_extend("force", opts, { desc = "Open PR" }))
+	end
+	table.sort(lines)
+	return lines
+end
+
+local function jump_to_comment(direction)
+	local lines = comment_lines_in_current_buf()
+	if not lines or #lines == 0 then
+		notify(vim.log.levels.INFO, "No comments in this file")
+		return
+	end
+
+	local cur = vim.fn.line(".")
+	local target
+	if direction > 0 then
+		for _, l in ipairs(lines) do
+			if l > cur then
+				target = l
+				break
+			end
+		end
+		target = target or lines[1]
+	else
+		for i = #lines, 1, -1 do
+			if lines[i] < cur then
+				target = lines[i]
+				break
+			end
+		end
+		target = target or lines[#lines]
+	end
+	vim.api.nvim_win_set_cursor(0, { target, 0 })
+end
+
+local function attach_keymaps(buf)
+	keymaps.attach(buf, {
+		{
+			mode = "v",
+			lhs = "<leader>Gc",
+			desc = "Add pending PR comment",
+			rhs = function()
+				add_comment(visual_context, true)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "<leader>Gc",
+			desc = "Add pending PR comment",
+			rhs = function()
+				add_comment(current_context, true)
+			end,
+		},
+		{
+			mode = "v",
+			lhs = "<leader>GC",
+			desc = "Add PR comment",
+			rhs = function()
+				add_comment(visual_context, false)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "<leader>GC",
+			desc = "Add PR comment",
+			rhs = function()
+				add_comment(current_context, false)
+			end,
+		},
+		{ mode = "n", lhs = "<leader>Gv", desc = "View PR thread", rhs = view_thread },
+		{
+			mode = "n",
+			lhs = "<leader>Ga",
+			desc = "Approve PR review",
+			rhs = function()
+				submit_review("APPROVE", "Approve")
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "<leader>Gr",
+			desc = "Request PR changes",
+			rhs = function()
+				submit_review("REQUEST_CHANGES", "Request changes")
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "]c",
+			desc = "Jump to next PR comment",
+			rhs = function()
+				jump_to_comment(1)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "[c",
+			desc = "Jump to previous PR comment",
+			rhs = function()
+				jump_to_comment(-1)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "<leader>GR",
+			desc = "Refresh PR comments",
+			rhs = function()
+				refresh(nil, { force = true })
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "gx",
+			desc = "Open PR",
+			rhs = function()
+				local provider = provider_for()
+				if provider and provider == state.provider and state.pr and provider.pr_url then
+					local url = provider.pr_url(state.pr)
+					if url and url ~= "" then
+						vim.ui.open(url)
+						return
+					end
+				end
+				vim.cmd.normal({ "gx", bang = true })
+			end,
+		},
+	})
 end
 
 local group = vim.api.nvim_create_augroup("my_diff_comments", { clear = true })

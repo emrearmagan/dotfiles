@@ -79,6 +79,29 @@ local function line_from_diff_hunk(diff_hunk, position, side)
 	end
 end
 
+local function side_from_diff_hunk(diff_hunk, position)
+	if type(diff_hunk) ~= "string" or type(position) ~= "number" then
+		return nil
+	end
+	local diff_position = 0
+	local in_body = false
+	for raw_line in diff_hunk:gmatch("[^\r\n]+") do
+		if raw_line:match("^@@") then
+			in_body = true
+		elseif in_body then
+			diff_position = diff_position + 1
+			if diff_position == position then
+				local prefix = raw_line:sub(1, 1)
+				if prefix == "-" then
+					return "LEFT"
+				end
+				return "RIGHT"
+			end
+		end
+	end
+	return nil
+end
+
 local function origin_url(root)
 	if type(root) ~= "string" or root == "" then
 		return ""
@@ -356,7 +379,9 @@ local function fetch_review_comments(pr, callback)
 
 				local comments = {}
 				for _, comment in ipairs(items) do
-					local side = comment.side or "RIGHT"
+					local side = comment.side
+						or side_from_diff_hunk(comment.diff_hunk, comment.original_position or comment.position)
+						or "RIGHT"
 					local pending = pr.pending_review_ids[comment.pull_request_review_id] == true
 					table.insert(comments, {
 						id = comment.id,
@@ -406,7 +431,9 @@ local function fetch_review_comments_for_review(pr, review_id, callback)
 
 				local comments = {}
 				for _, comment in ipairs(items) do
-					local side = comment.side or "RIGHT"
+					local side = comment.side
+						or side_from_diff_hunk(comment.diff_hunk, comment.original_position or comment.position)
+						or "RIGHT"
 					table.insert(comments, {
 						id = comment.id,
 						node_id = comment.node_id,

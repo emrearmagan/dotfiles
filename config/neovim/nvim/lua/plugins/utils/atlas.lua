@@ -47,8 +47,8 @@ return {
 
 				repo_config = {
 					paths = {
-						["emrearmaganxxx/*"] = "~/development/nvim/atlas.testing/new/*",
-						["emrearmagan/*"] = "~/development/nvim/*",
+						["emrearmagan/*"] = "~/development/*",
+						["emrearmagan/test"] = "~/development/nvim/atlas.testing/test",
 					},
 				},
 
