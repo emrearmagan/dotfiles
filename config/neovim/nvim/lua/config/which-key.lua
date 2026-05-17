@@ -309,7 +309,7 @@ wk.add({
 
 			vim.notify("All marks and jumps deleted", vim.log.levels.INFO)
 		end,
-		desc = "Delete All Marks",
+		desc = "Marks: Delete all",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
