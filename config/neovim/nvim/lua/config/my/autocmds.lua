@@ -90,3 +90,49 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		vim.opt_local.filetype = "sh"
 	end,
 })
+
+-- Columnized formatting for quickfix entries: "<filename> │<lnum>:<col>│<type> <text>"
+function _G.qftf(info)
+	local fn = vim.fn
+	local items
+	if info.quickfix == 1 then
+		items = fn.getqflist({ id = info.id, items = 0 }).items
+	else
+		items = fn.getloclist(info.winid, { id = info.id, items = 0 }).items
+	end
+	local limit = 31
+	local fname_fmt_short = "%-" .. limit .. "s"
+	local fname_fmt_long = "…%." .. (limit - 1) .. "s"
+	local valid_fmt = "%s │%5d:%-3d│%s %s"
+	local ret = {}
+	for i = info.start_idx, info.end_idx do
+		local e = items[i]
+		local str
+		if e.valid == 1 then
+			local fname = ""
+			if e.bufnr > 0 then
+				fname = fn.bufname(e.bufnr)
+				if fname == "" then
+					fname = "[No Name]"
+				else
+					fname = fname:gsub("^" .. vim.env.HOME, "~")
+				end
+				if #fname <= limit then
+					fname = fname_fmt_short:format(fname)
+				else
+					fname = fname_fmt_long:format(fname:sub(1 - limit))
+				end
+			end
+			local lnum = e.lnum > 99999 and -1 or e.lnum
+			local col = e.col > 999 and -1 or e.col
+			local qtype = e.type == "" and "" or " " .. e.type:sub(1, 1):upper()
+			str = valid_fmt:format(fname, lnum, col, qtype, e.text)
+		else
+			str = e.text
+		end
+		table.insert(ret, str)
+	end
+	return ret
+end
+
+vim.o.quickfixtextfunc = "{info -> v:lua._G.qftf(info)}"
