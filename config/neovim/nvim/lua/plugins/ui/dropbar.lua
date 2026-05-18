@@ -1,5 +1,6 @@
 return {
 	"Bekaboo/dropbar.nvim",
+	event = "BufReadPre",
 	config = function()
 		local sources = require("dropbar.sources")
 		require("dropbar").setup({

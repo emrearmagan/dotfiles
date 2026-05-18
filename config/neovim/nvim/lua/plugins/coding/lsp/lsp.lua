@@ -2,6 +2,8 @@ return {
 	-- Mason UI for managing LSPs
 	{
 		"mason-org/mason.nvim",
+		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate", "MasonLog" },
+		event = "BufReadPre",
 		config = function()
 			require("mason").setup({
 				ui = {
@@ -17,6 +19,8 @@ return {
 	-- Bridge: Mason <-> LSPConfig
 	{
 		"mason-org/mason-lspconfig.nvim",
+		event = "BufReadPre",
+		dependencies = { "mason-org/mason.nvim" },
 		config = function()
 			require("mason-lspconfig").setup({
 				ensure_installed = {

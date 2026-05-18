@@ -271,8 +271,9 @@ wk.add({
 		end,
 		desc = "Quickfix",
 	},
+	{ "<leader>qa", ":BufferLineCloseOthers<CR>", desc = "Close all except current", mode = "n" },
 	{
-		"<leader>qa",
+		"<leader>q+",
 		function()
 			vim.fn.setqflist({
 				{
