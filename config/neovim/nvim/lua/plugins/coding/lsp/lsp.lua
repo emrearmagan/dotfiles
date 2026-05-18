@@ -229,6 +229,8 @@ return {
 			-- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
 			require("luasnip.loaders.from_vscode").lazy_load()
 
+			cmp.register_source("filemention", require("config.my.filemention").new())
+
 			cmp.setup({
 				preselect = cmp.PreselectMode.None, -- do not preselect any item
 				completion = {
@@ -281,6 +283,7 @@ return {
 					-- { name = "buffer" }, -- text within current buffer
 					{ name = "vim-dadbod-completion" },
 					{ name = "path" }, -- file system paths
+					{ name = "filemention" }, -- @path/to/file in prose buffers
 				}),
 
 				-- configure lspkind for vs-code like pictograms in completion menu
