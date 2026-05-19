@@ -28,8 +28,7 @@
       "source": "npm:@victor-software-house/pi-curated-themes",
       "skills": [],
       "extensions": [],
-      "prompts": [],
-      "themes": ["catppuccin-mocha"]
+      "prompts": []
     },
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
