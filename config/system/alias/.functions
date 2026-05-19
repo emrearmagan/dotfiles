@@ -1,8 +1,3 @@
-# Create a new directory and enter it
-function mkd() {
-	mkdir -p "$@" && cd "$_";
-}
-
 # Determine size of a file or total size of a directory
 function fs() {
 	if du -b /dev/null > /dev/null 2>&1; then
@@ -16,3 +11,39 @@ function fs() {
 		du $arg .[^.]* ./*;
 	fi;
 }
+
+# -- Widgets
+falias() {
+  local a
+  a=$(
+    alias \
+      | sed -E 's/=.*$//' \
+      | sort -u \
+      | fzf --no-preview --height 40% --layout=reverse --prompt='alias> '
+  ) || return
+  LBUFFER+="${a} "
+}
+zle -N falias
+bindkey -M emacs '^Xa' falias
+bindkey -M viins '^Xa' falias
+
+fssh() {
+  local -a cfgs
+  local h
+  cfgs=(~/.ssh/config(N) ~/.ssh/config.d/*(N) ~/.ssh/conf.d/*(N))
+  (( ${#cfgs} )) || return
+  h=$(
+    awk '
+      tolower($1)=="host" {
+        for (i=2; i<=NF; i++) if ($i !~ /[*?]/ && $i !~ /^!/) print $i
+      }
+    ' $cfgs 2>/dev/null \
+    | sort -u \
+    | fzf --no-preview --height 40% --layout=reverse --prompt="ssh> "
+  ) || return
+  ssh "$h"
+}
+zle -N fssh
+bindkey -M emacs '^Xs' fssh
+bindkey -M viins '^Xs' fssh
+
