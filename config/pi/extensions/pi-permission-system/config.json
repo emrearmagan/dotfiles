@@ -1,0 +1,54 @@
+{
+  "permission": {
+    "*": "allow",
+    "edit": "ask",
+    "external_directory": "ask",
+    "path": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      ".dev.vars": "deny"
+    },
+    "bash": {
+      "*": "ask",
+
+      "ls *": "allow",
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "find *": "allow",
+      "rg *": "allow",
+      "grep *": "allow",
+      "pwd": "allow",
+      "printf *": "allow",
+      "type *": "allow",
+      "file *": "allow",
+      "stat *": "allow",
+      "du *": "allow",
+      "df *": "allow",
+
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "git remote*": "allow",
+      "git rev-parse*": "allow",
+      "git merge-base*": "allow",
+      "git reflog*": "allow",
+      "git tag*": "allow",
+      "git show-ref*": "allow",
+
+      "git commit*": "ask",
+      "git push*": "ask",
+      "git reset --hard*": "ask",
+      "git rebase*": "ask",
+
+      "docker ps*": "allow",
+
+      "rm -rf *": "deny",
+      "sudo *": "ask"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "hideThinkingBlock": false,
+  "thinkingBudgets": {
+    "minimal": 1024,
+    "low": 4096,
+    "medium": 10240,
+    "high": 32768
+  },
+  "lastChangelogVersion": "0.75.3",
+  "compaction": {
+    "enabled": true
+  },
+  "terminal": {
+    "showImages": true
+  },
+  "showHardwareCursor": false,
+  "editorPaddingX": 1,
+  "packages": [
+    "npm:context-mode",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@tintinweb/pi-tasks",
+    "npm:pi-code-previews",
+    "npm:@juicesharp/rpiv-btw",
+    "npm:@victor-software-house/pi-curated-themes",
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter",
+    "npm:@gotgenes/pi-permission-system",
+    "npm:pi-observational-memory",
+    "git:github.com/elpapi42/pi-fork",
+    "git:github.com/elpapi42/pi-minimal-subagent"
+  ],
+  "theme": "dark"
+}

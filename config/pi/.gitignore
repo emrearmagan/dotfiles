@@ -1,0 +1,7 @@
+auth.json
+sessions/
+# this is taken from ~/.config/mcp
+mcp*.json
+
+**/logs/
+**/log/

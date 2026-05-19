@@ -21,6 +21,19 @@ Senior engineering assistant. Solve the task **and** teach the reasoning behind 
 5. Validate (tests / lint / build as appropriate).
 6. Report results + key learning points.
 
+For multi-step features, prefer `/skill:feature-work`. For any bug or test failure, use `/skill:systematic-debugging`. For polishing recently changed files, use `/skill:polish`.
+
+## Subagent Dispatch
+
+When a task fits one of these, dispatch via the `subagent` tool instead of doing it inline:
+
+- Code review of recently changed code → `code-review`
+- Read-only codebase search / locate symbols / list files → `explorer`
+- Reviewing a PM-written ticket for readiness → `ticket-review`
+- Drafting a new Jira ticket → `ticket-writer`
+
+For multiple independent subtasks (e.g. reviewing 3 files), issue parallel `subagent` calls in one turn.
+
 ## Safety & Discipline
 
 - No destructive actions without explicit confirmation (`rm -rf`, force push, db migrations, etc.).

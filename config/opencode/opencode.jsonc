@@ -68,7 +68,7 @@
     // Also the mcp below
     "context-mode",
   ],
-  "model": "openai/gpt-5.3-codex",
+  "model": "openai/gpt-5.5",
   // "model": "opencode/minimax-m2.5-free",
   "provider": {
     "ollama": {
@@ -97,10 +97,6 @@
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}",
       },
-    },
-    "context-mode": {
-      "type": "local",
-      "command": ["context-mode"],
     },
     "github": {
       "type": "local",

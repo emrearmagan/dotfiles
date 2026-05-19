@@ -76,6 +76,14 @@ dotfiles:
       dest: "{{ ansible_env.HOME }}/.config/opencode",
     }
   - {
+      src: "{{ playbook_dir }}/../config/pi",
+      dest: "{{ ansible_env.HOME }}/.pi/agent",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/mcp/mcp.json",
+      dest: "{{ ansible_env.HOME }}/.config/mcp/mcp.json",
+    }
+  - {
       src: "{{ playbook_dir }}/../config/btop",
       dest: "{{ ansible_env.HOME }}/.config/btop",
     }
