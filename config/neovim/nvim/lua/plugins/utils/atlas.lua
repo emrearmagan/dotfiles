@@ -267,8 +267,7 @@ return {
 								session,
 								window,
 								"--",
-								"opencode",
-								"--prompt",
+								"pi",
 								prompt,
 							}, function(code)
 								if code ~= 0 then

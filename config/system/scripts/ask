@@ -48,7 +48,7 @@ run_with_spinner() {
 	tput cnorm -- normal
 }
 
-MODEL="opencode/minimax-m2.5-free"
+MODEL="openai-codex/gpt-5.4-mini"
 PROMPT_PARTS=()
 
 while [ "$#" -gt 0 ]; do
@@ -82,7 +82,7 @@ PROMPT="${PROMPT_PARTS[*]}"
 	exit 1
 }
 
-need opencode
+need pi
 
 VERBS=(
 	"overthinking"
@@ -110,6 +110,8 @@ VERBS=(
 verb_index=$((RANDOM % ${#VERBS[@]}))
 verb="${VERBS[$verb_index]}"
 
+printf 'Model: %s\n' "$MODEL"
+
 OUT_FILE="$(mktemp)"
 ERR_FILE="$(mktemp)"
 
@@ -119,7 +121,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-opencode run --model "$MODEL" "$PROMPT" >"$OUT_FILE" 2>"$ERR_FILE" &
+pi -p --model "$MODEL" "$PROMPT" >"$OUT_FILE" 2>"$ERR_FILE" &
 pid=$!
 
 if [ -t 1 ] && command -v tput >/dev/null 2>&1; then

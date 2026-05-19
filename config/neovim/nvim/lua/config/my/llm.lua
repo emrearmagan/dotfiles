@@ -34,7 +34,7 @@ local function start_spinner(buf, row, col)
 
 		pcall(vim.api.nvim_buf_set_extmark, buf, spinner_ns, row, col, {
 			id = 1,
-			virt_text = { { spinner_frames[frame] .. " asking opencode", "Comment" } },
+			virt_text = { { spinner_frames[frame] .. " asking pi", "Comment" } },
 			virt_text_pos = "eol",
 		})
 
@@ -70,10 +70,10 @@ local function ask(prompt)
 	local stop_spinner = start_spinner(buf, cursor[1] - 1, cursor[2])
 
 	local command = {
-		"opencode",
-		"run",
+		"pi",
+		"-p",
 		"--model",
-		"openai/gpt-5.3-codex",
+		"openai-codex/gpt-5.4-mini",
 		table.concat({
 			"You are a code generator.",
 			"Use the current buffer context to choose the correct language and style.",
@@ -93,13 +93,13 @@ local function ask(prompt)
 			stop_spinner()
 
 			if result.code ~= 0 then
-				vim.notify(result.stderr ~= "" and result.stderr or "opencode failed", vim.log.levels.ERROR)
+				vim.notify(result.stderr ~= "" and result.stderr or "pi failed", vim.log.levels.ERROR)
 				return
 			end
 
 			local output = vim.trim(result.stdout or "")
 			if output == "" then
-				vim.notify("opencode returned no output", vim.log.levels.WARN)
+				vim.notify("pi returned no output", vim.log.levels.WARN)
 				return
 			end
 

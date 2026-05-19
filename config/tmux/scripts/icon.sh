@@ -26,6 +26,9 @@ get_icon() {
 	*opencode*)
 		echo "󰚩"
 		;;
+	pi | pi-*)
+		echo ""
+		;;
 	*http*)
 		echo "󰖟"
 		;;

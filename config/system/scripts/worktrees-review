@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Create or reuse worktrees for one branch across multiple repositories,
-# then send the same OpenCode review command to every tmux pane.
+# then send the same pi review command to every tmux pane.
 #
 # Usage:
 #   worktrees-review <branch> [--skip-unchanged] [--base=<branch>] [--attach]
@@ -9,7 +9,7 @@
 #
 # Notes:
 #   - Uses tmux session: reviews
-#   - Sends a fixed OpenCode prompt to each pane
+#   - Sends a fixed pi prompt to each pane
 #   - --skip-unchanged and --base are forwarded to `worktrees`
 #   - --attach attaches after review commands are sent
 #   - branch-only mode uses current repo with destination at ./reviews
@@ -99,8 +99,7 @@ else
 fi
 
 SESSION="reviews"
-# Skill comes from https://github.com/obra/superpowers
-PROMPT='Use the requesting-code-review skill to review this branch. First, check whether the branch has any changes versus its base branch (fallback: main). If there are no changes, stop and report: No changes on this branch. If there are changes, perform the review and return: (1) a concise summary of what changed, (2) findings grouped by severity (Critical, Important, Minor), and (3) recommended fixes.'
+PROMPT='Review this branch versus its base branch (fallback: main). First, check whether the branch has any changes — if none, stop and report: No changes on this branch. If there are changes, invoke the `subagent` tool with `agent: "code-review"` and pass the review task to it. Return what it produces: (1) a concise summary of what changed, (2) findings grouped by severity (Critical, Important, Minor), and (3) recommended fixes.'
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
@@ -122,16 +121,11 @@ if [ -z "$WINDOW_TARGET" ]; then
 fi
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
-COMMAND="opencode --prompt '$ESCAPED_PROMPT'"
-# COMMAND="opencode run '$ESCAPED_PROMPT'" --- cant get this to work because of the permissions...
-
-printf 'Running in each pane: %s\n' "$COMMAND"
+COMMAND="pi '$ESCAPED_PROMPT'"
 
 while IFS= read -r pane; do
 	tmux send-keys -t "$pane" "$COMMAND" Enter
 done < <(tmux list-panes -t "$WINDOW_TARGET" -F '#{session_name}:#{window_name}.#{pane_index}')
-
-printf 'Sent review command to panes in %s\n' "$WINDOW_TARGET"
 
 if [ "$ATTACH" -eq 1 ]; then
 	if [ -z "${TMUX:-}" ]; then

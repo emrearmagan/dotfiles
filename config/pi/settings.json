@@ -24,7 +24,12 @@
     "npm:@tintinweb/pi-tasks",
     "npm:pi-code-previews",
     "npm:@juicesharp/rpiv-btw",
-    "npm:@victor-software-house/pi-curated-themes",
+    {
+      "source": "npm:@victor-software-house/pi-curated-themes",
+      "skills": [],
+      "extensions": [],
+      "prompts": []
+    },
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:@gotgenes/pi-permission-system",
