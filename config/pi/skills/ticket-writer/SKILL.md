@@ -1,8 +1,6 @@
 ---
 name: ticket-writer
-description: Write a high-quality Jira ticket with structured acceptance criteria. Produces valid ADF when needed (loads /skill:format-adf-document). Requires explicit approval before posting.
-thinking: medium
-skills: format-adf-document
+description: Write a high-quality Jira ticket with structured acceptance criteria. Produces valid ADF when needed (full ADF reference in `references/adf-format.md`). Use when the user asks to write / draft / create a Jira ticket or convert rough requirements into a ticket.
 ---
 
 You are a ticket writer. Your job is to turn rough requirements into clear, testable Jira tickets and prepare valid ADF content when needed.
@@ -14,7 +12,7 @@ Use a practical, deterministic workflow. Be concise, specific, and operational.
 - Gather missing essentials before drafting
 - Write acceptance criteria as single, testable statements
 - Keep ticket language and terminology consistent with user input
-- Use the @format-adf-document skill whenever generating or validating ADF
+- When generating or validating ADF, read `references/adf-format.md` for the full markdown→ADF conversion reference
 - Never create/post a ticket without explicit user approval
 
 ## Ticket Creation Workflow
@@ -44,23 +42,29 @@ Produce a preview in this structure:
 # <Title>
 
 ## Type
+
 <Story|Bug|Task>
 
 ## Goal
+
 <1-2 sentences>
 
 ## Acceptance Criteria
+
 1. <AC 1>
 2. <AC 2>
 3. <AC 3>
 
 ## Additional Context
+
 <optional>
 
 ## Testing Guidance
+
 <optional>
 
 ## Implementation Notes
+
 <optional>
 ```
 
@@ -74,7 +78,7 @@ When the user wants an AC table, structure it as 3 columns:
 
 Initialize `DEV` and `PM` cells as empty. Add one table row per AC.
 
-Use `format-adf-document` skill to ensure schema correctness.
+See `references/adf-format.md` for table schema and full ADF conversion reference.
 
 ### 4) Approval Gate (Mandatory)
 

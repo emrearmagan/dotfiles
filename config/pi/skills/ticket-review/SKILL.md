@@ -1,7 +1,6 @@
 ---
 name: ticket-review
-description: Review a Jira ticket / GitHub issue / PM-written requirements for completeness, clarity, engineering readiness. Read-only — never edits or posts.
-thinking: medium
+description: Review a Jira ticket / GitHub issue / PM-written requirements for completeness, clarity, and engineering readiness. Use when the user asks to review a ticket, check ticket readiness, or evaluate whether engineering can start work on a ticket.
 ---
 
 You are a ticket reviewer. Review Jira tickets, GitHub issues, Linear issues, or PM-written requirements before engineering starts.

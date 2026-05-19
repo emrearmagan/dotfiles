@@ -30,22 +30,27 @@ Plan structure:
 **Approach:** 2-3 sentences on architecture.
 
 ## Files
+
 - Create: path/to/new.ts
 - Modify: path/to/existing.ts (lines X-Y, reason)
 - Test: path/to/test.ts
 
 ## Tasks
+
 ### 1. <small focused task>
+
 - [ ] Step: <action, exact code or command>
-  Verify: <command + expected output>
+      Verify: <command + expected output>
 - [ ] Step: ...
-  Verify: ...
+      Verify: ...
 
 ### 2. <next task>
+
 ...
 ```
 
 Rules for the plan:
+
 - **Bite-sized steps**, 2-5 minutes each. "Add the function" is one step. "Add error handling" is not — be specific.
 - **No placeholders.** No "TBD", "add validation here", "similar to task N". If a step changes code, show the code. If it runs a command, show the exact command and expected output.
 - **Exact file paths.** Always.
@@ -53,6 +58,7 @@ Rules for the plan:
 - **Frequent commits.** Each task ends with a commit step.
 
 Self-review the plan before starting:
+
 1. Does every spec requirement map to a task?
 2. Are there any placeholder phrases? Fix them.
 3. Do types/function names match across tasks?
@@ -81,7 +87,7 @@ If you haven't run the verification command **in this message**, you cannot clai
 
 ### The Gate
 
-Before saying *any* of "done", "fixed", "passing", "ready", "great", "perfect", "should work":
+Before saying _any_ of "done", "fixed", "passing", "ready", "great", "perfect", "should work":
 
 1. **Identify:** what command proves this claim?
 2. **Run:** execute the full command fresh.
@@ -93,14 +99,14 @@ Skip any step = lying, not verifying.
 
 ### Claim → Evidence Required
 
-| Claim | Required evidence | Not enough |
-|---|---|---|
-| Tests pass | Test command output: 0 failures | "Should pass", earlier run |
-| Build succeeds | Build command exit 0 | Linter passed |
-| Bug fixed | Original repro now passes | Code changed, "looks right" |
-| Linter clean | Linter output: 0 errors | Partial check |
-| Requirements met | Line-by-line checklist vs plan | Tests pass |
-| Subagent finished | `git diff` shows expected changes | Agent reports success |
+| Claim             | Required evidence                 | Not enough                  |
+| ----------------- | --------------------------------- | --------------------------- |
+| Tests pass        | Test command output: 0 failures   | "Should pass", earlier run  |
+| Build succeeds    | Build command exit 0              | Linter passed               |
+| Bug fixed         | Original repro now passes         | Code changed, "looks right" |
+| Linter clean      | Linter output: 0 errors           | Partial check               |
+| Requirements met  | Line-by-line checklist vs plan    | Tests pass                  |
+| Subagent finished | `git diff` shows expected changes | Agent reports success       |
 
 ### Red Flags — STOP
 
@@ -115,14 +121,14 @@ If you catch yourself doing any of these, you are about to claim without evidenc
 
 ### Rationalizations
 
-| Excuse | Reality |
-|---|---|
-| "Should work now" | Run the verification. |
-| "I'm confident" | Confidence ≠ evidence. |
-| "Just this once" | No exceptions. |
-| "Linter passed" | Linter ≠ compiler ≠ tests. |
-| "Agent said success" | Verify the diff independently. |
-| "Partial check is enough" | Partial proves nothing. |
+| Excuse                    | Reality                        |
+| ------------------------- | ------------------------------ |
+| "Should work now"         | Run the verification.          |
+| "I'm confident"           | Confidence ≠ evidence.         |
+| "Just this once"          | No exceptions.                 |
+| "Linter passed"           | Linter ≠ compiler ≠ tests.     |
+| "Agent said success"      | Verify the diff independently. |
+| "Partial check is enough" | Partial proves nothing.        |
 
 ## Bottom Line
 

@@ -1,7 +1,6 @@
 ---
 name: explorer
-description: Fast read-only codebase scout — locate patterns, list files, trace dependencies. Returns terse findings with file:line references.
-thinking: minimal
+description: Fast read-only codebase scout — locate patterns, list files, trace dependencies. Use when the user asks to find / locate / list / search code patterns, files, or symbols, or wants a quick exploration of how something works.
 ---
 
 # Explore Agent - Fast Read-Only Codebase Search

@@ -68,11 +68,22 @@ return {
 			vim.lsp.config("lua_ls", {
 				filetypes = { "lua" },
 				capabilities = capabilities,
+				root_markers = {
+					".luarc.json",
+					".luarc.jsonc",
+					".luacheckrc",
+					"stylua.toml",
+					"selene.toml",
+					"selene.yml",
+					".git",
+				},
 				settings = {
 					Lua = {
 						runtime = { version = "LuaJIT" },
 						workspace = {
 							checkThirdParty = false,
+							maxPreload = 100000,
+							preloadFileSize = 10000,
 							library = {
 								vim.env.VIMRUNTIME,
 								"${3rd}/luv/library",
@@ -105,20 +116,51 @@ return {
 				},
 			})
 
-			-- Swift (macOS native)
-			vim.lsp.enable("sourcekit", {
-				capabilities = capabilities,
-				filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
-				on_init = function(client)
-					client.offset_encoding = "utf-8"
+			-- Swift (macOS native).
+			-- TODO: still have to test. might not even work
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = { "swift", "objc", "objective-c", "objective-cpp" },
+				once = true,
+				callback = function()
+					-- Point sourcekit-lsp at the build's index store so go-to-definition
+					-- works for SPM/Xcode dependencies (otherwise external symbols can't be resolved).
+					local function sourcekit_index_store()
+						local cwd = vim.fn.getcwd()
+						if vim.fn.filereadable(cwd .. "/Package.swift") == 1 then
+							return cwd .. "/.build/debug/index/store"
+						end
+
+						local build_dir = vim.fn.systemlist(
+							"xcodebuild -showBuildSettings 2>/dev/null | awk -F= '/ BUILD_DIR /{gsub(/^ +| +$/,\"\",$2); print $2}' | head -1"
+						)[1]
+						if build_dir and build_dir ~= "" then
+							return build_dir:gsub("/Build/Products$", "/Index.noindex/DataStore")
+						end
+					end
+
+					local cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) }
+					local index_store = sourcekit_index_store()
+					if index_store then
+						vim.list_extend(cmd, { "--index-store-path", index_store })
+					end
+
+					vim.lsp.config("sourcekit", {
+						capabilities = capabilities,
+						filetypes = { "swift", "objc", "objective-c", "objective-cpp" },
+						on_init = function(client)
+							client.offset_encoding = "utf-8"
+						end,
+						root_dir = require("lspconfig.util").root_pattern(
+							"Package.swift",
+							"*.xcworkspace",
+							"*.xcodeproj",
+							".git"
+						),
+						cmd = cmd,
+					})
+					vim.lsp.enable("sourcekit")
+					vim.cmd("LspStart sourcekit")
 				end,
-				-- root_dir = function(_, callback)
-				-- 	callback(
-				-- 		require("lspconfig.util").root_pattern("Package.swift")(vim.fn.getcwd())
-				-- 			or require("lspconfig.util").find_git_ancestor(vim.fn.getcwd())
-				-- 	)
-				-- end,
-				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 			})
 
 			-- YAML
@@ -173,8 +215,6 @@ return {
 			vim.lsp.config("cssls", {
 				filetypes = { "css", "scss", "less" },
 			})
-
-			vim.lsp.enable("sourcekit")
 		end,
 	},
 

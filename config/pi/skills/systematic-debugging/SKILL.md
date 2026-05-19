@@ -18,6 +18,7 @@ Random fixes waste time and create new bugs. Symptom fixes are failure. If you h
 Any technical issue: test failures, production bugs, unexpected behavior, performance problems, build failures, integration issues.
 
 **Especially when:**
+
 - Under time pressure (emergencies make guessing tempting — systematic is faster than thrashing).
 - "Just one quick fix" seems obvious.
 - A previous fix didn't work, or you've already tried multiple.
@@ -28,12 +29,13 @@ Any technical issue: test failures, production bugs, unexpected behavior, perfor
 1. **Read errors carefully.** Don't skip stack traces. Line numbers, file paths, error codes often contain the exact answer.
 2. **Reproduce consistently.** Exact steps, every time. If not reproducible → gather more data, don't guess.
 3. **Check recent changes.** Git diff, deploys, dep updates, config changes.
-4. **In multi-component systems, instrument every boundary** *before* proposing fixes:
+4. **In multi-component systems, instrument every boundary** _before_ proposing fixes:
    - Log what data enters each component, what exits.
    - Verify env/config propagation across layers.
-   - Run once to see *where* it breaks, then investigate that layer.
+   - Run once to see _where_ it breaks, then investigate that layer.
 
    Example (CI → build → signing → app):
+
    ```bash
    # Layer 1: workflow secrets present?
    echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
@@ -71,6 +73,7 @@ Any technical issue: test failures, production bugs, unexpected behavior, perfor
 ## When 3+ Fixes Have Failed: Question Architecture
 
 Pattern signal:
+
 - Each fix reveals a new shared-state / coupling problem in a different place.
 - Fixes require "massive refactoring" to implement.
 - Each fix creates new symptoms elsewhere.
@@ -79,14 +82,14 @@ This is not a failed hypothesis — it's wrong architecture. Stop and discuss be
 
 ## Common Bug Patterns
 
-| Pattern | Cause | Solution |
-|---|---|---|
-| Null/undefined | Missing checks | Validate at boundary |
-| Race condition | Concurrency | Synchronization, transactions |
-| Off-by-one | Index errors | Boundary testing |
-| State mismatch | Stale data | Cache invalidation, state sync |
-| Type confusion | Dynamic typing | Type checks, runtime validation |
-| Resource leak | Missing cleanup | `defer`, `finally`, cleanup fns |
+| Pattern        | Cause           | Solution                        |
+| -------------- | --------------- | ------------------------------- |
+| Null/undefined | Missing checks  | Validate at boundary            |
+| Race condition | Concurrency     | Synchronization, transactions   |
+| Off-by-one     | Index errors    | Boundary testing                |
+| State mismatch | Stale data      | Cache invalidation, state sync  |
+| Type confusion | Dynamic typing  | Type checks, runtime validation |
+| Resource leak  | Missing cleanup | `defer`, `finally`, cleanup fns |
 
 ## Red Flags — STOP and Restart Phase 1
 
@@ -103,31 +106,34 @@ If you catch yourself thinking any of these, you are guessing:
 
 ## Common Rationalizations
 
-| Excuse | Reality |
-|---|---|
-| "Issue is simple, don't need process" | Simple bugs have root causes too. Process is fast for simple bugs. |
-| "Emergency, no time" | Systematic debugging is faster than guess-and-check thrashing. |
-| "Just try this first" | The first fix sets the pattern. Do it right from the start. |
-| "I'll write the test after confirming the fix" | Untested fixes don't stick. Test first proves it. |
-| "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
-| "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
-| "One more attempt" (after 2+ failures) | 3+ failures = architectural problem, not a fix problem. |
+| Excuse                                         | Reality                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| "Issue is simple, don't need process"          | Simple bugs have root causes too. Process is fast for simple bugs. |
+| "Emergency, no time"                           | Systematic debugging is faster than guess-and-check thrashing.     |
+| "Just try this first"                          | The first fix sets the pattern. Do it right from the start.        |
+| "I'll write the test after confirming the fix" | Untested fixes don't stick. Test first proves it.                  |
+| "Multiple fixes at once saves time"            | Can't isolate what worked. Causes new bugs.                        |
+| "I see the problem, let me fix it"             | Seeing symptoms ≠ understanding root cause.                        |
+| "One more attempt" (after 2+ failures)         | 3+ failures = architectural problem, not a fix problem.            |
 
 ## Debugging Tools by Language
 
 ### Go
+
 ```bash
 dlv debug main.go            # delve debugger
 go run -race main.go         # race detection
 ```
 
 ### Rust
+
 ```bash
 RUST_BACKTRACE=1 cargo run   # full backtrace on panic
 log::debug!("x = {}", x);    # log crate
 ```
 
 ### TypeScript / JavaScript
+
 ```bash
 node --inspect-brk server.ts # Chrome DevTools attach
 console.table(data);

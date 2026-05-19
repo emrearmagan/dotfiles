@@ -34,8 +34,7 @@
     "npm:pi-mcp-adapter",
     "npm:@gotgenes/pi-permission-system",
     "npm:pi-observational-memory",
-    "git:github.com/elpapi42/pi-fork",
-    "git:github.com/elpapi42/pi-minimal-subagent"
+    "git:github.com/elpapi42/pi-fork"
   ],
-  "theme": "dark"
+  "theme": "catppuccin-mocha"
 }

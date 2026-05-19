@@ -1,8 +1,3 @@
----
-name: format-adf-document
-description: Convert markdown to Atlassian Document Format (ADF) for Confluence pages and Jira ticket bodies. Use when the user mentions ADF, Atlassian Document Format, Confluence page creation/update, or formatting content for Jira/Confluence.
-license: MIT
----
 
 # ADF Format Skill
 

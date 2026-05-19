@@ -99,7 +99,7 @@ else
 fi
 
 SESSION="reviews"
-PROMPT='Review this branch versus its base branch (fallback: main). First, check whether the branch has any changes — if none, stop and report: No changes on this branch. If there are changes, invoke the `subagent` tool with `agent: "code-review"` and pass the review task to it. Return what it produces: (1) a concise summary of what changed, (2) findings grouped by severity (Critical, Important, Minor), and (3) recommended fixes.'
+PROMPT='Review this branch versus its base branch (fallback: main). First, check whether the branch has any changes — if none, stop and report: No changes on this branch. If there are changes, load /skill:code-review and apply it to the diff. Return: (1) a concise summary of what changed, (2) findings grouped by severity (Critical, Important, Minor), and (3) recommended fixes.'
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
