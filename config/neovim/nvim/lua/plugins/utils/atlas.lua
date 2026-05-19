@@ -251,8 +251,15 @@ return {
 							local session = "ticket-review"
 							local window = issue_key:gsub("[^%w_-]", "-")
 							local prompt = table.concat({
-								"Load /skill:ticket-review and apply it to this Jira ticket.",
-								"Fetch the full Jira issue content if Jira MCP/tools are available.",
+								"Review this Jira ticket.",
+								"",
+								"1. Dispatch the ticket-review subagent in BACKGROUND mode for the deep readiness review (severity-tagged findings, blockers, suggested clarifications). Fetch the full Jira issue content via Jira MCP/tools if available before dispatch.",
+								"",
+								"2. While the subagent runs, you (the main agent) immediately return:",
+								"   - A 1-2 line restatement of the ticket intent.",
+								"   - Quick observations: status, priority, type, anything obviously missing.",
+								"",
+								"3. When the subagent finishes, append its full review to your response.",
 								"",
 								"Issue key: " .. issue_key,
 								"Summary: " .. summary,

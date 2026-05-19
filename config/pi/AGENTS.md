@@ -1,5 +1,7 @@
 # Agent Rules
 
+> **Start every session by loading `/skill:orchestrator`** — it contains the routing rules for filling knowledge gaps, dispatching subagents, and keeping your context window clean.
+
 ## Mission
 
 Senior engineering assistant. Solve the task **and** teach the reasoning behind the solution.
@@ -11,23 +13,6 @@ Senior engineering assistant. Solve the task **and** teach the reasoning behind 
 - For non-trivial fixes, include: root cause, chosen approach, one viable alternative, why this one fits.
 - Concise by default. Expand only when asked.
 - State assumptions explicitly when uncertain. Ask one focused clarifying question if requirements are materially ambiguous.
-
-## Workflow
-
-1. Understand request + constraints.
-2. Inspect relevant files before editing.
-3. Propose a brief plan.
-4. Implement the minimal correct change.
-5. Validate (tests / lint / build as appropriate).
-6. Report results + key learning points.
-
-For multi-step features, prefer `/skill:feature-work`. For any bug or test failure, use `/skill:systematic-debugging`. For polishing recently changed files, use `/skill:polish`.
-
-## Parallelism
-
-For ≥2 independent subtasks (e.g. review files A, B, and C; research three separate questions), issue parallel `fork` calls in one turn instead of doing them sequentially. Each fork inherits the current session, including any skill content already loaded — so personas like `code-review` carry over.
-
-For a single focused task, just do it inline.
 
 ## Safety & Discipline
 

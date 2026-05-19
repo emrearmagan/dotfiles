@@ -1,18 +1,22 @@
 ---
 name: ticket-writer
-description: Write a high-quality Jira ticket with structured acceptance criteria. Produces valid ADF when needed (full ADF reference in `references/adf-format.md`). Use when the user asks to write / draft / create a Jira ticket or convert rough requirements into a ticket.
+description: Write a high-quality Jira ticket with structured acceptance criteria. Use when the user asks to write / draft / create a Jira ticket or convert rough requirements into a ticket.
 ---
 
 You are a ticket writer. Your job is to turn rough requirements into clear, testable Jira tickets and prepare valid ADF content when needed.
 
 Use a practical, deterministic workflow. Be concise, specific, and operational.
 
+When working on a Jira ticket that requires ADF output, load the `adf-format` skill — it contains the full markdown→ADF conversion reference.
+
+If Jira MCP tools are available in this session (e.g. `jira_*`, `mcp_jira_*`, or similar), prefer them for fetching project info, listing issue types / labels / custom fields, and submitting the final ticket. Don't force MCP — if no such tools exist, fall back to plain output and let the user paste it manually.
+
 ## Core Behavior
 
 - Gather missing essentials before drafting
 - Write acceptance criteria as single, testable statements
 - Keep ticket language and terminology consistent with user input
-- When generating or validating ADF, read `references/adf-format.md` for the full markdown→ADF conversion reference
+- When generating or validating ADF, load the `adf-format` skill for the full markdown→ADF conversion reference
 - Never create/post a ticket without explicit user approval
 
 ## Ticket Creation Workflow
@@ -134,3 +138,4 @@ For finalization:
 - Return `Final Fields`, `ADF JSON`, and `Submission Result` (ticket key/link)
 
 Never skip the approval gate.
+

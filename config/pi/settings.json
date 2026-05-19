@@ -28,13 +28,14 @@
       "source": "npm:@victor-software-house/pi-curated-themes",
       "skills": [],
       "extensions": [],
-      "prompts": []
+      "prompts": [],
+      "themes": ["catppuccin-mocha"]
     },
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:@gotgenes/pi-permission-system",
     "npm:pi-observational-memory",
-    "git:github.com/elpapi42/pi-fork"
+    "npm:@tintinweb/pi-subagents"
   ],
   "theme": "catppuccin-mocha"
 }
