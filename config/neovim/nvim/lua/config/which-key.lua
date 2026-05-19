@@ -112,7 +112,8 @@ wk.add({
 
 	-- Hover & Signature
 	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
-	{ "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
+	-- Currently used by tmux for pane navigation
+	-- { "<C-k>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
 
 	-- Diagnostic Movement
 	{
