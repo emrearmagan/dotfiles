@@ -127,7 +127,7 @@ function M.open(thread, opts)
 		return
 	end
 
-	local width = math.min(opts.width or 100, vim.o.columns - 4)
+	local width = math.min(opts.width or 80, vim.o.columns - 4)
 
 	local items = build_items(thread)
 	local lines, spans, line_map = threadsv2.render(items, width, {

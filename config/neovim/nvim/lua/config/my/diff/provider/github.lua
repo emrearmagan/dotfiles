@@ -287,6 +287,95 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 	end)
 end
 
+---@param diff_hunk string|nil
+---@return DiffHunk|nil
+local function parse_diff_hunk(diff_hunk)
+	if type(diff_hunk) ~= "string" or diff_hunk == "" then
+		return nil
+	end
+	local ok, parser = pcall(require, "atlas.core.git.diff_parser")
+	if not ok then
+		return nil
+	end
+	local synthetic = "diff --git a/x b/x\n--- a/x\n+++ b/x\n" .. diff_hunk .. "\n"
+	local pok, files = pcall(parser.parse, synthetic)
+	if not pok or not files or #files == 0 or #files[1].hunks == 0 then
+		return nil
+	end
+	return files[1].hunks[1]
+end
+
+---@param pr GithubPR
+---@param on_done fun(comments: table[]|nil, err: string|nil)
+function M.fetch_review_comments(pr, on_done)
+	local query = ([[
+query($owner: String!, $repo: String!, $pr: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
+      reviewThreads(first: 100) {
+        nodes {
+          id isResolved isOutdated path line startLine diffSide
+          comments(first: 100) {
+            nodes {
+              id databaseId body url createdAt updatedAt
+              path line
+              diffHunk
+              author { login ... on User { name } }
+              replyTo { id databaseId }
+              pullRequestReview { id state }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+]])
+	graphql(query, { owner = pr.owner, repo = pr.repo, pr = tonumber(pr.number) }, function(data)
+		local gh_pr = data.repository and data.repository.pullRequest
+		if not gh_pr then
+			on_done({}, "No PR data")
+			return
+		end
+
+		local out = {}
+		for _, thread in ipairs(gh_pr.reviewThreads and gh_pr.reviewThreads.nodes or {}) do
+			local nodes = thread.comments and thread.comments.nodes or {}
+			for _, c in ipairs(nodes) do
+				local rv = c.pullRequestReview
+				if rv and rv.state == "PENDING" then
+					local path = thread.path or c.path
+					local line = thread.line or c.line
+					local side = thread.diffSide == "LEFT" and "old" or "new"
+					table.insert(out, {
+						id = c.databaseId,
+						parent_id = c.replyTo and c.replyTo.databaseId or nil,
+						author = c.author and {
+							name = c.author.name or c.author.login,
+							nickname = c.author.login,
+							id = c.author.login,
+						} or nil,
+						content_raw = c.body or "",
+						created_on = c.createdAt or "",
+						inline = path and line and {
+							path = path,
+							to = side == "new" and line or nil,
+							from = side == "old" and line or nil,
+						} or nil,
+						inline_hunk = parse_diff_hunk(c.diffHunk),
+						state = "PENDING",
+						url = c.url,
+						html_url = c.url,
+					})
+				end
+			end
+		end
+		on_done(out)
+	end, function(err)
+		on_done(nil, err)
+	end)
+end
+
 ---@param pr GithubPR
 ---@param comment DiffComment
 ---@param on_done fun(created: DiffComment|nil, err: string|nil)
@@ -495,9 +584,42 @@ function M.edit_comment(pr, comment, on_done)
 		return
 	end
 
+	if comment.state == "PENDING" then
+		local node_id = comment.node_id or (comment._raw and comment._raw.comment and comment._raw.comment.id)
+		if not node_id then
+			on_done(nil, "Missing comment node id")
+			return
+		end
+		local query = [[
+mutation($id: ID!, $body: String!) {
+  updatePullRequestReviewComment(input: { pullRequestReviewCommentId: $id, body: $body }) {
+    pullRequestReviewComment { id databaseId body createdAt updatedAt url }
+  }
+}
+]]
+		graphql(query, { id = node_id, body = comment.body or "" }, function(data)
+			local updated = data.updatePullRequestReviewComment
+				and data.updatePullRequestReviewComment.pullRequestReviewComment
+			if not updated then
+				on_done(nil, "Empty edit response")
+				return
+			end
+			on_done(vim.tbl_extend("force", comment, {
+				id = updated.databaseId,
+				node_id = updated.id,
+				body = updated.body,
+				updated_at = updated.updatedAt,
+				url = updated.url or comment.url,
+			}))
+		end, function(err)
+			on_done(nil, "Failed to edit comment: " .. err)
+		end)
+		return
+	end
+
 	local endpoint = comment.context
-			and ("repos/{owner}/{repo}/pulls/comments/%s"):format(comment.id)
-		or ("repos/{owner}/{repo}/issues/comments/%s"):format(comment.id)
+			and ("repos/%s/%s/pulls/comments/%s"):format(pr.owner, pr.repo, comment.id)
+		or ("repos/%s/%s/issues/comments/%s"):format(pr.owner, pr.repo, comment.id)
 
 	local payload = vim.json.encode({ body = comment.body or "" })
 	local stdout_chunks, stderr_chunks = {}, {}
@@ -556,7 +678,7 @@ function M.delete_comment(pr, comment, on_done)
 		return
 	end
 	local stderr_chunks = {}
-	vim.fn.jobstart(shell(("gh api repos/{owner}/{repo}/pulls/comments/%s --method DELETE"):format(comment.id)), {
+	vim.fn.jobstart(shell(("gh api repos/%s/%s/pulls/comments/%s --method DELETE"):format(pr.owner, pr.repo, comment.id)), {
 		stderr_buffered = true,
 		on_stderr = function(_, data)
 			if data then

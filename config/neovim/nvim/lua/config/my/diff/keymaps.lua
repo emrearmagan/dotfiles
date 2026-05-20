@@ -78,6 +78,7 @@ end
 ---@field view_thread fun()
 ---@field submit_review fun(event: "APPROVE"|"REQUEST_CHANGES")
 ---@field refresh fun()
+---@field view_review fun()
 ---@field jump fun(direction: 1|-1)
 ---@field open_pr_url fun()
 
@@ -134,6 +135,7 @@ function M.setup(buf, actions)
 			end,
 		},
 		{ mode = "n", lhs = "gv", desc = "View PR thread", rhs = actions.view_thread },
+		{ mode = "n", lhs = "gV", desc = "View pending review", rhs = actions.view_review },
 		{
 			mode = "n",
 			lhs = "ga",

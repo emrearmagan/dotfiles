@@ -318,6 +318,25 @@ function M.add_comment(pr, comment, on_done)
 end
 
 ---@param pr DiffCommentsPR
+---@param on_done fun(comments: table[]|nil, err: string|nil)
+function M.fetch_review_comments(pr, on_done)
+	local atlas_bb = require("atlas.pulls.providers.bitbucket")
+	atlas_bb.fetch_comments(pr._raw, { force_refresh = true }, function(comments, err)
+		if err then
+			on_done(nil, err)
+			return
+		end
+		local out = {}
+		for _, c in ipairs(comments or {}) do
+			if tostring(c.state or ""):upper() == "PENDING" then
+				table.insert(out, c)
+			end
+		end
+		on_done(out)
+	end)
+end
+
+---@param pr DiffCommentsPR
 ---@param comment DiffComment
 ---@param on_done fun(updated: DiffComment|nil, err: string|nil)
 function M.edit_comment(pr, comment, on_done)

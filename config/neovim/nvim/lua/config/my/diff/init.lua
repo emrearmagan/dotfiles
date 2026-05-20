@@ -30,6 +30,7 @@ local resolved_icon = "󰄳"
 
 local thread_popup = require("config.my.diff.ui.thread")
 local input_popup = require("config.my.diff.ui.input")
+local review_popup = require("config.my.diff.ui.review")
 
 ---@param opts { prompt: string, text: string|nil, on_submit: fun(body: string) }
 local function prompt_body(opts)
@@ -518,6 +519,144 @@ local actions = {
 
 	refresh = function()
 		load(nil, { force = true })
+	end,
+
+	view_review = function()
+		if not ensure_ready() then
+			return
+		end
+		if not state.provider.fetch_review_comments then
+			notify(vim.log.levels.WARN, "Provider doesn't support review view")
+			return
+		end
+		notify(vim.log.levels.INFO, "Loading pending review...")
+		state.provider.fetch_review_comments(state.pr, function(comments, err)
+			if err then
+				notify(vim.log.levels.ERROR, err)
+				return
+			end
+			if not comments or #comments == 0 then
+				notify(vim.log.levels.INFO, "No pending review")
+				return
+			end
+			---@param id string|integer
+			---@return DiffComment|nil
+			local function find_comment(id)
+				for _, c in ipairs(state.comments) do
+					if tostring(c.id) == tostring(id) then
+						return c
+					end
+				end
+			end
+
+			review_popup.open(comments, {
+				title = (" Pending review (%d) "):format(#comments),
+				on_reply = function(id, close)
+					local parent = find_comment(id)
+					if not parent then
+						return
+					end
+					close()
+					prompt_body({
+						prompt = "Reply: ",
+						on_submit = function(body)
+							state.provider.add_comment(
+								state.pr,
+								{ body = body, parent = parent },
+								function(created, perr)
+									if perr then
+										notify(vim.log.levels.ERROR, perr)
+										return
+									end
+									if created then
+										table.insert(state.comments, created)
+									end
+									load(nil, { force = true, silent = true })
+									notify(vim.log.levels.INFO, "Reply posted")
+								end
+							)
+						end,
+					})
+				end,
+				on_edit = function(id, close)
+					local comment = find_comment(id)
+					if not comment then
+						return
+					end
+					close()
+					prompt_body({
+						prompt = "Edit: ",
+						text = comment.body,
+						on_submit = function(body)
+							local updated = vim.tbl_extend("force", comment, { body = body })
+							state.provider.edit_comment(state.pr, updated, function(result, perr)
+								if perr then
+									notify(vim.log.levels.ERROR, perr)
+									return
+								end
+								if result then
+									for i, c in ipairs(state.comments) do
+										if c.id == result.id then
+											state.comments[i] = result
+											break
+										end
+									end
+								end
+								load(nil, { force = true, silent = true })
+								notify(vim.log.levels.INFO, "Comment updated")
+							end)
+						end,
+					})
+				end,
+				on_delete = function(id, close)
+					local comment = find_comment(id)
+					if not comment then
+						return
+					end
+					vim.ui.input({ prompt = "Delete comment? [y/N]: " }, function(input)
+						if not input or not input:match("^[yY]") then
+							return
+						end
+						state.provider.delete_comment(state.pr, comment, function(_, perr)
+							if perr then
+								notify(vim.log.levels.ERROR, perr)
+								return
+							end
+							close()
+							load(nil, { force = true, silent = true })
+							notify(vim.log.levels.INFO, "Comment deleted")
+						end)
+					end)
+				end,
+				on_resolve = function(id, close)
+					local comment = find_comment(id)
+					if not comment then
+						return
+					end
+					local fn = comment.state == "RESOLVED" and state.provider.unresolve_thread
+						or state.provider.resolve_thread
+					if not fn then
+						notify(vim.log.levels.WARN, "Not supported by provider")
+						return
+					end
+					local verb = comment.state == "RESOLVED" and "Unresolve" or "Resolve"
+					vim.ui.input({ prompt = verb .. " thread? [y/N]: " }, function(input)
+						if not input or not input:match("^[yY]") then
+							return
+						end
+						fn(state.pr, comment, function(_, perr)
+							if perr then
+								notify(vim.log.levels.ERROR, perr)
+								return
+							end
+							close()
+							load(nil, { force = true, silent = true })
+							notify(vim.log.levels.INFO, verb .. "d thread")
+						end)
+					end)
+				end,
+			})
+		end)
 	end,
 
 	jump = function(direction)

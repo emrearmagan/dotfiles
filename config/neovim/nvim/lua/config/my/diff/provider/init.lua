@@ -68,6 +68,7 @@
 ---
 ---@field find_pr fun(session: DiffCommentsSession, on_done: fun(pr: DiffCommentsPR|nil, err: string|nil))
 ---@field fetch_comments fun(pr: DiffCommentsPR, on_done: fun(comments: DiffComment[], err: string|nil))
+---@field fetch_review_comments fun(pr: DiffCommentsPR, on_done: fun(comments: table[]|nil, err: string|nil))  pending comments in atlas's PullsComment shape (with inline + inline_hunk attached)
 ---
 ---@field add_comment fun(pr: DiffCommentsPR, comment: DiffComment, on_done: fun(created: DiffComment|nil, err: string|nil))
 ---@field edit_comment fun(pr: DiffCommentsPR, comment: DiffComment, on_done: fun(updated: DiffComment|nil, err: string|nil))
