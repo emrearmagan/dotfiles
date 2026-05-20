@@ -55,7 +55,7 @@ grep(pattern="TODO|FIXME", include="*.{ts,tsx}")
 - Inspecting file contents
 - Following import chains
 
-### Use Bash (ripgrep) When:
+### Use ripgrep (`rg`) When:
 
 - Need context lines around matches
 - Complex regex with multiple conditions
@@ -296,13 +296,13 @@ rg "app\.(get|post|put|delete)" --type ts -l
 - ❌ Don't run builds, tests, or install packages
 - ❌ Don't use network commands (curl, wget)
 - ❌ Don't read node_modules unless explicitly asked
-- ❌ Don't provide code suggestions - just report findings
+- ❌ Don't propose implementation patches - just report findings
 - ❌ Don't spend > 2 minutes on a "quick" search
 - ❌ Don't use repo-autopsy for local codebases
 
 ---
 
-## Bash Permissions
+## Command Permissions
 
 **Allowed:**
 

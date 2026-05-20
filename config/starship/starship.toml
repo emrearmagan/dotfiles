@@ -4,7 +4,7 @@ right_format = "$golang$php$nodejs$swift$docker_context$package$jobs$battery"
 palette = "catppuccin_mocha"
 
 [directory]
-style = "bold blue" 
+style = "bold blue"
 format = "[$path]($style)"
 truncation_length = 0
 truncate_to_repo = false

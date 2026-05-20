@@ -9,7 +9,7 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.75.3",
+  "lastChangelogVersion": "0.75.4",
   "compaction": {
     "enabled": true
   },

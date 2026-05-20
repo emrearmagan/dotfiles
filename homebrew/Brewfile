@@ -83,7 +83,7 @@ brew "coreutils"            # gnu core utilities
 
 # Database Tools
 # make sure to run "brew link --force libpq" afterwards
-brew "postgresql"            # postgres databas
+brew "postgresql"           # postgres database
 brew "libpq"                # postgres tools
 
 # ───────────────────────────────

@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
   "permission": {
     // MCPs
     "context7_*": "allow",
@@ -59,8 +60,6 @@
     },
   },
   "plugin": [
-    "superpowers@git+https://github.com/obra/superpowers.git",
-
     // https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
     "@tarquinen/opencode-dcp@latest",
 

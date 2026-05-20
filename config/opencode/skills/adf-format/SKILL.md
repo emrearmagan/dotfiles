@@ -1,9 +1,10 @@
 ---
-name: format-adf-document
-description: Format, create and validate content to Atlassian Document Format (ADF - Atlassian Document Format) for creating and updating pages. 
-license: MIT
-compatibility: opencode
+name: adf-format
+description: Convert markdown to Atlassian Document Format (ADF). Use when generating or validating ADF for Confluence pages or Jira ticket bodies, or when the user mentions ADF, Atlassian Document Format, Jira API payload, or Confluence formatting.
 ---
+
+# ADF Reference
+
 
 # ADF Format Skill
 
@@ -22,6 +23,7 @@ Expert guidance for creating, formatting, and validating Atlassian Document Form
 **ADF (Atlassian Document Format)** is Confluence's JSON-based document format. It represents content as a structured tree of nodes.
 
 ### Basic ADF Structure
+
 ```json
 {
   "version": 1,
@@ -47,77 +49,86 @@ Expert guidance for creating, formatting, and validating Atlassian Document Form
 #### Markdown → ADF
 
 **Bold**:
+
 ```markdown
 **bold text**
 ```
+
 ```json
 {
   "type": "text",
   "text": "bold text",
-  "marks": [{"type": "strong"}]
+  "marks": [{ "type": "strong" }]
 }
 ```
 
 **Italic**:
+
 ```markdown
-*italic text*
+_italic text_
 ```
+
 ```json
 {
   "type": "text",
   "text": "italic text",
-  "marks": [{"type": "em"}]
+  "marks": [{ "type": "em" }]
 }
 ```
 
 **Code (inline)**:
+
 ```markdown
 `code snippet`
 ```
+
 ```json
 {
   "type": "text",
   "text": "code snippet",
-  "marks": [{"type": "code"}]
+  "marks": [{ "type": "code" }]
 }
 ```
 
 **Strikethrough**:
+
 ```markdown
 ~~struck text~~
 ```
+
 ```json
 {
   "type": "text",
   "text": "struck text",
-  "marks": [{"type": "strike"}]
+  "marks": [{ "type": "strike" }]
 }
 ```
 
 **Underline**:
+
 ```markdown
 <u>underlined</u>
 ```
+
 ```json
 {
   "type": "text",
   "text": "underlined",
-  "marks": [{"type": "underline"}]
+  "marks": [{ "type": "underline" }]
 }
 ```
 
 **Combined marks**:
+
 ```markdown
-***bold italic***
+**_bold italic_**
 ```
+
 ```json
 {
   "type": "text",
   "text": "bold italic",
-  "marks": [
-    {"type": "strong"},
-    {"type": "em"}
-  ]
+  "marks": [{ "type": "strong" }, { "type": "em" }]
 }
 ```
 
@@ -125,7 +136,9 @@ Expert guidance for creating, formatting, and validating Atlassian Document Form
 
 ```markdown
 # Heading 1
+
 ## Heading 2
+
 ### Heading 3
 ```
 
@@ -199,7 +212,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "Item 1"}]
+          "content": [{ "type": "text", "text": "Item 1" }]
         }
       ]
     },
@@ -208,7 +221,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "Item 2"}]
+          "content": [{ "type": "text", "text": "Item 2" }]
         },
         {
           "type": "bulletList",
@@ -218,7 +231,7 @@ This is another paragraph.
               "content": [
                 {
                   "type": "paragraph",
-                  "content": [{"type": "text", "text": "Nested item 2.1"}]
+                  "content": [{ "type": "text", "text": "Nested item 2.1" }]
                 }
               ]
             },
@@ -227,7 +240,7 @@ This is another paragraph.
               "content": [
                 {
                   "type": "paragraph",
-                  "content": [{"type": "text", "text": "Nested item 2.2"}]
+                  "content": [{ "type": "text", "text": "Nested item 2.2" }]
                 }
               ]
             }
@@ -240,7 +253,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "Item 3"}]
+          "content": [{ "type": "text", "text": "Item 3" }]
         }
       ]
     }
@@ -265,7 +278,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "First item"}]
+          "content": [{ "type": "text", "text": "First item" }]
         }
       ]
     },
@@ -274,7 +287,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "Second item"}]
+          "content": [{ "type": "text", "text": "Second item" }]
         }
       ]
     },
@@ -283,7 +296,7 @@ This is another paragraph.
       "content": [
         {
           "type": "paragraph",
-          "content": [{"type": "text", "text": "Third item"}]
+          "content": [{ "type": "text", "text": "Third item" }]
         }
       ]
     }
@@ -314,12 +327,14 @@ This is another paragraph.
 
 ### Code Blocks
 
-```markdown
+````markdown
 ```python
 def hello():
     print("Hello world")
 ```
-```
+````
+
+````
 
 ```json
 {
@@ -334,7 +349,7 @@ def hello():
     }
   ]
 }
-```
+````
 
 **Supported languages**: javascript, python, java, go, rust, typescript, sql, bash, json, xml, html, css, and many more.
 
@@ -351,15 +366,11 @@ def hello():
   "content": [
     {
       "type": "paragraph",
-      "content": [
-        {"type": "text", "text": "This is a quote"}
-      ]
+      "content": [{ "type": "text", "text": "This is a quote" }]
     },
     {
       "type": "paragraph",
-      "content": [
-        {"type": "text", "text": "Multi-line quote"}
-      ]
+      "content": [{ "type": "text", "text": "Multi-line quote" }]
     }
   ]
 }
@@ -381,7 +392,7 @@ def hello():
 
 ```markdown
 | Header 1 | Header 2 | Header 3 |
-|----------|----------|----------|
+| -------- | -------- | -------- |
 | Cell 1   | Cell 2   | Cell 3   |
 | Cell 4   | Cell 5   | Cell 6   |
 ```
@@ -398,7 +409,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Header 1"}]
+              "content": [{ "type": "text", "text": "Header 1" }]
             }
           ]
         },
@@ -407,7 +418,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Header 2"}]
+              "content": [{ "type": "text", "text": "Header 2" }]
             }
           ]
         },
@@ -416,7 +427,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Header 3"}]
+              "content": [{ "type": "text", "text": "Header 3" }]
             }
           ]
         }
@@ -430,7 +441,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 1"}]
+              "content": [{ "type": "text", "text": "Cell 1" }]
             }
           ]
         },
@@ -439,7 +450,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 2"}]
+              "content": [{ "type": "text", "text": "Cell 2" }]
             }
           ]
         },
@@ -448,7 +459,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 3"}]
+              "content": [{ "type": "text", "text": "Cell 3" }]
             }
           ]
         }
@@ -462,7 +473,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 4"}]
+              "content": [{ "type": "text", "text": "Cell 4" }]
             }
           ]
         },
@@ -471,7 +482,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 5"}]
+              "content": [{ "type": "text", "text": "Cell 5" }]
             }
           ]
         },
@@ -480,7 +491,7 @@ def hello():
           "content": [
             {
               "type": "paragraph",
-              "content": [{"type": "text", "text": "Cell 6"}]
+              "content": [{ "type": "text", "text": "Cell 6" }]
             }
           ]
         }
@@ -569,9 +580,7 @@ def hello():
   "content": [
     {
       "type": "paragraph",
-      "content": [
-        {"type": "text", "text": "This is important information"}
-      ]
+      "content": [{ "type": "text", "text": "This is important information" }]
     }
   ]
 }
@@ -597,9 +606,7 @@ Hidden content here
   "content": [
     {
       "type": "paragraph",
-      "content": [
-        {"type": "text", "text": "Hidden content here"}
-      ]
+      "content": [{ "type": "text", "text": "Hidden content here" }]
     }
   ]
 }
@@ -658,7 +665,8 @@ Status: `DONE` or `IN_PROGRESS`
 ## Complete Example
 
 ### Markdown Input
-```markdown
+
+````markdown
 # Project Documentation
 
 ## Overview
@@ -677,16 +685,18 @@ This is a **sample project** with `code examples`.
 ```bash
 npm install my-package
 ```
+````
 
 For more info, visit [our website](https://example.com).
 
 > **Note**: This is still in beta.
 
-| Command | Description |
-|---------|-------------|
+| Command | Description  |
+| ------- | ------------ |
 | `start` | Start server |
-| `test`  | Run tests   |
-```
+| `test`  | Run tests    |
+
+````
 
 ### ADF Output
 ```json
@@ -918,7 +928,7 @@ For more info, visit [our website](https://example.com).
     }
   ]
 }
-```
+````
 
 ## Common Patterns
 
@@ -987,6 +997,7 @@ When converting Markdown to ADF, I will:
 [Reads README.md]
 
 I see:
+
 - Title: "My Project"
 - Sections: Overview, Installation, Usage, API Reference
 - Code blocks in bash and javascript
@@ -994,6 +1005,7 @@ I see:
 - Some warnings/notes
 
 Converting to ADF with enhancements:
+
 - Converting code blocks with proper language tags
 - Tables for command reference
 - Info panels for warnings
