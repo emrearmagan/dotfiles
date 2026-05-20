@@ -34,7 +34,8 @@ small steps, verify with evidence before claiming done.
 
 ## Skill Routing
 
-- Multi-step implementation → `/skill:worker`
+- Fuzzy idea / no spec yet → `/skill:brainstorming` (explores intent, produces a spec)
+- Multi-step implementation (you have a spec) → `/skill:worker`
 - Bug or test failure → `/skill:systematic-debugging`
 - Polishing recently changed files → `/skill:polish`
 - Terse / token-efficient output → `/skill:caveman`
