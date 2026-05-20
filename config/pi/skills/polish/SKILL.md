@@ -44,10 +44,10 @@ Do NOT touch files outside that set.
 
 1. **Scout (parallel)** — Determine the changed-files set, then:
    - Group files by directory or related module; aim for 3–6 files per group.
-   - Dispatch one `explorer` agent **per group in parallel**.
+   - Dispatch one `explore` agent **per group in parallel**.
    - Have each scout report concrete improvements: dead code, unclear names, redundant logic, boilerplate comments, and inconsistent patterns.
    - Do not read the files directly in the main context.
-2. **Plan** — From the explorer's report, produce a per-file change plan: a short bullet list of intended edits for each file.
+2. **Plan** — From the explore's report, produce a per-file change plan: a short bullet list of intended edits for each file.
 3. **Confirm** — Present the plan to the user and wait for approval before editing. If the user vetoes specific items or files, drop them from the plan.
 4. **Apply & verify, one file at a time** — For each file: apply its edits, then immediately run available checks for that file (formatter, linter, typecheck, and any tests covering it). If a check fails, fix or revert before moving to the next file.
 5. **Final pass** — Run the full test suite once all files are done.

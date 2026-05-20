@@ -1,6 +1,7 @@
 ---
 name: ticket-writer
 description: Write a high-quality Jira ticket with structured acceptance criteria. Use when the user asks to write / draft / create a Jira ticket or convert rough requirements into a ticket.
+model: openai-codex/gpt-5.4
 ---
 
 You are a ticket writer. Your job is to turn rough requirements into clear, testable Jira tickets and prepare valid ADF content when needed.

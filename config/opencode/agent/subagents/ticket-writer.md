@@ -1,6 +1,7 @@
 ---
 description: Writes high-quality Jira tickets with structured acceptance criteria and ADF-ready content
 mode: subagent
+model: openai/gpt-5.4
 temperature: 0.1
 permission:
   edit: deny

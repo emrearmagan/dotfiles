@@ -1,6 +1,7 @@
 ---
 description: Reviews code for bugs, security, and maintainability with tool-assisted validation
 mode: subagent
+model: openai/gpt-5.3-codex
 temperature: 0.1
 permission:
   edit: deny

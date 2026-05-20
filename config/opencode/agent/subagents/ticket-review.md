@@ -1,6 +1,7 @@
 ---
 description: Reviews Jira tickets and PM-written issues for completeness, clarity, and readiness
 mode: subagent
+model: openai/gpt-5.4
 temperature: 0.1
 permission:
   edit: deny

@@ -1,7 +1,7 @@
 ---
 description: Fast codebase exploration - read-only, no modifications. Optimized for quick searches and pattern discovery.
 mode: subagent
-model: openai/gpt-5.3-codex
+model: openai/gpt-5.4-mini
 temperature: 0.1
 tools:
   bash: true

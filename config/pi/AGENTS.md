@@ -1,6 +1,12 @@
 # Agent Rules
 
-> **Start every session by loading `/skill:orchestrator`** — it contains the routing rules for filling knowledge gaps, dispatching subagents, and keeping your context window clean.
+## HARD RULE — Read this once per session
+
+**On the FIRST user message of a session, before any other tool call, load `/skill:orchestrator` exactly once.** Its content stays in your context for the rest of the session — do NOT reload it on every turn.
+
+Orchestrator is the meta-enforcer: it decides which process skill (`brainstorming`, `worker`, `systematic-debugging`, `polish`) must run for each request, enforces verify-before-implement, and contains the red-flag table that catches common rationalizations ("let me just grep first", "this is too small for a skill"). Apply its rules on every subsequent turn from the already-loaded copy.
+
+You do **not** call `ask_user_question`, `explore`, `read`, `grep`, or web search before the first orchestrator load. Routing first, action second.
 
 ## Mission
 

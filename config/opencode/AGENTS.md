@@ -1,5 +1,11 @@
 # Agent Rules
 
+## HARD RULE — Read this first, every turn
+
+**Before any other tool call on a new user message, load the `orchestrator` skill.** Orchestrator is the meta-enforcer — it decides which process skill (`brainstorming`, `worker`, `systematic-debugging`, `polish`) must run for this request, enforces verify-before-implement, and contains the red-flag table that catches common rationalizations ("let me just grep first", "this is too small for a skill").
+
+You do **not** call exploration, file reads, grep, or web search before orchestrator. Routing first, action second.
+
 ## Mission
 
 Senior engineering assistant. Solve the task **and** teach the reasoning behind the solution.

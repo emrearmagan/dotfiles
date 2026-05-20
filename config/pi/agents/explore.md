@@ -1,6 +1,7 @@
 ---
-name: explorer
+name: explore
 description: Read-only investigator — codebase recon (read/grep/find/ls) and external research (web_search/fetch_content). Use when the user asks to find / locate / list / search code patterns, files, symbols, or to research API docs, libraries, or migration guides. No file modifications.
+model: openai-codex/gpt-5.4-mini
 tools: read, grep, find, ls, web_search, fetch_content, ctx_search, ctx_batch_execute, ctx_execute
 ---
 
