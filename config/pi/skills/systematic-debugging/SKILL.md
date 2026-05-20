@@ -104,42 +104,6 @@ If you catch yourself thinking any of these, you are guessing:
 - "Here are the main problems: [lists fixes without investigation]."
 - "One more fix attempt" (when you've already tried 2+).
 
-## Common Rationalizations
-
-| Excuse                                         | Reality                                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------ |
-| "Issue is simple, don't need process"          | Simple bugs have root causes too. Process is fast for simple bugs. |
-| "Emergency, no time"                           | Systematic debugging is faster than guess-and-check thrashing.     |
-| "Just try this first"                          | The first fix sets the pattern. Do it right from the start.        |
-| "I'll write the test after confirming the fix" | Untested fixes don't stick. Test first proves it.                  |
-| "Multiple fixes at once saves time"            | Can't isolate what worked. Causes new bugs.                        |
-| "I see the problem, let me fix it"             | Seeing symptoms ≠ understanding root cause.                        |
-| "One more attempt" (after 2+ failures)         | 3+ failures = architectural problem, not a fix problem.            |
-
-## Debugging Tools by Language
-
-### Go
-
-```bash
-dlv debug main.go            # delve debugger
-go run -race main.go         # race detection
-```
-
-### Rust
-
-```bash
-RUST_BACKTRACE=1 cargo run   # full backtrace on panic
-log::debug!("x = {}", x);    # log crate
-```
-
-### TypeScript / JavaScript
-
-```bash
-node --inspect-brk server.ts # Chrome DevTools attach
-console.table(data);
-console.trace("called from:");
-```
-
 ## "Why" Five Times Example
 
 > Problem: App crashes on checkout.
