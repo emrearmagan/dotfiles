@@ -1,7 +1,11 @@
--- Keymap registry + help popup for PR diff buffers.
-
 local M = {}
 
+--------------------------------------------------------------------------------
+-- Help popup
+--------------------------------------------------------------------------------
+
+---@param mode string|string[]
+---@return string
 local function mode_label(mode)
 	if type(mode) == "table" then
 		return table.concat(mode, ",")
@@ -9,16 +13,15 @@ local function mode_label(mode)
 	return tostring(mode)
 end
 
+---@param entries { mode: string|string[], lhs: string, desc: string }[]
 local function show_help(entries)
 	local title = " PR Diff Keymaps "
 	local lines = { "" }
-	local widest_lhs = 0
-	local widest_mode = 0
+	local widest_lhs, widest_mode = 0, 0
 	for _, e in ipairs(entries) do
 		widest_lhs = math.max(widest_lhs, #e.lhs)
 		widest_mode = math.max(widest_mode, #mode_label(e.mode))
 	end
-
 	for _, e in ipairs(entries) do
 		table.insert(
 			lines,
@@ -43,7 +46,6 @@ local function show_help(entries)
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 	vim.bo[buf].modifiable = false
 	vim.bo[buf].bufhidden = "wipe"
-	vim.bo[buf].filetype = "diff_keymaps_help"
 
 	local win = vim.api.nvim_open_win(buf, true, {
 		relative = "editor",
@@ -66,9 +68,22 @@ local function show_help(entries)
 	vim.keymap.set("n", "<Esc>", close, { buffer = buf, silent = true })
 end
 
+--------------------------------------------------------------------------------
+-- Setup
+--------------------------------------------------------------------------------
+
+---@class DiffActions
+---@field add_comment fun(opts: { pending: boolean, is_task: boolean|nil })
+---@field add_comment_range fun(opts: { pending: boolean, is_task: boolean|nil })
+---@field view_thread fun()
+---@field submit_review fun(event: "APPROVE"|"REQUEST_CHANGES")
+---@field refresh fun()
+---@field jump fun(direction: 1|-1)
+---@field open_pr_url fun()
+
 ---@param buf integer
----@param entries table[]  list of { mode, lhs, rhs, desc }
-function M.attach(buf, entries)
+---@param actions DiffActions
+function M.setup(buf, actions)
 	if not buf or not vim.api.nvim_buf_is_valid(buf) then
 		return
 	end
@@ -77,16 +92,91 @@ function M.attach(buf, entries)
 	end
 	vim.b[buf].my_diff_keymaps = true
 
-	local opts = { buffer = buf, silent = true }
+	local entries = {
+		{
+			mode = "n",
+			lhs = "gc",
+			desc = "Add pending PR comment",
+			rhs = function()
+				actions.add_comment({ pending = true })
+			end,
+		},
+		{
+			mode = "v",
+			lhs = "gc",
+			desc = "Add pending PR comment",
+			rhs = function()
+				actions.add_comment_range({ pending = true })
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "gC",
+			desc = "Add PR comment",
+			rhs = function()
+				actions.add_comment({ pending = false })
+			end,
+		},
+		{
+			mode = "v",
+			lhs = "gC",
+			desc = "Add PR comment",
+			rhs = function()
+				actions.add_comment_range({ pending = false })
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "gt",
+			desc = "Add PR task",
+			rhs = function()
+				actions.add_comment({ pending = false, is_task = true })
+			end,
+		},
+		{ mode = "n", lhs = "gv", desc = "View PR thread", rhs = actions.view_thread },
+		{
+			mode = "n",
+			lhs = "ga",
+			desc = "Approve PR",
+			rhs = function()
+				actions.submit_review("APPROVE")
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "gd",
+			desc = "Request PR changes",
+			rhs = function()
+				actions.submit_review("REQUEST_CHANGES")
+			end,
+		},
+		{ mode = "n", lhs = "gr", desc = "Refresh PR comments", rhs = actions.refresh },
+		{
+			mode = "n",
+			lhs = "]c",
+			desc = "Next PR comment",
+			rhs = function()
+				actions.jump(1)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "[c",
+			desc = "Previous PR comment",
+			rhs = function()
+				actions.jump(-1)
+			end,
+		},
+		{ mode = "n", lhs = "gx", desc = "Open PR", rhs = actions.open_pr_url },
+	}
+
+	local opts = { buffer = buf, silent = true, nowait = true }
 	for _, e in ipairs(entries) do
 		vim.keymap.set(e.mode, e.lhs, e.rhs, vim.tbl_extend("force", opts, { desc = e.desc }))
 	end
-
 	vim.keymap.set("n", "?", function()
 		show_help(entries)
 	end, vim.tbl_extend("force", opts, { desc = "Show PR diff keymaps" }))
 end
-
-M.show_help = show_help
 
 return M
