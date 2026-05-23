@@ -50,6 +50,7 @@ return {
 
 	-- Appearance
 	color_scheme = "Catppuccin Mocha", -- or "Catppuccin Macchiato", etc.
+	font = wezterm.font("JetBrainsMono Nerd Font"),
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
 	window_background_opacity = 1,

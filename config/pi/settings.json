@@ -10,6 +10,9 @@
     "high": 32768
   },
   "lastChangelogVersion": "0.75.4",
+  "observational-memeory": {
+    "observationThresholdToken": 5000
+  },
   "compaction": {
     "enabled": true
   },
@@ -20,18 +23,18 @@
   "editorPaddingX": 1,
   "packages": [
     "npm:context-mode",
-    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter",
     "npm:@tintinweb/pi-tasks",
-    "npm:pi-code-previews",
+    "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@juicesharp/rpiv-btw",
+    "npm:@juicesharp/rpiv-todo",
     {
       "source": "npm:@victor-software-house/pi-curated-themes",
       "skills": [],
       "extensions": [],
       "prompts": []
     },
-    "npm:pi-web-access",
-    "npm:pi-mcp-adapter",
     "npm:@gotgenes/pi-permission-system",
     "npm:pi-observational-memory",
     "npm:@tintinweb/pi-subagents"

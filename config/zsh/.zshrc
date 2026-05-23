@@ -12,6 +12,8 @@ source ~/.config/alias/.functions
 set -o vi
 export EDITOR=nvim
 export VISUAL=nvim
+# Pretty-print man pages with bat; col strips raw backspace formatting (^H).
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 # ----------------------
 # Export
@@ -27,14 +29,14 @@ export PATH="$GOBIN:$PATH"
 
 export LUA_PATH="lua/?.lua;lua/?/init.lua;;" # i dont know why but i need this for 'busted' to work
 
-# zsh-autosuggestions, syntax highlighting, and fzf-tab
+# zsh-autosuggestions, zsh-vi-mode, syntax highlighting, and fzf-tab
 fpath+=("$(brew --prefix)/share/zsh-completions")
 autoload -Uz compinit && compinit
 
 source $(brew --prefix)/share/fzf-tab/fzf-tab.zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
+source $(brew --prefix)/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 eval $(thefuck --alias)

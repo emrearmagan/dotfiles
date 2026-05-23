@@ -200,7 +200,7 @@ wk.add({
 		function()
 			snacks.picker.grep({ hidden = true, no_ignore = false })
 		end,
-		desc = "Lazygit",
+		desc = "Grep",
 	},
 	{
 		"<leader>f/",

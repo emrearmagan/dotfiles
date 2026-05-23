@@ -86,6 +86,9 @@
         "qwen2.5-coder:7b": {
           "name": "qwen2.5-coder 7B",
         },
+        "gemma4:e4b": {
+          "name": "Gemma 4 E4B",
+        },
       },
     },
   },

@@ -22,7 +22,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if ! tmux has -t "$session" 2>/dev/null; then
-	tmux new-session -d -s "$session"
+	tmux new-session -d -s "$session" -c "$PWD"
 	tmux set-option -s -t "$session" key-table popup
 	tmux set-option -s -t "$session" status off
 	tmux set-option -s -t "$session" prefix None

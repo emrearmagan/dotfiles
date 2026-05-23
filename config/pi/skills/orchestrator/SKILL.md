@@ -27,6 +27,14 @@ On every new user request, identify intent and load the matching process skill B
 
 Two skills could apply? Process first (brainstorming/debugging), then implementation.
 
+## Multi-intent prompts
+
+When a user prompt contains multiple top-level intents, split them into ordered steps and handle them sequentially in the order written.
+
+- First acknowledge or perform/update the first intent, then move to the next. Do not merge intents, skip one, or pretend they are a single task.
+- Within each top-level intent, still batch or parallelize independent reads, lookups, or subagent investigations.
+- Do not parallelize steps that depend on each other or when the user's wording implies order.
+
 ## Red flags — stop and route
 
 If you catch any of these thoughts, stop and reroute:
