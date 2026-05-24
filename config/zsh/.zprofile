@@ -8,22 +8,6 @@ if [ ! -S "$SSH_AUTH_SOCK" ]; then
   eval $(/opt/homebrew/bin/ssh-agent -a $SSH_AUTH_SOCK) >/dev/null
 fi
 
-#This is suppose to configure fzf to always use rg. But not sure how to verify..
-export FZF_DEFAULT_COMMAND='rg --files'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_DEFAULT_OPTS='
-  --height=100%
-  --border=rounded
-  --style=minimal
-  --prompt="❯ "
-  --pointer="➤"
-  --marker="✓"
-  --preview "bat --style=numbers --color=always --line-range=:500 {}"
-  --preview-window=right:60%
-'
-export FZF_CTRL_R_OPTS="--preview ''"
-export FZF_ALT_C_OPTS="--preview ''"
-
 # Currently used by lazygit to find the config file.
 export XDG_CONFIG_HOME="$HOME/.config"
 

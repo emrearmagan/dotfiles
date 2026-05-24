@@ -1,4 +1,6 @@
 {
+  "debugLog": false,
+  "yoloMode": false,
   "permission": {
     "*": "allow",
     "edit": "ask",

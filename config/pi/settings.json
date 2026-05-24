@@ -9,18 +9,19 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.75.4",
+  "lastChangelogVersion": "0.75.5",
   "observational-memory": {
-    "observeAfterTokens": 10000,
-    "reflectAfterTokens": 20000,
-    "compactAfterTokens": 81000,
-    "observationsPoolMaxTokens": 20000,
-    "agentMaxTurns": 16,
-    "model": {
+    "observationThresholdTokens": 10000,
+    "reflectionThresholdTokens": 20000,
+    "compactionThresholdTokens": 81000,
+    "observerMaxTurnsPerRun": 16,
+    "reflectorMaxTurnsPerPass": 16,
+    "prunerMaxTurnsPerPass": 16,
+    "compactionModel": {
       "provider": "openai-codex",
-      "id": "gpt-5.4-mini",
-      "thinking": "low"
-    }
+      "id": "gpt-5.4-mini"
+    },
+    "thinkingLevel": "low"
   },
   "compaction": {
     "enabled": true

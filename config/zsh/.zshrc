@@ -6,7 +6,7 @@ source ~/.env
 source ~/.config/alias/.alias
 source ~/.config/alias/.custom
 source ~/.config/alias/.macos
-source ~/.config/alias/.functions
+source ~/.config/alias/.fzf
 
 # use vim motions
 set -o vi
@@ -31,7 +31,10 @@ export LUA_PATH="lua/?.lua;lua/?/init.lua;;" # i dont know why but i need this f
 
 # zsh-autosuggestions, zsh-vi-mode, syntax highlighting, and fzf-tab
 fpath+=("$(brew --prefix)/share/zsh-completions")
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+_zcompdump_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+[[ -d $_zcompdump_dir ]] || mkdir -p $_zcompdump_dir
+compinit -d "$_zcompdump_dir/zcompdump"
 
 source $(brew --prefix)/share/fzf-tab/fzf-tab.zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -39,6 +42,7 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 source $(brew --prefix)/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+source /opt/homebrew/opt/fzf/shell/completion.zsh
 eval $(thefuck --alias)
 if [[ -z "${__STARSHIP_INIT_DONE:-}" ]]; then
   eval "$(starship init zsh)"

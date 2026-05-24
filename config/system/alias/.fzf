@@ -1,0 +1,58 @@
+# FZF defaults — use rg for file listing
+export FZF_DEFAULT_COMMAND='rg --files'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_DEFAULT_OPTS='
+  --height=100%
+  --border=rounded
+  --style=minimal
+  --prompt="❯ "
+  --pointer="➤"
+  --marker="✓"
+  --preview "bat --style=numbers --color=always --line-range=:500 {}"
+  --preview-window=right:60%
+'
+export FZF_CTRL_R_OPTS="--preview ''"
+export FZF_ALT_C_OPTS="--preview ''"
+
+# -- Widgets
+falias() {
+  local a
+  a=$(
+    alias \
+      | sed -E 's/=.*$//' \
+      | sort -u \
+      | fzf --no-preview --height 40% --layout=reverse --prompt='alias> '
+  ) || return
+  LBUFFER+="${a} "
+}
+zle -N falias
+
+fssh() {
+  local -a cfgs
+  local h
+  cfgs=(~/.ssh/config(N) ~/.ssh/config.d/*(N) ~/.ssh/conf.d/*(N))
+  (( ${#cfgs} )) || return
+  h=$(
+    awk '
+      tolower($1)=="host" {
+        for (i=2; i<=NF; i++) if ($i !~ /[*?]/ && $i !~ /^!/) print $i
+      }
+    ' $cfgs 2>/dev/null \
+    | sort -u \
+    | fzf --no-preview --height 40% --layout=reverse --prompt="ssh> "
+  ) || return
+  ssh "$h"
+}
+zle -N fssh
+
+zvm_after_init_commands+=(
+  'bindkey -M emacs "^Xa" falias'
+  'bindkey -M viins "^Xa" falias'
+  'bindkey -M emacs "^Xs" fssh'
+  'bindkey -M viins "^Xs" fssh'
+
+  # Register bindings after zsh-vi-mode finishes init.
+  # ^R needs this because zvm rebinds it; the custom widgets are here for safety.
+  'bindkey -M emacs "^R" fzf-history-widget'
+  'bindkey -M viins "^R" fzf-history-widget'
+)
