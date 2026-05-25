@@ -63,6 +63,7 @@ brew "openssh"              # ssh tool
 # Dev & Build Tools
 # ───────────────────────────────
 brew "ansible"              # automation
+brew "ansible-lint"         # ansible linter
 brew "delve"                # go debugger (nvim DAP)
 brew "git"                  # version control
 brew "go"                   # go lang

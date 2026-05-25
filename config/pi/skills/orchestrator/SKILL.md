@@ -68,7 +68,8 @@ If any is fuzzy, you're not ready.
 
 Search hygiene rules (direct tools, regex combining, batching, broad-then-narrow) live in AGENTS.md and apply to everyone. The rules below are main-agent only — when to dispatch a subagent vs do it yourself.
 
-- Do not dispatch `explore` for a known file, a specific symbol search, or code contained in 1–3 small files.
+- Do not dispatch `explore` for a single known file or a specific symbol search.
+- **Exception — parallel known-file reads:** when you have ≥2 independent investigations (even on small known files), dispatch one `explore` per investigation in the same turn. pi cannot batch reads in a single turn, so parallel subagents are the only way to avoid serial latency.
 - Use one bounded `explore` for comparative audits across many known files. Simple listing stays direct.
 - Use `explore` for a single large file (>20K tokens) only when you need a summary, not the bytes for editing.
 - **Briefing subagents.** They start with zero context from your conversation. Every prompt must include:

@@ -33,6 +33,7 @@ Any technical issue: test failures, production bugs, unexpected behavior, perfor
    - Log what data enters each component, what exits.
    - Verify env/config propagation across layers.
    - Run once to see _where_ it breaks, then investigate that layer.
+   - **Independent layers → parallel subagents.** When the boundaries don't depend on each other (e.g. terminal emulator config vs multiplexer config vs SSH config), dispatch one `explore` per layer in a single turn. Reading them sequentially wastes turns.
 
    Example (CI → build → signing → app):
 
