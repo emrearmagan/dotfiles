@@ -58,6 +58,7 @@ brew "pass"                 # password manager
 brew "pass-otp"             # extension for pass to generate one-time passwords
 brew "gpg"                  # encryption tool for pass
 brew "openssh"              # ssh tool
+brew "ipinfo-cli"           # ip info cli
 
 # ───────────────────────────────
 # Dev & Build Tools

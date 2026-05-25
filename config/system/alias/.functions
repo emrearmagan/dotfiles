@@ -1,0 +1,147 @@
+#!/usr/bin/env zsh
+
+ipcheck() {
+    local no_cache=0
+    if [[ "$1" == "--no-cache" ]]; then no_cache=1; shift; fi
+    local ip=$1
+    if [[ "$2" == "--no-cache" ]]; then no_cache=1; fi
+    local CYAN=$'\033[1;36m' KEY=$'\033[0;36m' GRN=$'\033[0;32m' YEL=$'\033[1;33m' RED=$'\033[1;31m' DIM=$'\033[2;33m' RST=$'\033[0m'
+    local cache="/tmp/ipcheck"
+    mkdir -p "$cache"
+
+    # Resolve domain (or URL) to IP if input isn't an IP literal.
+    if [[ ! "$ip" =~ ^[0-9.:a-fA-F]+$ ]]; then
+        local host="${ip#*://}"      # strip scheme://
+        host="${host%%/*}"            # strip path
+        host="${host%%:*}"            # strip :port
+        local resolved
+        resolved=$(dig +short "$host" A | grep -E '^[0-9.]+$' | head -1)
+        if [[ -z "$resolved" ]]; then
+            echo "${RED}could not resolve $host${RST}" >&2
+            return 1
+        fi
+        printf "${DIM}resolved %s → %s${RST}\n" "$host" "$resolved"
+        ip="$resolved"
+    fi
+
+    if (( no_cache )); then
+        rm -f "$cache/$ip-"*.json
+    fi
+
+    _hdr() {
+        local title=$1 file=$2 badge=""
+        if [[ -s "$file" ]]; then
+            local mtime now
+            mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null || echo 0)
+            now=$(date +%s)
+            (( now - mtime < 3600 )) && badge=" ${DIM}(cached)${RST}"
+        fi
+        printf "${CYAN}── %s ──${RST}%s\n" "$title" "$badge"
+    }
+
+    _ipcheck_curl() {
+        local file=$1; shift
+        local now mtime
+        now=$(date +%s)
+        if [[ -f "$file" ]]; then
+            mtime=$(stat -f %m "$file" 2>/dev/null || stat -c %Y "$file" 2>/dev/null || echo 0)
+        else
+            mtime=0
+        fi
+        if (( now - mtime < 3600 )) && [[ -s "$file" ]]; then
+            command cat "$file"
+        else
+            curl -s "$@" >"$file" && command cat "$file"
+        fi
+    }
+
+    # key\tvalue\ttag → "- key   value" with per-row color + word-wrap.
+    # tag: red | yel | grn (default green).
+    local fmt='
+      {
+        key = $1; val = $2; tag = $3;
+        c = (tag == "red" ? RED : tag == "yel" ? YEL : G);
+        prefix = "- " K sprintf("%-14s", key) R " " c;
+        indent = "                 " c;
+        suffix = R;
+        width  = 80 - 17;
+        if (length(val) <= width) { print prefix val suffix; next; }
+        n = split(val, parts, ", "); line = ""; first = 1;
+        for (i = 1; i <= n; i++) {
+          cand = (line == "" ? parts[i] : line ", " parts[i]);
+          if (length(cand) > width && line != "") {
+            if (first) { print prefix line suffix; first = 0 } else { print indent line suffix }
+            line = parts[i];
+          } else line = cand;
+        }
+        if (line != "") { if (first) print prefix line suffix; else print indent line suffix; }
+      }'
+
+    printf "${CYAN}── ipinfo ──${RST}\n"
+    if command -v ipinfo >/dev/null; then ipinfo "$ip"; else curl -s "ipinfo.io/$ip"; echo; fi
+
+    echo
+    _hdr "shodan internetdb" "$cache/$ip-shodan.json"
+    _ipcheck_curl "$cache/$ip-shodan.json" "https://internetdb.shodan.io/$ip" | jq -r '
+      if .ip then
+        . as $o |
+        ([range(0; $o.ports|length)] | map(
+          . as $i |
+          ($o.cpes[$i] // "") | split(":") as $c |
+          (if ($c|length) > 4 then "\($c[3]) \($c[4])" else "?" end) as $svc |
+          "\($o.ports[$i]) (\($svc))"
+        ) | join(", "))                  as $p |
+        (.hostnames|join(", "))          as $h |
+        (.tags|join(", "))               as $t |
+        (.vulns|join(", "))              as $v |
+        "ports\t\($p)\t",
+        "hostnames\t\(if $h=="" then "-" else $h end)\t",
+        "tags\t\(if $t=="" then "-" else $t end)\t",
+        "vulns\t\(if $v=="" then "-" else $v end)\t\(if $v=="" then "" else "red" end)"
+      else "no data" end' \
+    | awk -F'\t' -v K="$KEY" -v G="$GRN" -v RED="$RED" -v YEL="$YEL" -v R="$RST" "$fmt"
+
+    echo
+    _hdr "greynoise" "$cache/$ip-greynoise.json"
+    _ipcheck_curl "$cache/$ip-greynoise.json" "https://api.greynoise.io/v3/community/$ip" | jq -r '
+      if .ip then
+        "noise\t\(.noise)\t\(if .noise then "red" else "" end)",
+        "classification\t\(.classification)\t\(if .classification=="malicious" then "red" elif .classification=="unknown" then "yel" else "" end)",
+        "name\t\(.name // "-")\t",
+        "last_seen\t\(.last_seen // "-")\t"
+      else "  not seen by GreyNoise" end' \
+    | awk -F'\t' -v K="$KEY" -v G="$GRN" -v RED="$RED" -v YEL="$YEL" -v R="$RST" "$fmt"
+
+    echo
+    _hdr "crowdsec cti" "$cache/$ip-crowdsec.json"
+    if [[ -n "$CROWDSEC_API_KEY" ]]; then
+      _ipcheck_curl "$cache/$ip-crowdsec.json" "https://cti.api.crowdsec.net/v2/smoke/$ip" -H "x-api-key: $CROWDSEC_API_KEY" \
+      | jq -r '
+        if .ip then
+          (.background_noise_score // 0) as $ns |
+          (.attack_details | length) as $ac |
+          "reputation\t\(.reputation)\t\(if .reputation=="malicious" then "red" elif .reputation=="suspicious" then "yel" else "" end)",
+          "confidence\t\(.confidence // "-")\t\(if (.confidence=="high" and .reputation=="malicious") then "red" elif .confidence=="high" then "yel" else "" end)",
+          "noise_score\t\($ns)/10\t\(if $ns>=8 then "red" elif $ns>=4 then "yel" else "" end)",
+          "proxy_or_vpn\t\(.proxy_or_vpn)\t\(if .proxy_or_vpn then "yel" else "" end)",
+          "classifications\t\([.classifications.classifications[]?.label] | join(", ") | if . == "" then "-" else . end)\t",
+          "behaviors\t\([.behaviors[]?.label] | join(", ") | if . == "" then "-" else . end)\t",
+          "attack_count\t\($ac)\t\(if $ac>0 then "red" else "" end)",
+          "last_seen\t\(.history.last_seen // "-")\t"
+        else "  \(.message // "not in CTI")" end' \
+      | awk -F'\t' -v K="$KEY" -v G="$GRN" -v RED="$RED" -v YEL="$YEL" -v R="$RST" "$fmt"
+    else
+      echo "  set CROWDSEC_API_KEY to query (https://app.crowdsec.net/settings/cti-api-key)"
+    fi
+
+    echo
+    _hdr "ipapi.is" "$cache/$ip-ipapi.json"
+    _ipcheck_curl "$cache/$ip-ipapi.json" "https://api.ipapi.is/?q=$ip" | jq -r '
+      "is_abuser\t\(.is_abuser)\t\(if .is_abuser then "red" else "" end)",
+      "abuser_score\t\(.company.abuser_score // "-")\t",
+      "is_datacenter\t\(.is_datacenter)\t\(if .is_datacenter then "yel" else "" end)",
+      "is_proxy\t\(.is_proxy)\t\(if .is_proxy then "yel" else "" end)",
+      "is_vpn\t\(.is_vpn)\t\(if .is_vpn then "yel" else "" end)",
+      "is_tor\t\(.is_tor)\t\(if .is_tor then "yel" else "" end)"' \
+    | awk -F'\t' -v K="$KEY" -v G="$GRN" -v RED="$RED" -v YEL="$YEL" -v R="$RST" "$fmt"
+}

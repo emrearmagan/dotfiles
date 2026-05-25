@@ -102,7 +102,9 @@ alias gcam='git commit -a -m'
 alias gd='git diff'
 alias gds='git diff --staged'
 # Pretty single-line log graph across all refs.
-alias glog="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias glog="git log --color --graph --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
+alias glog1="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all"
+alias lg2="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'"
 
 # Push / pull
 alias gp='git push'
@@ -131,3 +133,7 @@ alias git-sync="git fetch --prune && git pull && git branch -vv | awk '/: gone]/
 alias git-purge='git branch --merged | egrep -v "(^\*|master|main|dev)" | xargs git branch -d'
 # Hard-reset all submodules — wipes uncommitted submodule changes.
 alias submodule-reset='git submodule deinit -f . && git submodule update --init --recursive'
+
+
+# Quick port scan: -Pn skip ping, -F top 100 ports, -sV detect service/version.
+alias scan='nmap -Pn -F -sV'
