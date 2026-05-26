@@ -137,3 +137,5 @@ alias submodule-reset='git submodule deinit -f . && git submodule update --init 
 
 # Quick port scan: -Pn skip ping, -F top 100 ports, -sV detect service/version.
 alias scan='nmap -Pn -F -sV'
+
+alias dig='doggo'

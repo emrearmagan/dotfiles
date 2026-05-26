@@ -24,6 +24,7 @@ brew "cesarferreira/tap/rip"# kill process
 # System & Network
 brew "btop"                 # system monitor
 brew "nmap"                 # network scanner
+brew "doggo"                # modern dig (DNS lookups)
 brew "curl"                 # http client
 brew "wget"                 # file downloader
 

@@ -1,46 +1,45 @@
+local function open_live_command(title, cmd, on_exit)
+	local width = math.floor(vim.o.columns * 0.4)
+	local height = math.floor(vim.o.lines * 0.25)
+	local row = math.floor((vim.o.lines - height) / 2) - 1
+	local col = math.floor((vim.o.columns - width) / 2)
+	local buf = vim.api.nvim_create_buf(false, true)
+	vim.bo[buf].bufhidden = "wipe"
+	local win = vim.api.nvim_open_win(buf, true, {
+		relative = "editor",
+		style = "minimal",
+		border = "rounded",
+		title = " " .. title .. " ",
+		title_pos = "center",
+		width = width,
+		height = height,
+		row = math.max(0, row),
+		col = math.max(0, col),
+	})
+	vim.keymap.set("n", "q", function()
+		if vim.api.nvim_win_is_valid(win) then
+			vim.api.nvim_win_close(win, true)
+		end
+	end, { buffer = buf, silent = true })
+	vim.fn.jobstart(cmd, {
+		term = true,
+		on_exit = function(_, code, _)
+			vim.schedule(function()
+				if on_exit then
+					on_exit(code)
+				end
+			end)
+		end,
+	})
+end
+
 return {
 	-- "emrearmagan/atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas.nvim",
 	event = "VeryLazy",
-	config = function()
-		local function open_live_command(title, cmd, on_exit)
-			local width = math.floor(vim.o.columns * 0.4)
-			local height = math.floor(vim.o.lines * 0.25)
-			local row = math.floor((vim.o.lines - height) / 2) - 1
-			local col = math.floor((vim.o.columns - width) / 2)
-			local buf = vim.api.nvim_create_buf(false, true)
-			vim.bo[buf].bufhidden = "wipe"
-			local win = vim.api.nvim_open_win(buf, true, {
-				relative = "editor",
-				style = "minimal",
-				border = "rounded",
-				title = " " .. title .. " ",
-				title_pos = "center",
-				width = width,
-				height = height,
-				row = math.max(0, row),
-				col = math.max(0, col),
-			})
-			vim.keymap.set("n", "q", function()
-				if vim.api.nvim_win_is_valid(win) then
-					vim.api.nvim_win_close(win, true)
-				end
-			end, { buffer = buf, silent = true })
-			vim.fn.jobstart(cmd, {
-				term = true,
-				on_exit = function(_, code, _)
-					vim.schedule(function()
-						if on_exit then
-							on_exit(code)
-						end
-					end)
-				end,
-			})
-		end
-
-		require("atlas").setup({
-			---@class AtlasPullsConfig
-			pulls = {
+	opts = {
+		---@class AtlasPullsConfig
+		pulls = {
 				diff = {
 					open_cmd = "CodeDiff",
 				},
@@ -423,6 +422,5 @@ return {
 					},
 				},
 			},
-		})
-	end,
+	},
 }
