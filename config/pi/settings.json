@@ -32,7 +32,6 @@
   "showHardwareCursor": false,
   "editorPaddingX": 1,
   "packages": [
-    "npm:context-mode",
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:@tintinweb/pi-tasks",
@@ -45,9 +44,11 @@
       "extensions": [],
       "prompts": []
     },
-    "npm:@gotgenes/pi-permission-system",
     "npm:pi-observational-memory",
-    "npm:@tintinweb/pi-subagents"
+    "npm:@tintinweb/pi-subagents",
+    "npm:context-mode",
+    "npm:@gotgenes/pi-permission-system"
   ],
-  "theme": "catppuccin-mocha"
+  "theme": "catppuccin-mocha",
+  "permissionLevel": "low"
 }

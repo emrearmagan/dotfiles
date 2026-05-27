@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Find the root cause before fixing — reproduce, gather evidence at each layer, form a single hypothesis, then test minimally. Use for any bug, test failure, build break, or unexpected behavior. Especially under time pressure when "one quick fix" feels obvious.
+description: 'Root-cause a bug before fixing — reproduce, evidence, single hypothesis, minimal test. Use for any bug, test failure, build break, or unexpected behavior — especially when a "quick fix" feels obvious.'
 ---
 
 # Systematic Debugging

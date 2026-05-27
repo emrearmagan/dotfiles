@@ -1,6 +1,6 @@
 ---
 name: polish
-description: Review recently changed files and apply simplification improvements — reduce complexity, remove dead code, improve names — without changing behavior. Use when the user runs /polish or asks to clean up / simplify recent changes.
+description: 'Simplify recently changed files — remove dead code, clearer names, less nesting — without behavior change. Triggers: "/polish", "clean up", "simplify", "tidy".'
 ---
 
 # Polish

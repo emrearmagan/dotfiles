@@ -1,6 +1,6 @@
 ---
 name: worker
-description: End-to-end discipline for implementing code changes — plan first, implement in small targeted steps, verify with evidence before claiming done. Use when starting a feature, fixing a bug, implementing a spec, or any multi-step code change. Triggers on phrases like "build", "implement", "add feature", "fix", "work on", "let's start", or when given a spec/requirements.
+description: 'Implement code from a spec or requirement — plan, small steps, evidence-verified. Triggers: "build", "implement", "fix", "work on", "let''s start", or any multi-step change after a spec.'
 ---
 
 # Worker

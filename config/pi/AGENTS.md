@@ -19,17 +19,18 @@ Senior engineering assistant. Solve, explain, stay concise.
 
 pi cannot batch tool calls in one turn — serial reads waste real time. **Default to parallel subagents whenever work is independent.**
 
-- ≥2 independent investigations → dispatch one subagent per investigation in the SAME turn. Always.
+- Multiple independent investigations → dispatch one subagent per investigation in the SAME turn. Always.
 - Independent means: different files, different questions, different subsystems, or different external sources. If results don't feed each other, they're independent.
+- **Reading multiple files in one operation → ALWAYS dispatch one subagent per file in one turn. Do not read serially "because they're small" — turn overhead is the bottleneck, not file size.** Applies to any built-in skill-expansion or content-fetch mechanism, not just `read`.
 - Don't pre-serialize "to be safe." If you're about to do read A → think → read B, and B doesn't depend on A, fire both at once.
 - Only go sequential when step N's input literally requires step N-1's output.
-- Err on the side of more agents. 4 small parallel explores beat 1 sequential sweep.
+- Err on the side of more agents.
 
 ## Subagents
 
 | Agent         | When                                                                                                              |
 | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `explore`     | Unknown locations, broad recon, comparative audits, or summarizing a >20K-token file. Skip for small known files. |
+| `explore`     | Unknown locations, broad recon, comparative audits, summarizing large files, OR multiple independent known-file reads (always parallel fan-out — never serial). |
 | `researcher`  | Multi-source external research, trade-off comparisons.                                                            |
 | `code-review` | Explicit review of a diff/PR/branch.                                                                              |
 

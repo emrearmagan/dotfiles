@@ -1,6 +1,6 @@
 ---
 name: ticket-review
-description: Review a ticket or issue (Jira, GitHub, Linear, or PM-written requirements) for completeness, clarity, and engineering readiness. Use when the user asks to review a ticket / issue, check readiness, or evaluate whether engineering can start work.
+description: 'Review a ticket/issue for engineering readiness — completeness, clarity, blockers. Triggers: "review this ticket/issue", "is this ready", "can engineering start".'
 ---
 
 # Ticket Review
