@@ -1,32 +1,25 @@
 ---
 name: brainstorming
-description: 'Use BEFORE any creative or design work — new features, components, behavior changes, or open-ended planning questions. Triggers on phrases like "how will we do that", "how should we approach", "what''s the best way", "design", "plan", "spec", "approach", "let''s build/add/create". Terminal state — load /skill:worker with an approved spec.'
+description: 'Design/spec a new feature, component, or behavior change before any code. Triggers: "how should we…", "what''s the best way", "let''s build/add/create", "design", "plan", "spec". Outputs an approved spec → hands off to worker.'
 ---
 
 # Brainstorming
 
-Turn a fuzzy idea into an approved spec through dialogue.
-
-## Hard gate
-
-Do NOT write code or load `/skill:worker` until the user has approved a written spec. This applies even when the task looks trivial — short specs are fine, but you must have one.
+Turn a fuzzy idea into an approved spec through dialogue. **Do not write code or load `worker` until the user approves a written spec.** Short specs fine — one must exist.
 
 ## Flow
 
-1. **Scout silently, in parallel.** List the knowledge gaps in your head: codebase touchpoints, linked issues/docs, third-party APIs, constraints. Reuse existing context first. Dispatch at most 1-2 `explore` calls by default, combining related gaps into one prompt. Use 3 only when areas are genuinely independent. No "let me research" narration.
-2. **Synthesize.** Read the reports, form a working model.
-3. **Ask** via `ask_user_question` — one question per call, multiple-choice when possible. Only ask what scouting couldn't answer.
-4. **Decompose** if the request spans multiple subsystems (chat + storage + billing → separate specs).
-5. **Propose 2–3 approaches** with tradeoffs and your pick.
-6. **Present the design** section by section, approval per section. Cover: architecture, components, data flow, error handling, testing. Scale to complexity.
-7. **Write the spec** at a path the user agrees on.
-8. **Self-review** — placeholders, contradictions, ambiguity, scope. Fix inline.
-9. **Wait for explicit user approval** before continuing.
-10. **Hand off to `/skill:worker`**.
+1. **Scout in parallel.** Identify gaps (code, docs, APIs, constraints). Dispatch independent `explore` agents in one turn. Skip when the question is self-contained or a direct `read`/`grep` answers it.
+2. **Ask** what scouting couldn't answer — one `ask_user_question` per call, multiple-choice when possible.
+3. **Decompose** if the request spans subsystems → separate specs.
+4. **Propose 2–3 approaches** with tradeoffs and your pick.
+5. **Present the design** section by section (architecture, components, data flow, errors, testing), approval per section.
+6. **Write the spec** at a path the user agrees on.
+7. **Self-review** for placeholders, contradictions, scope drift. Fix inline.
+8. **Wait for explicit approval**, then hand off to `worker`.
 
 ## Principles
 
 - YAGNI. Drop features that don't earn their keep.
-- Smaller units with clear interfaces — independently testable.
-- Follow existing patterns in the codebase.
-- Skip scouting when the message is fully self-contained, the relevant code is already known, or the answer only needs a direct `read` / `grep` / `find`.
+- Smaller units with clear interfaces.
+- Follow existing codebase patterns.

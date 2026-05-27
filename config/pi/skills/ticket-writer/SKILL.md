@@ -1,6 +1,6 @@
 ---
 name: ticket-writer
-description: Draft a high-quality ticket or issue (Jira, GitHub, Linear, or generic) with structured, testable acceptance criteria. Generates ADF-ready content when the target is Atlassian. Use when the user asks to write / draft / create a ticket or issue, or convert rough requirements into one.
+description: 'Draft a Jira/GitHub/Linear ticket with testable AC (ADF-ready for Atlassian). Triggers: "write/draft/create a ticket/issue", or converting rough requirements into one.'
 ---
 
 # Ticket Writer
