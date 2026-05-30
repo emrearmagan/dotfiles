@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Run upgrade jobs in parallel with one spinner per job.
+
+set -u
+
+# name : label shown while running : command
+JOBS=(
+  "brew:Brewing fresh packages:brew update && brew upgrade && brew cleanup"
+  "tmux:Tightening tmux plugins:~/.tmux/plugins/tpm/bin/update_plugins all"
+  "pi:Baking fresh pi:pi update"
+)
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils/spinner.sh
+source "$SCRIPT_DIR/utils/spinner.sh" spinner1
+
+GREEN=$'\033[32m'
+RED=$'\033[31m'
+DIM=$'\033[2m'
+RESET=$'\033[0m'
+
+tmpdir=$(mktemp -d)
+trap 'tput cnorm; rm -rf "$tmpdir"' EXIT
+
+declare -a names labels pids states
+for entry in "${JOBS[@]}"; do
+  name="${entry%%:*}"
+  rest="${entry#*:}"
+  label="${rest%%:*}"
+  cmd="${rest#*:}"
+  log="$tmpdir/$name.log"
+  ( eval "$cmd" ) >"$log" 2>&1 &
+  names+=("$name")
+  labels+=("$label")
+  pids+=("$!")
+  states+=("running")
+done
+
+n=${#names[@]}
+
+draw() {
+  local frame_idx=$1
+  for i in $(seq 0 $((n - 1))); do
+    case "${states[$i]}" in
+      running) icon="${DIM}${FRAME[$frame_idx]}${RESET}" ; trail="..." ;;
+      ok)      icon="${GREEN}✔${RESET}"                  ; trail="" ;;
+      fail)    icon="${RED}✖${RESET}"                    ; trail="" ;;
+    esac
+    printf '\r\033[K[ %s ] %s%s\n' "$icon" "${labels[$i]}" "$trail"
+  done
+}
+
+tput civis
+draw 0
+
+frame_idx=0
+while :; do
+  remaining=0
+  for i in $(seq 0 $((n - 1))); do
+    [[ "${states[$i]}" != "running" ]] && continue
+    if kill -0 "${pids[$i]}" 2>/dev/null; then
+      remaining=$((remaining + 1))
+    else
+      if wait "${pids[$i]}"; then
+        states[$i]="ok"
+      else
+        states[$i]="fail"
+      fi
+    fi
+  done
+  printf '\033[%dA' "$n"
+  draw "$frame_idx"
+  (( remaining == 0 )) && break
+  frame_idx=$(( (frame_idx + 1) % ${#FRAME[@]} ))
+  sleep "$FRAME_INTERVAL"
+done
+
+tput cnorm
+
+failed=0
+for i in $(seq 0 $((n - 1))); do
+  if [[ "${states[$i]}" == "fail" ]]; then
+    failed=1
+    echo
+    echo "--- ${names[$i]} failed ---"
+    cat "$tmpdir/${names[$i]}.log"
+  fi
+done
+
+sketchybar --trigger brew_update >/dev/null 2>&1 || true
+
+exit $failed
