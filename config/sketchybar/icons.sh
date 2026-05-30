@@ -10,6 +10,8 @@ MAIL=􀍜
 MAIL_OPEN=􀍜
 BELL=􀋚
 BELL_DOT=􀝗
+TASK=􀷾
+TASK_DONE=􀁣
 CALENDAR=􀉉
 CLOCK=􀐬
 

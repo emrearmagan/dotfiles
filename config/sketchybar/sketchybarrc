@@ -73,7 +73,7 @@ source "$ITEM_DIR/date_time.sh"
 # source "$ITEM_DIR/calendar.sh"
 
 source "$ITEM_DIR/brew.sh"
-source "$ITEM_DIR/github.sh"
+source "$ITEM_DIR/taskbook.sh"
 source "$ITEM_DIR/battery.sh"
 
 source "$ITEM_DIR/volume.sh"
@@ -87,13 +87,13 @@ status_bracket=(
   background.border_width=2
   background.padding_left=20
 )
-sketchybar --add bracket status battery brew github.bell \
+sketchybar --add bracket status battery brew taskbook \
            --set status "${status_bracket[@]}"
 
 sketchybar --set battery padding_left=10
 sketchybar --set brew padding_right=10
-sketchybar --set github padding_right=5
-sketchybar --set github padding_left=5
+sketchybar --set taskbook padding_right=5
+sketchybar --set taskbook padding_left=5
 ############## FINALIZING THE SETUP ##############
 sketchybar --update
 
