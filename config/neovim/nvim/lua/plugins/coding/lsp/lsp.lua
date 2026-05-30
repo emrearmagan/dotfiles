@@ -38,6 +38,7 @@ return {
 					"marksman", -- Markdown
 
 					"sqls", -- SQL language server
+					"harper_ls",
 
 					-- sourcekit (Swift) is macOS native, not installable via Mason
 					-- Make sure to have Xcode installed or CLI Tools: xcode-select --install

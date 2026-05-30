@@ -31,18 +31,25 @@ When in doubt: keep the comment. Removing a comment is only safe when its text i
 
 ## Scope
 
-Only review and modify files that have been changed recently. Determine the set via:
+Only review and modify files in the selected change scope. If the user did not specify a scope, clarify it first with the `ask_user_question` tool instead of inferring silently.
 
-```bash
-git status --short
-git diff --name-only origin/HEAD...HEAD 2>/dev/null || git diff --name-only HEAD~5..HEAD
-```
+Supported scopes:
 
-Do NOT touch files outside that set.
+- **Current uncommitted changes** — files from `git status --short` / working tree diffs.
+- **Current branch** — files changed on the current branch versus its upstream/base.
+- **Last N commits** — files changed in a user-specified number of recent commits.
+
+Do NOT touch files outside the selected scope.
 
 ## Process
 
-1. **Scout (parallel)** — Determine the changed-files set, then:
+0. **Clarify scope when unspecified** — If the user did not explicitly say what to polish, use `ask_user_question` to ask whether to polish:
+    - Current uncommitted changes
+    - Current branch changes
+    - Last N commits
+
+   If they choose last N commits and did not provide N, ask for N before scouting.
+1. **Scout (parallel)** — Determine the changed-files set from the selected scope, then:
     - Group files by directory or related module; aim for 3–6 files per group.
    - Dispatch at most 2 `explore` agents in parallel by default. Use 3 only for clearly independent modules; for larger changes, ask the user to narrow scope.
     - Have each scout report concrete improvements: dead code, unclear names, redundant logic, boilerplate comments, and inconsistent patterns.

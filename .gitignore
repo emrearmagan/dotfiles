@@ -16,5 +16,4 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-## from the pi extension: "npm:@tintinweb/pi-tasks",
-.pi/tasks
+.pi

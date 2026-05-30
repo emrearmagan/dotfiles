@@ -1,7 +1,7 @@
 {
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "xhigh",
   "hideThinkingBlock": true,
   "thinkingBudgets": {
     "minimal": 1024,
@@ -9,7 +9,7 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.76.0",
+  "lastChangelogVersion": "0.78.0",
   "observational-memory": {
     "observationThresholdTokens": 10000,
     "reflectionThresholdTokens": 20000,
@@ -47,7 +47,9 @@
     "npm:pi-observational-memory",
     "npm:@tintinweb/pi-subagents",
     "npm:context-mode",
-    "npm:@gotgenes/pi-permission-system"
+    "npm:@gotgenes/pi-permission-system",
+    "npm:spotme",
+    "git:github.com/MasuRii/pi-tool-display"
   ],
   "theme": "catppuccin-mocha",
   "permissionLevel": "low"
