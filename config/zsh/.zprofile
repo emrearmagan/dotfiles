@@ -11,6 +11,6 @@ fi
 # Currently used by lazygit to find the config file.
 export XDG_CONFIG_HOME="$HOME/.config"
 
-export LANG=de_DE.UTF-8
+export LANG=en_US.UTF-8
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
