@@ -9,7 +9,7 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.78.0",
+  "lastChangelogVersion": "0.80.2",
   "observational-memory": {
     "observationThresholdTokens": 10000,
     "reflectionThresholdTokens": 20000,

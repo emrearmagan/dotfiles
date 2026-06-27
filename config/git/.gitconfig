@@ -75,7 +75,12 @@
 	helper = cache
 
 [merge]
-  tool = sourcetree
+  tool = codediff
+
+[mergetool "codediff"]
+  cmd = nvim -f -c "CodeDiff" "$MERGED"
+  trustExitCode = false
+  keepBackup = false
 
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
