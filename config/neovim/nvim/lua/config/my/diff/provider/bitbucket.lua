@@ -19,6 +19,25 @@ local function trim(value)
 	return vim.trim(value)
 end
 
+---@param link any
+---@return string|nil
+local function link_href(link)
+	if type(link) == "string" and link ~= "" then
+		return link
+	end
+	if type(link) == "table" and type(link.href) == "string" and link.href ~= "" then
+		return link.href
+	end
+	return nil
+end
+
+---@param pr DiffCommentsPR
+---@return table
+local function raw_pr(pr)
+	local raw = (pr and pr._raw) or {}
+	return type(raw._raw) == "table" and raw._raw or raw
+end
+
 ---@param root string
 ---@return string|nil workspace
 ---@return string|nil repo
@@ -86,7 +105,7 @@ local function comment_to_diff_comment(comment)
 		state = state,
 		created_at = comment.created_on,
 		updated_at = comment.updated_on,
-		url = comment.links and comment.links.html and comment.links.html.href or nil,
+		url = comment.html_url or (comment.links and link_href(comment.links.html)) or nil,
 		_raw = { comment = comment },
 	}
 end
@@ -97,9 +116,9 @@ local function task_to_diff_comment(task)
 	local creator = task.creator or {}
 	return {
 		id = task.id,
-		parent_id = task.comment and task.comment.id or nil,
-		author = (creator.display_name or creator.nickname) and {
-			name = creator.display_name,
+		parent_id = task.comment_id or (task.comment and task.comment.id) or nil,
+		author = (creator.display_name or creator.name or creator.nickname) and {
+			name = creator.display_name or creator.name,
 			username = creator.nickname or creator.username,
 		} or nil,
 		body = task.content_raw or (task.content and task.content.raw) or "",
@@ -107,8 +126,8 @@ local function task_to_diff_comment(task)
 		is_task = true,
 		created_at = task.created_on,
 		updated_at = task.updated_on,
-		url = task.links and task.links.html and task.links.html.href or nil,
-		_raw = { task = task, task_url = task.links and task.links.self and task.links.self.href },
+		url = task.html_url or (task.links and link_href(task.links.html)) or nil,
+		_raw = { task = task, task_url = task.links and link_href(task.links.self) },
 	}
 end
 
@@ -138,14 +157,14 @@ function M.find_pr(session, on_done)
 	end
 
 	local service = require("atlas.pulls.providers.bitbucket.api.service")
-	local normalizer = require("atlas.pulls.providers.bitbucket.api.pr_normalizer")
+	local mapper = require("atlas.pulls.providers.bitbucket.api.mapper")
 	local endpoint = ("/repositories/%s/%s/pullrequests?state=OPEN&pagelen=50"):format(workspace, repo)
 	service.request("GET", endpoint, nil, nil, function(result, err)
 		if err then
 			on_done(nil, err)
 			return
 		end
-		for _, raw in ipairs(normalizer.pullrequests(result, workspace, repo) or {}) do
+		for _, raw in ipairs(mapper.to_pull_requests_list(result, workspace, repo) or {}) do
 			local head = (raw.source or {}).commit_hash or ""
 			if head ~= "" and (head:sub(1, #sha) == sha or sha:sub(1, #head) == head) then
 				on_done({
@@ -168,8 +187,8 @@ function M.fetch_comments(pr, on_done)
 	local service = require("atlas.pulls.providers.bitbucket.api.service")
 	local comments_api = require("atlas.pulls.providers.bitbucket.api.comments")
 
-	local raw = pr._raw or {}
-	local comments_url = tostring((raw.links or {}).comments or "")
+	local raw = raw_pr(pr)
+	local comments_url = link_href((raw.links or {}).comments) or ""
 	if comments_url == "" then
 		on_done({}, "Failed to load comments: no comments URL")
 		return
@@ -248,7 +267,7 @@ function M.add_comment(pr, comment, on_done)
 	if parent then
 		local is_pending = comment.state == "PENDING" or parent.state == "PENDING"
 		if is_pending then
-			local comments_url = tostring(((pr._raw or {}).links or {}).comments or "")
+			local comments_url = link_href((raw_pr(pr).links or {}).comments) or ""
 			if comments_url == "" then
 				on_done(nil, "Missing comments URL")
 				return
@@ -288,7 +307,7 @@ function M.add_comment(pr, comment, on_done)
 	end
 
 	if comment.state == "PENDING" then
-		local comments_url = tostring(((pr._raw or {}).links or {}).comments or "")
+		local comments_url = link_href((raw_pr(pr).links or {}).comments) or ""
 		if comments_url == "" then
 			on_done(nil, "Missing comments URL")
 			return
@@ -461,12 +480,12 @@ end
 ---@param body string
 ---@param on_done fun(ok: boolean|nil, err: string|nil)
 function M.submit_review(pr, event, body, on_done)
-	local links = (pr._raw or {}).links or {}
+	local links = raw_pr(pr).links or {}
 	local action_url, action
 	if event == "APPROVE" then
-		action_url, action = tostring(links.approve or ""), "approve"
+		action_url, action = link_href(links.approve) or "", "approve"
 	elseif event == "REQUEST_CHANGES" then
-		action_url, action = tostring(links.request_changes or ""), "request_changes"
+		action_url, action = link_href(links.request_changes) or "", "request_changes"
 	else
 		on_done(nil, "Unsupported Bitbucket review event: " .. tostring(event))
 		return
