@@ -48,6 +48,10 @@ dotfiles:
       dest: "{{ ansible_env.HOME }}/.config/nvim",
     }
   - {
+      src: "{{ playbook_dir }}/../config/vim/vimrc",
+      dest: "{{ ansible_env.HOME }}/.vimrc",
+    }
+  - {
       src: "{{ playbook_dir }}/../config/bat",
       dest: "{{ ansible_env.HOME }}/.config/bat",
     }

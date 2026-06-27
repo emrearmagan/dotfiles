@@ -1,0 +1,137 @@
+" ── Core ──────────────────────────────────────────────────────────────────
+set nocompatible
+syntax on
+filetype plugin indent on
+
+let mapleader = " "
+let maplocalleader = "\\"
+
+" ── UI ────────────────────────────────────────────────────────────────────
+set number
+set relativenumber
+set scrolloff=8
+set nowrap
+set ruler
+set showcmd
+set wildmenu
+set wildmode=longest:full,full
+set fillchars=eob:\ ,fold:\
+set laststatus=2
+set cmdheight=1
+set signcolumn=yes   " always reserve gutter, prevents text jump
+set mouse=
+set termguicolors
+
+" ── Indent ────────────────────────────────────────────────────────────────
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set autoindent
+set smartindent
+
+" ── Search ────────────────────────────────────────────────────────────────
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+" ── Buffers / files ───────────────────────────────────────────────────────
+set hidden
+set autoread
+set updatetime=1000
+set backspace=indent,eol,start
+set splitright
+set splitbelow
+set path+=**         " :find <name> walks the project recursively
+
+" ── Undo (persistent) ─────────────────────────────────────────────────────
+set undofile
+set undodir=~/.vim/undo//
+set nobackup
+set nowritebackup
+set noswapfile
+if !isdirectory($HOME . "/.vim/undo")
+  call mkdir($HOME . "/.vim/undo", "p", 0700)
+endif
+
+" ── Folds ─────────────────────────────────────────────────────────────────
+" za toggle, zR open all, zM close all.
+set foldmethod=syntax
+set foldlevel=99
+set foldlevelstart=99
+set foldenable
+
+" ── Keymaps ───────────────────────────────────────────────────────────────
+
+" Exit insert quickly
+inoremap jk <Esc>
+
+" Disable plain <Space> in normal so it doesn't move when used as leader
+nnoremap <Space> <Nop>
+
+" Better defaults
+nnoremap J mzJ`z
+nnoremap Y y$
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Move visual selection up/down
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+" Buffer navigation
+nnoremap <Tab>   :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+nnoremap <C-n>   :bnext<CR>
+nnoremap <C-p>   :bprevious<CR>
+nnoremap <C-x>   :bp\|bd #<CR>
+
+" Quickfix
+nnoremap [q :cprev<CR>
+nnoremap ]q :cnext<CR>
+nnoremap <leader>qq :copen<CR>
+nnoremap <leader>qc :cclose<CR>
+nnoremap <leader>qS :wa<CR>
+
+" File ops
+nnoremap <leader>ff :find
+nnoremap <leader>fg :grep -R  .<Left><Left>
+nnoremap <leader>fh :help
+
+" Built-in file explorer
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_winsize = 25
+nnoremap <leader><Space> :Lexplore<CR>
+nnoremap <leader>. :Lexplore<CR>
+
+" Clear search highlight
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
+
+" ── Autocmds ──────────────────────────────────────────────────────────────
+augroup my_vimrc
+  autocmd!
+  " Restore cursor to last position when reopening a file
+  autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+        \ | execute "normal! g`\"" | endif
+  " OSC 52 — push every yank to local clipboard over SSH
+  if exists("##TextYankPost")
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call s:OscYank() | endif
+  endif
+augroup END
+
+" Close ephemeral buffers with <q>
+augroup close_with_q
+  autocmd!
+  autocmd FileType qf,help,man nnoremap <buffer><silent> q :close<CR>
+augroup END
+
+" ── Filetype tweaks ───────────────────────────────────────────────────────
+augroup my_filetypes
+  autocmd!
+  autocmd BufNewFile,BufRead Brewfile setfiletype ruby
+  autocmd BufNewFile,BufRead *.yml setfiletype yaml
+augroup END
