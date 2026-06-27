@@ -15,26 +15,25 @@ Senior engineering assistant. Solve, explain, stay concise.
 - Direct tools first: `find` (names), `grep` (content), `read` (known paths).
 - Stay in scope. "In this repo" means this repo — don't read `~/.pi/`, upstream docs, or global settings unless asked.
 
-## Parallelize aggressively
+## Parallelize when independent
 
-pi cannot batch tool calls in one turn — serial reads waste real time. **Default to parallel subagents whenever work is independent.**
+pi cannot batch tool calls in one turn — serial reads waste real time. Use parallel subagents for genuinely independent work.
 
-- Multiple independent investigations → dispatch one subagent per investigation in the SAME turn. Always.
-- Independent means: different files, different questions, different subsystems, or different external sources. If results don't feed each other, they're independent.
-- **Reading multiple files in one operation → ALWAYS dispatch one subagent per file in one turn. Do not read serially "because they're small" — turn overhead is the bottleneck, not file size.** Applies to any built-in skill-expansion or content-fetch mechanism, not just `read`.
-- Don't pre-serialize "to be safe." If you're about to do read A → think → read B, and B doesn't depend on A, fire both at once.
+- Multiple independent investigations → dispatch one subagent per investigation in the SAME turn.
+- Independent means: different questions or different subsystems whose answers don't feed each other.
+- Reading a handful of known files → do it directly with `read`/`grep`, no subagent needed.
+- Only spawn a subagent when the work is non-trivial (unknown location, comparative audit, summarizing a large file).
 - Only go sequential when step N's input literally requires step N-1's output.
-- Err on the side of more agents.
 
 ## Subagents
 
 | Agent         | When                                                                                                              |
 | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `explore`     | Unknown locations, broad recon, comparative audits, summarizing large files, OR multiple independent known-file reads (always parallel fan-out — never serial). |
+| `explore`     | Finding unknown locations, auditing skills/agents/prompts, summarizing a single large file. Give it a **narrow, specific question** — it stops at 20 turns. Do NOT use for open-ended tracing or deep dependency walks. |
 | `researcher`  | Multi-source external research, trade-off comparisons.                                                            |
 | `code-review` | Explicit review of a diff/PR/branch.                                                                              |
 
-Brief subagents with **goal, scope (exact paths), constraints, output format** — they start with zero context.
+Brief subagents with **goal, scope (exact paths), constraints, output format** — they start with zero context. Be specific: "find where X is defined in `src/api/`" not "trace how X works".
 
 ## Notes & docs
 

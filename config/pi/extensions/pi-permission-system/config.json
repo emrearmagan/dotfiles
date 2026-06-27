@@ -7,6 +7,7 @@
     "external_directory": "ask",
     "path": {
       "*": "allow",
+      "~/.pi/": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
       "*.env.example": "allow",
@@ -14,7 +15,6 @@
     },
     "bash": {
       "*": "ask",
-
       "ls *": "allow",
       "cat *": "allow",
       "head *": "allow",
@@ -29,7 +29,6 @@
       "stat *": "allow",
       "du *": "allow",
       "df *": "allow",
-
       "git status*": "allow",
       "git diff*": "allow",
       "git log*": "allow",
@@ -41,14 +40,11 @@
       "git reflog*": "allow",
       "git tag*": "allow",
       "git show-ref*": "allow",
-
       "git commit*": "ask",
       "git push*": "ask",
       "git reset --hard*": "ask",
       "git rebase*": "ask",
-
       "docker ps*": "allow",
-
       "rm -rf *": "deny",
       "sudo *": "ask"
     }

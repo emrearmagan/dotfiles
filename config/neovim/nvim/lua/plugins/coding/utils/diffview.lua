@@ -25,6 +25,9 @@ return {
 				default = {
 					disable_diagnostics = false,
 				},
+				diff = {
+					layout = "inline",
+				},
 				view = {
 					merge_tool = {
 						disable_diagnostics = false,

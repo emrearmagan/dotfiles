@@ -53,7 +53,6 @@ alias cursor="cursor-agent"
 
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""
-alias fd='cd "$(find . -type d -not -path "*/.git/*" | fzf --no-preview)"'
 
 # Fuzzy-search grep results and open the selected match
 alias ffg="grep --line-number --color=always -r --exclude-dir=.git '' . \
@@ -72,9 +71,9 @@ alias proxy-local='
     echo " IP copied to clipboard!"
     echo "Press Enter to start mitmproxy..."
     read
-    mitmproxy --mode regular@8888 \
+      mitmproxy --mode regular@8888 \
         --ignore "~u \.png$ | ~u logo" \
-        --ssl-insecure
+        --ssl-insecure \
         --no-http2
 '
 
@@ -123,8 +122,10 @@ alias gr='git restore'
 # Navigation
 # Jump to repo root.
 alias grt='cd "$(git rev-parse --show-toplevel || echo .)"'
-# Fuzzy-find a local or remote branch and check it out.
-alias gco='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
+# Fuzzy-find a remote branch and check out/create the matching local branch.
+alias gco='b=$(git branch -r --format="%(refname:short)" | grep -v "HEAD" | fzf --height 40% --layout=reverse --prompt="remote branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80") && l="${b#*/}" && (git show-ref --verify --quiet "refs/heads/$l" && git checkout "$l" || git checkout -b "$l" "$b")'
+alias gcob='gco'
+alias gcod='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
 
 # Maintenance
 # Fetch + prune, pull, then delete local branches whose upstream is gone.
