@@ -101,7 +101,7 @@ fi
 
 SESSION="reviews"
 MODEL="openai-codex/gpt-5.4"
-PROMPT='Load /skill:review and review this branch versus its base branch (fallback: main).'
+PROMPT='/review this branch versus its base branch (fallback: main).'
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then

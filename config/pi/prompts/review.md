@@ -1,11 +1,19 @@
 ---
-name: review
 description: Review a branch, PR, diff, or work-in-progress change by orchestrating code-review and spec-review agents.
+argument-hint: "[review target]"
 ---
 
 # Review
 
-Orchestrate review axes only. The main session should not inspect the code, gather git context, read branch notes, fetch tickets, or write notes. The specialist agents must gather their own context and use their own available tools.
+You are orchestrating a review request.
+
+User review request:
+
+```text
+$ARGUMENTS
+```
+
+Orchestrate the review only. The main session must not inspect the code, gather git context, read branch notes, fetch tickets, or write notes. The specialist agents must gather their own context and use their own available tools.
 
 Do not edit files. Do not commit. Do not change scripts/config unless the user explicitly asks.
 
@@ -13,7 +21,7 @@ Do not edit files. Do not commit. Do not change scripts/config unless the user e
 
 ### 1. Route the review
 
-Identify the user's requested review target from the prompt:
+Identify the requested review target from the user request:
 
 - current branch / worktree
 - explicit base branch
@@ -26,9 +34,9 @@ Ask a clarification only when the request cannot be routed at all.
 
 ### 2. Dispatch agents
 
-Run the review agents in parallel whenever both axes are relevant.
+Run the review agents in parallel whenever both reviewers are relevant.
 
-**Code axis — `code-review` agent**
+**Code review — `code-review` agent**
 
 Ask it to:
 
@@ -39,7 +47,7 @@ Ask it to:
 
 Pass only the user's review request and any context already present in the conversation. Do not pre-digest the diff for it.
 
-**Spec axis — `spec-review` agent**
+**Spec review — `spec-review` agent**
 
 Ask it to:
 
@@ -52,25 +60,22 @@ Ask it to:
 
 Pass only the user's review request and any context already present in the conversation. Do not pre-digest the spec or diff for it.
 
-If the user explicitly requests only one axis, dispatch only that agent.
+If the user explicitly requests only one reviewer, dispatch only that agent.
 
-### 3. Aggregate results
+### 3. Relay results
 
-Summarize the agents' outputs without doing additional investigation in the main session.
+Do not summarize, merge, deduplicate, rerank, or synthesize the agents' findings.
 
-Keep axes separate; do not merge or rerank findings across axes.
+Output each agent's result under its own section. Preserve the substance and ordering of each agent output; only trim obvious wrapper text if needed.
+
+If a reviewer was not run, write `Skipped` for that section.
 
 ```markdown
 ## Code Review
 
-<code-review findings or "No issues found.">
+<paste the code-review agent output, or "No issues found.">
 
 ## Spec Review
 
-<spec-review findings, "Skipped", or "No issues found.">
-
-## Verdict
-
-- Code: safe / needs changes / blocked
-- Spec: matches / gaps / skipped / blocked
+<paste the spec-review agent output, "Skipped", or "No issues found.">
 ```
