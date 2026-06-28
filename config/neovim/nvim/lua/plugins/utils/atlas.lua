@@ -247,14 +247,14 @@ return {
 						local issue_type = issue.type and tostring(issue.type.name or "") or ""
 						local status = tostring(issue.status or "")
 						local priority = tostring(issue.priority or "")
-						local session = "ticket-review"
+						local session = "spec-review"
 						local window = issue_key:gsub("[^%w_-]", "-")
 						local prompt = table.concat({
-							"Load /skill:ticket-review and review this Jira ticket.",
+							"Use the spec-review agent to review this Jira ticket.",
 							"",
 							"1. Fetch the full Jira issue content via Jira MCP/tools if available.",
-							"2. Apply the readiness criteria from the skill (severity-tagged findings, blockers, suggested clarifications).",
-							"3. Output in the skill's standard format: Ticket Intent → Review → Concrete Improvements → Summary/Verdict.",
+							"2. Review it for engineering readiness: clarity, scope, blockers, acceptance criteria, risks, and missing descisions.",
+							"3. Do not inspect inspect implementation code. This is a ticket/spec review only.",
 							"",
 							"Issue key: " .. issue_key,
 							"Summary: " .. summary,
