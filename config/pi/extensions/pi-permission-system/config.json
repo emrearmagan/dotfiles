@@ -1,6 +1,7 @@
 {
   "debugLog": false,
-  "yoloMode": true,
+  "permissionReviewLog": false,
+  "yoloMode": false,
   "permission": {
     "*": "allow",
     "edit": "allow",
@@ -55,6 +56,5 @@
       "rm -rf *": "deny",
       "sudo *": "deny"
     }
-  },
-  "permissionReviewLog": true
+  }
 }
