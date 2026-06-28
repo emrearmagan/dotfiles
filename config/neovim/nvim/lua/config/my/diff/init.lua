@@ -767,6 +767,7 @@ local actions = {
 	end,
 
 	refresh = function()
+		show()
 		load(nil, { force = true })
 	end,
 
