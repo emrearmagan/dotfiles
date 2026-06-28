@@ -85,48 +85,67 @@ alias lg=lazygit
 
 # Status / branches
 alias gs='git status'
+alias gstatus='git status --short --branch'
+alias goverview='git status --short --branch'
 alias gb='git branch'
+alias gbranches='git branch --all --sort=-committerdate'
 alias gba='git branch --all'
 alias gbd='git branch --delete'
 
 # Add / commit
 alias ga='git add'
 alias gaa='git add --all'
+alias gstage-all='git add --all'
 alias gap='git add --patch'
+alias gstage='git add --patch'
 alias gc='git commit'
+alias gcommit='git commit'
 alias gcm='git commit -m'
+alias gcommit-msg='git commit -m'
 alias gca='git commit -a'
 alias gcam='git commit -a -m'
 
 # Diff / log
 alias gd='git diff'
+alias gdiff='git diff'
 alias gds='git diff --staged'
-# Pretty single-line log graph across all refs.
-alias glog="git log --color --graph --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
-alias glog1="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all"
-alias lg2="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'"
+alias gstaged='git diff --staged'
+alias glog="git log --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
+alias ghistory="git log --all --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
 
 # Push / pull
 alias gp='git push'
+alias gpush='git push'
 alias gpl='git pull'
+alias gpull='git pull'
 # Safer force push (refuses if remote has new commits you don't have).
 alias gpf='git push --force-with-lease'
+alias gforcepush='git push --force-with-lease'
+alias gsync='git fetch --prune && git pull'
 
 # Stash / restore
 alias gst='git stash'
+alias gstash='git stash'
 alias gsp='git stash pop'
+alias gunstash='git stash pop'
 # Unstage a file (keep working-tree changes).
 alias grs='git restore --staged'
+alias gunstage-file='git restore --staged'
+alias gunstage='git restore --staged --patch'
+alias gunstage-all='git restore --staged :/'
 # Discard working-tree changes for a file.
 alias gr='git restore'
+alias gdiscard='git restore --patch'
 
 # Navigation
 # Jump to repo root.
 alias grt='cd "$(git rev-parse --show-toplevel || echo .)"'
+alias groot='cd "$(git rev-parse --show-toplevel || echo .)"'
 # Fuzzy-find a remote branch and check out/create the matching local branch.
 alias gco='b=$(git branch -r --format="%(refname:short)" | grep -v "HEAD" | fzf --height 40% --layout=reverse --prompt="remote branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80") && l="${b#*/}" && (git show-ref --verify --quiet "refs/heads/$l" && git checkout "$l" || git checkout -b "$l" "$b")'
 alias gcob='gco'
 alias gcod='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
+alias gswitch='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
 
 # Maintenance
 # Fetch + prune, pull, then delete local branches whose upstream is gone.
@@ -136,8 +155,45 @@ alias git-purge='git branch --merged | egrep -v "(^\*|master|main|dev)" | xargs 
 # Hard-reset all submodules — wipes uncommitted submodule changes.
 alias submodule-reset='git submodule deinit -f . && git submodule update --init --recursive'
 
-
 # Quick port scan: -Pn skip ping, -F top 100 ports, -sV detect service/version.
 alias scan='nmap -Pn -F -sV'
 
 alias dig='doggo'
+
+# Expand aliases when pressing Enter so history shows the real command.
+# Aliases listed here stay as typed because expanding them is noisy or pointless.
+typeset -gA _expand_alias_on_enter_blacklist=(
+  cls 1 cl 1
+  .. 1 ... 1 .... 1 ..... 1 cd 1 oo 1 dl 1
+  ls 1 l 1 la 1 lsa 1 lsd 1
+  grep 1 cat 1 how 1 pcopy 1 ppaste 1 v 1 vim 1 cursor 1
+  proxy-local 1
+)
+
+_expand_alias_on_enter() {
+  emulate -L zsh
+
+  # zsh-autosuggestions renders ghost text through POSTDISPLAY. Clear it before
+  # rewriting BUFFER, otherwise can visually clutter.
+  POSTDISPLAY=
+
+  local leading=${BUFFER%%[^[:space:]]*}
+  local command_part=${BUFFER#$leading}
+  local first=${command_part%%[[:space:]]*}
+  local rest=${command_part#$first}
+
+  if [[ -n $first && -n ${aliases[$first]} && -z ${_expand_alias_on_enter_blacklist[$first]-} ]]; then
+    BUFFER="${leading}${aliases[$first]}${rest}"
+    CURSOR=${#BUFFER}
+  fi
+
+  zle -R
+  zle .accept-line
+}
+
+_setup_expand_alias_on_enter() {
+  zle -N _expand_alias_on_enter
+  bindkey -M emacs '^M' _expand_alias_on_enter
+  bindkey -M viins '^M' _expand_alias_on_enter
+  bindkey -M vicmd '^M' _expand_alias_on_enter
+}

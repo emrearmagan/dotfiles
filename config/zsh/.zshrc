@@ -51,6 +51,8 @@ if [[ -z "${__STARSHIP_INIT_DONE:-}" ]]; then
 fi
 eval "$(zoxide init zsh)"
 
+_setup_expand_alias_on_enter
+
 # ----------------------
 # Configuration
 # ----------------------
