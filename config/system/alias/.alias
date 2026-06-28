@@ -1,5 +1,6 @@
 alias reload='exec zsh -l'
 alias tmux-reload="tmux source-file ~/.config/tmux/tmux.conf"
+alias tmux-sockets='command ls -1 "${TMUX_TMPDIR:-/tmp}/tmux-$(id -u)"'
 
 alias cls='clear'
 

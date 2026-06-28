@@ -2,7 +2,7 @@ local M = {}
 
 function M.run_in_popup(cmd)
 	vim.system({ "tmux-popup", "-d" }, {}, function()
-		vim.system({ "tmux", "send-keys", "-t", "popup", cmd, "C-m" })
+		vim.system({ "tmux", "-L", "popup", "send-keys", "-t", "popup", cmd, "C-m" })
 		vim.system({
 			"tmux",
 			"display-popup",
@@ -13,7 +13,7 @@ function M.run_in_popup(cmd)
 			"-T",
 			"Shell",
 			"-E",
-			"tmux attach -t popup",
+			"tmux-popup",
 		})
 	end)
 end

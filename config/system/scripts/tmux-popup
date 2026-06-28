@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+socket="popup"
 session="popup"
 detach=0
+
+tmux_popup() {
+	env -u TMUX tmux -L "$socket" "$@"
+}
 
 while [ "$#" -gt 0 ]; do
 	case "$1" in
@@ -21,15 +26,17 @@ while [ "$#" -gt 0 ]; do
 	esac
 done
 
-if ! tmux has -t "$session" 2>/dev/null; then
-	tmux new-session -d -s "$session" -c "$PWD"
-	tmux set-option -s -t "$session" key-table popup
-	tmux set-option -s -t "$session" status off
-	tmux set-option -s -t "$session" prefix None
+if ! tmux_popup has-session -t "$session" 2>/dev/null; then
+	tmux_popup new-session -d -s "$session" -c "$PWD"
 fi
+
+# The popup server loads the normal tmux config, so keep normal prefix/key behavior
+# and override only the keys that should close this popup client.
+tmux_popup bind-key t detach-client
+tmux_popup bind-key -n Escape detach-client
 
 if [ "$detach" -eq 1 ]; then
 	exit 0
 fi
 
-exec tmux attach -t "$session" >/dev/null
+exec env -u TMUX tmux -L "$socket" attach-session -t "$session" >/dev/null
