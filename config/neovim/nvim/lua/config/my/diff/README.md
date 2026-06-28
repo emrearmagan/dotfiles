@@ -1,5 +1,7 @@
 # My CodeDiff
 
+<img width="3791" height="1995" alt="CleanShot 2026-06-28 at 23 02 59@2x" src="https://github.com/user-attachments/assets/29df1c68-cdcc-4474-a33f-7a3adabcce64" />
+
 Custom extension for [codediff.nvim](https://github.com/esmuellert/codediff.nvim).
 
 Uses [atlas.nvim](https://github.com/emrearmagan/atlas.nvim) UI components to show comments and threads.
