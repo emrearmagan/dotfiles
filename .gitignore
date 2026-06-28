@@ -16,4 +16,5 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-.pi
+.pi/tasks
+.pi/subagents.json

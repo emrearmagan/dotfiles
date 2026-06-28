@@ -3,8 +3,12 @@
   "yoloMode": false,
   "permission": {
     "*": "allow",
-    "edit": "ask",
-    "external_directory": "ask",
+    "edit": "allow",
+    "external_directory": {
+      "*": "ask",
+      "~/.pi/agent/skills/*": "allow",
+      "~/.pi/agent/agents/*": "allow"
+    },
     "path": {
       "*": "allow",
       "~/.pi/": "allow",
@@ -22,7 +26,10 @@
       "find *": "allow",
       "rg *": "allow",
       "grep *": "allow",
+      "sed *": "allow",
+      "awk *": "allow",
       "pwd": "allow",
+      "echo *": "allow",
       "printf *": "allow",
       "type *": "allow",
       "file *": "allow",
@@ -46,7 +53,7 @@
       "git rebase*": "ask",
       "docker ps*": "allow",
       "rm -rf *": "deny",
-      "sudo *": "ask"
+      "sudo *": "deny"
     }
   }
 }

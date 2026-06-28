@@ -1,6 +1,6 @@
 ---
 description: Strict read-only reviewer for explicit code/diff/PR review requests. Finds real bugs with file:line evidence.
-model: openai-codex/gpt-5.3-codex
+model: openai-codex/gpt-5.4
 tools: read, grep, find, ls
 ---
 

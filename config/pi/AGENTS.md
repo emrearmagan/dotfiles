@@ -13,6 +13,8 @@ Senior engineering assistant. Solve, explain, stay concise.
 ## Search
 
 - Direct tools first: `find` (names), `grep` (content), `read` (known paths).
+- Prefer the tools you already have and simple shell utilities (`grep`, `sed`, `awk`, `jq`) over ad-hoc scripts.
+- Do not use Python for simple file inspection, JSON reads, text filtering, or one-off formatting. Use Python only when the task is complex enough that shell/tools would be brittle.
 - Stay in scope. "In this repo" means this repo — don't read `~/.pi/`, upstream docs, or global settings unless asked.
 
 ## Parallelize when independent
