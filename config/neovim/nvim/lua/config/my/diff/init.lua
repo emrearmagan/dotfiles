@@ -24,13 +24,13 @@ local providers = {
 	require("config.my.diff.provider.bitbucket"),
 }
 
-local comment_icon = ""
-local pending_icon = ""
-local resolved_icon = "󰄳"
+local box = require("atlas.ui.components.box")
+local icons = require("config.my.diff.ui.icons")
+local comments_ui = require("config.my.diff.ui.comments")
 
 local thread_popup = require("config.my.diff.ui.thread")
 local input_popup = require("config.my.diff.ui.input")
-local review_popup = require("config.my.diff.ui.review")
+local notes_ui = require("config.my.diff.ui.notes")
 
 ---@param opts { prompt: string, text: string|nil, on_submit: fun(body: string) }
 local function prompt_body(opts)
@@ -45,7 +45,7 @@ local function prompt_body(opts)
 end
 
 local ns = vim.api.nvim_create_namespace("diff_pr_comments")
-local note_ns = vim.api.nvim_create_namespace("diff_agent_notes_demo")
+local tree_ns = vim.api.nvim_create_namespace("diff_tree_review_markers")
 
 local function notify(level, msg)
 	vim.notify("[PR comments] " .. tostring(msg), level)
@@ -122,156 +122,232 @@ end
 -- Rendering
 --------------------------------------------------------------------------------
 
----@param value string
----@return integer
-local function display_width(value)
-	return vim.fn.strdisplaywidth(value)
-end
-
----@param value string
----@param width integer
----@return string
-local function truncate_display(value, width)
-	if display_width(value) <= width then
-		return value
-	end
-	if width <= 1 then
-		return ""
-	end
-	local suffix = "…"
-	local target = width - display_width(suffix)
-	local out = ""
-	for i = 0, vim.fn.strchars(value) - 1 do
-		local ch = vim.fn.strcharpart(value, i, 1)
-		if display_width(out .. ch) > target then
-			break
-		end
-		out = out .. ch
-	end
-	return out .. suffix
-end
-
----@param value string
----@param width integer
----@return string
-local function pad_right(value, width)
-	value = truncate_display(value, width)
-	return value .. string.rep(" ", math.max(0, width - display_width(value)))
-end
-
----@param text string
----@param width integer
----@return string[]
-local function wrap_text(text, width)
-	local lines = {}
-	local current = ""
-	for word in text:gmatch("%S+") do
-		local candidate = current == "" and word or (current .. " " .. word)
-		if display_width(candidate) > width and current ~= "" then
-			table.insert(lines, current)
-			current = word
-		else
-			current = candidate
-		end
-	end
-	if current ~= "" then
-		table.insert(lines, current)
-	end
-	return lines
-end
-
----@param bufnr integer
----@return integer
-local function note_box_width(bufnr)
-	local win = vim.api.nvim_get_current_buf() == bufnr and vim.api.nvim_get_current_win() or nil
-	if not win then
-		for _, candidate in ipairs(vim.fn.win_findbuf(bufnr)) do
-			if vim.api.nvim_win_is_valid(candidate) then
-				win = candidate
-				break
+---@return table<string, integer>
+local function comment_counts_by_file()
+	local counts = {}
+	for _, comment in ipairs(state.comments) do
+		if comment.state ~= "OUTDATED" and not comment.parent_id and comment.context then
+			local file_path = comment.context.file_path
+			if type(file_path) == "string" and file_path ~= "" then
+				counts[file_path] = (counts[file_path] or 0) + 1
 			end
 		end
 	end
-	local width = win and vim.api.nvim_win_get_width(win) or vim.o.columns
-	return math.max(32, width - 2)
+	return counts
 end
 
----@param title string
----@param body string
+---@param tabpage integer|nil
+local function render_tree(tabpage)
+	local ok, lifecycle = pcall(require, "codediff.ui.lifecycle")
+	if not ok then
+		return
+	end
+
+	tabpage = tabpage or vim.api.nvim_get_current_tabpage()
+	local session = lifecycle.get_session(tabpage)
+	local explorer = lifecycle.get_explorer(tabpage)
+	if not session or not explorer or not explorer.tree then
+		return
+	end
+	if not explorer.bufnr or not vim.api.nvim_buf_is_valid(explorer.bufnr) then
+		return
+	end
+
+	vim.api.nvim_buf_clear_namespace(explorer.bufnr, tree_ns, 0, -1)
+
+	local note_counts = notes_ui.counts_by_file(session)
+	local comment_counts = comment_counts_by_file()
+	local has_markers = false
+	for line = 1, vim.api.nvim_buf_line_count(explorer.bufnr) do
+		local node = explorer.tree:get_node(line)
+		local file_path = node and node.data and node.data.path
+		local has_note = file_path and note_counts[file_path]
+		local has_comment = file_path and comment_counts[file_path]
+		if has_note or has_comment then
+			has_markers = true
+			vim.api.nvim_buf_set_extmark(explorer.bufnr, tree_ns, line - 1, 0, {
+				sign_text = has_note and icons.note or icons.comment,
+				sign_hl_group = has_note and "DiagnosticHint" or "DiagnosticInfo",
+				priority = has_note and 1200 or 1100,
+			})
+		end
+	end
+
+	for _, win in ipairs(vim.fn.win_findbuf(explorer.bufnr)) do
+		if vim.api.nvim_win_is_valid(win) then
+			vim.wo[win].signcolumn = has_markers and "yes:1" or "auto"
+		end
+	end
+end
+
+---@param tabpage integer|nil
+local function attach_tree(tabpage)
+	local ok, lifecycle = pcall(require, "codediff.ui.lifecycle")
+	if not ok then
+		return
+	end
+
+	tabpage = tabpage or vim.api.nvim_get_current_tabpage()
+	local explorer = lifecycle.get_explorer(tabpage)
+	if not explorer or not explorer.tree then
+		return
+	end
+	if explorer._diff_review_markers_tree_attached then
+		render_tree(tabpage)
+		return
+	end
+
+	local tree_render = explorer.tree.render
+	if type(tree_render) ~= "function" then
+		return
+	end
+
+	explorer._diff_review_markers_tree_attached = true
+	explorer.tree.render = function(tree, ...)
+		local result = tree_render(tree, ...)
+		vim.schedule(function()
+			render_tree(tabpage)
+		end)
+		return result
+	end
+
+	render_tree(tabpage)
+end
+
+---@param a DiffComment
+---@param b DiffComment
+---@return boolean
+local function comment_sort(a, b)
+	return tostring(a.created_at or a.id) < tostring(b.created_at or b.id)
+end
+
+---@param file_path string
+---@param side "LEFT"|"RIGHT"
+---@return table<integer, DiffComment[]>
+local function comment_threads_by_line(file_path, side)
+	local roots_by_line = {}
+	local replies_by_parent = {}
+	for _, comment in ipairs(state.comments) do
+		if comment.parent_id then
+			replies_by_parent[comment.parent_id] = replies_by_parent[comment.parent_id] or {}
+			table.insert(replies_by_parent[comment.parent_id], comment)
+		elseif
+			comment.state ~= "OUTDATED"
+			and comment.context
+			and comment.context.file_path == file_path
+			and comment.context.side == side
+		then
+			local line = comment.context.end_line
+			roots_by_line[line] = roots_by_line[line] or {}
+			table.insert(roots_by_line[line], comment)
+		end
+	end
+
+	local function append_thread(out, comment)
+		table.insert(out, comment)
+		local replies = replies_by_parent[comment.id] or {}
+		table.sort(replies, comment_sort)
+		for _, reply in ipairs(replies) do
+			append_thread(out, reply)
+		end
+	end
+
+	local threads_by_line = {}
+	for line, roots in pairs(roots_by_line) do
+		table.sort(roots, comment_sort)
+		threads_by_line[line] = {}
+		for _, root in ipairs(roots) do
+			append_thread(threads_by_line[line], root)
+		end
+	end
+	return threads_by_line
+end
+
+---@param bufnr integer
+---@return integer
+local function inline_width(bufnr)
+	local width = vim.o.columns
+	for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
+		if vim.api.nvim_win_is_valid(win) then
+			width = vim.api.nvim_win_get_width(win)
+			break
+		end
+	end
+	return math.max(36, math.min(100, width - 4))
+end
+
+---@param lines string[]
+---@param spans table[]
+---@return table[]
+local function to_virt_lines(lines, spans)
+	local by_line = {}
+	for _, span in ipairs(spans or {}) do
+		if span.start_col and span.end_col and span.hl_group then
+			local line = span.line + 1
+			by_line[line] = by_line[line] or {}
+			table.insert(by_line[line], span)
+		end
+	end
+
+	local virt_lines = {}
+	for i, line in ipairs(lines) do
+		local chunks = {}
+		local col = 0
+		local line_spans = by_line[i] or {}
+		table.sort(line_spans, function(a, b)
+			return a.start_col < b.start_col
+		end)
+
+		for _, span in ipairs(line_spans) do
+			if span.start_col > col then
+				table.insert(chunks, { line:sub(col + 1, span.start_col), "NormalFloat" })
+			end
+			table.insert(chunks, { line:sub(span.start_col + 1, span.end_col), span.hl_group })
+			col = span.end_col
+		end
+
+		if col < #line then
+			table.insert(chunks, { line:sub(col + 1), "NormalFloat" })
+		end
+		virt_lines[i] = chunks
+	end
+	return virt_lines
+end
+
+---@param comments DiffComment[]
 ---@param width integer
 ---@return table[]
-local function note_box_lines(title, body, width)
-	local content_width = width - 4
-	local border_width = width - 2
-	local title_text = truncate_display("─ " .. title .. " ", border_width)
-	local top = "╭" .. title_text .. string.rep("─", math.max(0, border_width - display_width(title_text))) .. "╮"
-	local bottom = "╰" .. string.rep("─", border_width) .. "╯"
-	local lines = {
-		{ { top, "FloatBorder" } },
-	}
-	for _, wrapped in ipairs(wrap_text(body, content_width)) do
-		table.insert(lines, {
-			{ "│ ", "FloatBorder" },
-			{ pad_right(wrapped, content_width), "NormalFloat" },
-			{ " │", "FloatBorder" },
-		})
-	end
-	if #lines == 1 then
-		table.insert(lines, { { "│ " .. pad_right("", content_width) .. " │", "FloatBorder" } })
-	end
-	table.insert(lines, { { bottom, "FloatBorder" } })
-	return lines
-end
-
----@param file_path string
----@param side "LEFT"|"RIGHT"
----@param line_count integer
----@return integer
-local function demo_note_line(file_path, side, line_count)
-	local seed = side == "RIGHT" and 97 or 31
-	for i = 1, #file_path do
-		seed = (seed + file_path:byte(i) * i) % 104729
-	end
-	return (seed % math.max(1, line_count)) + 1
-end
-
----@param bufnr integer
----@param file_path string
----@param side "LEFT"|"RIGHT"
-local function render_demo_note(bufnr, file_path, side)
-	if vim.g.my_diff_demo_agent_notes == false or vim.g.my_diff_demo_agent_notes == 0 then
-		return
-	end
-	-- Temporary prototype: show one local Pi note per file in the modified/new buffer.
-	-- In inline layout this is the single visible diff buffer.
-	if side ~= "RIGHT" then
-		return
-	end
-	local line_count = vim.api.nvim_buf_line_count(bufnr)
-	local line = demo_note_line(file_path, side, line_count)
-	vim.api.nvim_buf_set_extmark(bufnr, note_ns, line - 1, 0, {
-		virt_lines = note_box_lines(
-			("Pi note - %s R%d"):format(file_path, line),
-			"Design is like a fart. If you have to force it, it’s probably shit.",
-			note_box_width(bufnr)
-		),
-		virt_lines_above = true,
-		virt_lines_leftcol = true,
-		priority = 1200,
+local function inline_thread_lines(comments, width)
+	local lines, spans = comments_ui.render(comments, {
+		width = math.max(20, width - 4),
+		footer_items = {},
 	})
+	local rendered = box.render({ { lines = lines, spans = spans } }, {
+		width = width,
+		padding_x = 0,
+		border_hl = "FloatBorder",
+	})
+	return to_virt_lines(rendered.lines, rendered.highlights)
 end
 
 ---@param bufnr integer
 ---@param file_path string
 ---@param side "LEFT"|"RIGHT"
-local function render(bufnr, file_path, side)
+---@param session DiffCommentsSession
+local function render(bufnr, file_path, side, session)
 	if not vim.api.nvim_buf_is_valid(bufnr) then
 		return
 	end
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-	vim.api.nvim_buf_clear_namespace(bufnr, note_ns, 0, -1)
 
 	local pending_lines, normal_lines, resolved_lines = {}, {}, {}
+	local note_lines = {}
+	if side == "RIGHT" then
+		for _, line in ipairs(notes_ui.note_lines(session, file_path)) do
+			note_lines[line] = true
+		end
+	end
+	local threads_by_line = comment_threads_by_line(file_path, side)
 	for _, c in ipairs(state.comments) do
 		if
 			c.state ~= "OUTDATED"
@@ -291,7 +367,10 @@ local function render(bufnr, file_path, side)
 		end
 	end
 
-	local has_any = next(normal_lines) ~= nil or next(pending_lines) ~= nil or next(resolved_lines) ~= nil
+	local has_any = next(normal_lines) ~= nil
+		or next(pending_lines) ~= nil
+		or next(resolved_lines) ~= nil
+		or next(note_lines) ~= nil
 	for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
 		if vim.api.nvim_win_is_valid(win) then
 			vim.wo[win].signcolumn = has_any and "yes:1" or "auto"
@@ -299,10 +378,19 @@ local function render(bufnr, file_path, side)
 	end
 
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
+	for line in pairs(note_lines) do
+		if line >= 1 and line <= line_count then
+			vim.api.nvim_buf_set_extmark(bufnr, ns, line - 1, 0, {
+				sign_text = icons.note,
+				sign_hl_group = "DiagnosticInfo",
+				priority = 998,
+			})
+		end
+	end
 	for line in pairs(resolved_lines) do
 		if line >= 1 and line <= line_count and not normal_lines[line] and not pending_lines[line] then
 			vim.api.nvim_buf_set_extmark(bufnr, ns, line - 1, 0, {
-				sign_text = resolved_icon,
+				sign_text = icons.resolved,
 				sign_hl_group = "DiagnosticOk",
 				priority = 999,
 			})
@@ -311,7 +399,7 @@ local function render(bufnr, file_path, side)
 	for line in pairs(normal_lines) do
 		if line >= 1 and line <= line_count then
 			vim.api.nvim_buf_set_extmark(bufnr, ns, line - 1, 0, {
-				sign_text = comment_icon,
+				sign_text = icons.comment,
 				sign_hl_group = "DiagnosticInfo",
 				priority = 1000,
 			})
@@ -320,14 +408,26 @@ local function render(bufnr, file_path, side)
 	for line in pairs(pending_lines) do
 		if line >= 1 and line <= line_count then
 			vim.api.nvim_buf_set_extmark(bufnr, ns, line - 1, 0, {
-				sign_text = pending_icon,
+				sign_text = icons.pending,
 				sign_hl_group = "DiagnosticWarn",
 				priority = 1001,
 			})
 		end
 	end
 
-	render_demo_note(bufnr, file_path, side)
+	local width = inline_width(bufnr)
+	for line, thread in pairs(threads_by_line) do
+		if line >= 1 and line <= line_count then
+			vim.api.nvim_buf_set_extmark(bufnr, ns, line - 1, 0, {
+				virt_lines = inline_thread_lines(thread, width),
+				virt_lines_above = false,
+				virt_lines_leftcol = true,
+				priority = 1100,
+			})
+		end
+	end
+
+	notes_ui.render(bufnr, file_path, side, session)
 end
 
 ---@param tabpage integer|nil
@@ -336,8 +436,9 @@ local function show(tabpage)
 	if not file_path or not session then
 		return
 	end
-	render(session.original_bufnr, file_path, "LEFT")
-	render(session.modified_bufnr, file_path, "RIGHT")
+	render(session.original_bufnr, file_path, "LEFT", session)
+	render(session.modified_bufnr, file_path, "RIGHT", session)
+	attach_tree(tabpage)
 end
 
 --------------------------------------------------------------------------------
@@ -349,12 +450,17 @@ end
 local function load(tabpage, opts)
 	opts = opts or {}
 	local session = current_session(tabpage)
+	if not session then
+		return
+	end
 	local provider = provider_for(session)
-	if not provider or not session then
+	if not provider then
+		show(tabpage)
 		return
 	end
 	local key = session_key(session, provider.name)
 	if not key then
+		show(tabpage)
 		return
 	end
 	if not opts.force and state.session_key == key then
@@ -682,20 +788,21 @@ local actions = {
 				notify(vim.log.levels.INFO, "No pending review")
 				return
 			end
-			---@param id string|integer
+			---@param comment DiffComment
 			---@return DiffComment|nil
-			local function find_comment(id)
+			local function find_comment(comment)
 				for _, c in ipairs(state.comments) do
-					if tostring(c.id) == tostring(id) then
+					if tostring(c.id) == tostring(comment.id) then
 						return c
 					end
 				end
 			end
 
-			review_popup.open(comments, {
+			thread_popup.open(comments, {
 				title = (" Pending review (%d) "):format(#comments),
-				on_reply = function(id, close)
-					local parent = find_comment(id)
+				show_location = true,
+				on_reply = function(comment, close)
+					local parent = find_comment(comment)
 					if not parent then
 						return
 					end
@@ -721,8 +828,8 @@ local actions = {
 						end,
 					})
 				end,
-				on_edit = function(id, close)
-					local comment = find_comment(id)
+				on_edit = function(selected, close)
+					local comment = find_comment(selected)
 					if not comment then
 						return
 					end
@@ -751,8 +858,8 @@ local actions = {
 						end,
 					})
 				end,
-				on_delete = function(id, close)
-					local comment = find_comment(id)
+				on_delete = function(selected, close)
+					local comment = find_comment(selected)
 					if not comment then
 						return
 					end
@@ -771,8 +878,8 @@ local actions = {
 						end)
 					end)
 				end,
-				on_resolve = function(id, close)
-					local comment = find_comment(id)
+				on_resolve = function(selected, close)
+					local comment = find_comment(selected)
 					if not comment then
 						return
 					end
@@ -855,6 +962,53 @@ local actions = {
 		vim.api.nvim_win_set_cursor(0, { target, 0 })
 	end,
 
+	jump_note = function(direction)
+		local file_path, session = session_file_path()
+		if not file_path or not session then
+			return
+		end
+		local lines = notes_ui.note_lines(session, file_path)
+		if #lines == 0 then
+			notify(vim.log.levels.INFO, "No notes in this file")
+			return
+		end
+
+		local win = session.modified_win
+		local current_line = vim.fn.line(".")
+		if win and vim.api.nvim_win_is_valid(win) then
+			current_line = vim.api.nvim_win_get_cursor(win)[1]
+		end
+
+		local target
+		if direction > 0 then
+			for _, line in ipairs(lines) do
+				if line > current_line then
+					target = line
+					break
+				end
+			end
+			target = target or lines[1]
+		else
+			for i = #lines, 1, -1 do
+				if lines[i] < current_line then
+					target = lines[i]
+					break
+				end
+			end
+			target = target or lines[#lines]
+		end
+
+		if not session.modified_bufnr or not vim.api.nvim_buf_is_valid(session.modified_bufnr) then
+			return
+		end
+		local line_count = vim.api.nvim_buf_line_count(session.modified_bufnr)
+		target = math.max(1, math.min(target, line_count))
+		if win and vim.api.nvim_win_is_valid(win) then
+			vim.api.nvim_set_current_win(win)
+		end
+		vim.api.nvim_win_set_cursor(0, { target, 0 })
+	end,
+
 	open_pr_url = function()
 		if state.provider and state.pr and state.provider.pr_url then
 			local url = state.provider.pr_url(state.pr)
@@ -917,5 +1071,15 @@ vim.api.nvim_create_autocmd("WinEnter", {
 	group = group,
 	callback = function()
 		vim.schedule(show)
+	end,
+})
+
+vim.api.nvim_create_autocmd("WinResized", {
+	group = group,
+	callback = function()
+		local tabpage = vim.api.nvim_get_current_tabpage()
+		vim.schedule(function()
+			show(tabpage)
+		end)
 	end,
 })

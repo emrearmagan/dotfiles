@@ -1,5 +1,7 @@
 -- Thanks to this amazing guy: https://github.com/fredrikaverpil/dotfiles/blob/main/nvim-fredrik/plugin/github_comments.lua
 
+local git = require("config.my.diff.git")
+
 ---@class GithubPR : DiffCommentsPR
 ---@field pending_review_node_id string|nil  cached pending-review node id; draft comments must attach to a Pending Review (GitHub allows one per user/PR)
 
@@ -161,8 +163,8 @@ function M.can_handle(session)
 	if not session or not session.git_root or session.git_root == "" then
 		return false
 	end
-	local result = vim.system({ "git", "-C", session.git_root, "remote", "get-url", "origin" }, { text = true }):wait()
-	return result and result.code == 0 and trim(result.stdout):find("github", 1, false) ~= nil or false
+	local url = git.remote_url(session.git_root)
+	return url and url:find("github", 1, false) ~= nil or false
 end
 
 ---@param session DiffCommentsSession
@@ -187,14 +189,20 @@ function M.find_pr(session, on_done)
 				end
 
 				vim.system({
-					"gh", "api",
+					"gh",
+					"api",
 					("repos/%s/%s/commits/%s/pulls"):format(owner, repo, sha),
-					"-H", "Accept: application/vnd.github+json",
+					"-H",
+					"Accept: application/vnd.github+json",
 				}, { text = true, cwd = session.git_root }, function(result)
 					vim.schedule(function()
 						local ok, pulls = false, nil
 						if result and result.code == 0 then
-							ok, pulls = pcall(vim.json.decode, result.stdout or "", { luanil = { object = true, array = true } })
+							ok, pulls = pcall(
+								vim.json.decode,
+								result.stdout or "",
+								{ luanil = { object = true, array = true } }
+							)
 						end
 						if not ok or type(pulls) ~= "table" or #pulls == 0 then
 							on_done(nil, "No GitHub PR found for commit " .. sha:sub(1, 7))
@@ -308,7 +316,7 @@ end
 ---@param pr GithubPR
 ---@param on_done fun(comments: table[]|nil, err: string|nil)
 function M.fetch_review_comments(pr, on_done)
-	local query = ([[
+	local query = [[
 query($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
@@ -330,7 +338,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
     }
   }
 }
-]])
+]]
 	graphql(query, { owner = pr.owner, repo = pr.repo, pr = tonumber(pr.number) }, function(data)
 		local gh_pr = data.repository and data.repository.pullRequest
 		if not gh_pr then
@@ -617,8 +625,7 @@ mutation($id: ID!, $body: String!) {
 		return
 	end
 
-	local endpoint = comment.context
-			and ("repos/%s/%s/pulls/comments/%s"):format(pr.owner, pr.repo, comment.id)
+	local endpoint = comment.context and ("repos/%s/%s/pulls/comments/%s"):format(pr.owner, pr.repo, comment.id)
 		or ("repos/%s/%s/issues/comments/%s"):format(pr.owner, pr.repo, comment.id)
 
 	local payload = vim.json.encode({ body = comment.body or "" })
@@ -642,8 +649,11 @@ mutation($id: ID!, $body: String!) {
 					on_done(nil, "Failed to edit comment: " .. table.concat(stderr_chunks, ""))
 					return
 				end
-				local ok, result =
-					pcall(vim.json.decode, table.concat(stdout_chunks, ""), { luanil = { object = true, array = true } })
+				local ok, result = pcall(
+					vim.json.decode,
+					table.concat(stdout_chunks, ""),
+					{ luanil = { object = true, array = true } }
+				)
 				if not ok or type(result) ~= "table" then
 					on_done(nil, "Failed to parse edit response")
 					return
@@ -678,23 +688,26 @@ function M.delete_comment(pr, comment, on_done)
 		return
 	end
 	local stderr_chunks = {}
-	vim.fn.jobstart(shell(("gh api repos/%s/%s/pulls/comments/%s --method DELETE"):format(pr.owner, pr.repo, comment.id)), {
-		stderr_buffered = true,
-		on_stderr = function(_, data)
-			if data then
-				table.insert(stderr_chunks, table.concat(data, "\n"))
-			end
-		end,
-		on_exit = function(_, exit_code)
-			vim.schedule(function()
-				if exit_code ~= 0 then
-					on_done(nil, "Failed to delete comment: " .. table.concat(stderr_chunks, ""))
-					return
+	vim.fn.jobstart(
+		shell(("gh api repos/%s/%s/pulls/comments/%s --method DELETE"):format(pr.owner, pr.repo, comment.id)),
+		{
+			stderr_buffered = true,
+			on_stderr = function(_, data)
+				if data then
+					table.insert(stderr_chunks, table.concat(data, "\n"))
 				end
-				on_done(true)
-			end)
-		end,
-	})
+			end,
+			on_exit = function(_, exit_code)
+				vim.schedule(function()
+					if exit_code ~= 0 then
+						on_done(nil, "Failed to delete comment: " .. table.concat(stderr_chunks, ""))
+						return
+					end
+					on_done(true)
+				end)
+			end,
+		}
+	)
 end
 
 ---@param pr DiffCommentsPR

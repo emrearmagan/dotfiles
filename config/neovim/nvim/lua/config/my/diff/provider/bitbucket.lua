@@ -1,5 +1,7 @@
 -- Uses atlas.nvim's Bitbucket API: https://github.com/emrearmagan/atlas.nvim
 
+local git = require("config.my.diff.git")
+
 ---@class BitbucketProvider : DiffCommentsProvider
 local M = {
 	name = "bitbucket",
@@ -45,11 +47,7 @@ local function parse_origin(root)
 	if type(root) ~= "string" or root == "" then
 		return nil
 	end
-	local result = vim.system({ "git", "-C", root, "remote", "get-url", "origin" }, { text = true }):wait()
-	if not result or result.code ~= 0 then
-		return nil
-	end
-	local url = trim(result.stdout)
+	local url = trim(git.remote_url(root))
 	if not url:find("bitbucket", 1, false) then
 		return nil
 	end

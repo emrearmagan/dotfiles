@@ -80,6 +80,7 @@ end
 ---@field refresh fun()
 ---@field view_review fun()
 ---@field jump fun(direction: 1|-1)
+---@field jump_note fun(direction: 1|-1)
 ---@field open_pr_url fun()
 
 ---@param buf integer
@@ -96,7 +97,7 @@ function M.setup(buf, actions)
 	local entries = {
 		{
 			mode = "n",
-			lhs = "<leader>gRc",
+			lhs = "<leader>Rc",
 			desc = "Add pending PR comment",
 			rhs = function()
 				actions.add_comment({ pending = true })
@@ -104,7 +105,7 @@ function M.setup(buf, actions)
 		},
 		{
 			mode = "v",
-			lhs = "<leader>gRc",
+			lhs = "<leader>Rc",
 			desc = "Add pending PR comment",
 			rhs = function()
 				actions.add_comment_range({ pending = true })
@@ -112,7 +113,7 @@ function M.setup(buf, actions)
 		},
 		{
 			mode = "n",
-			lhs = "<leader>gRC",
+			lhs = "<leader>RC",
 			desc = "Add PR comment",
 			rhs = function()
 				actions.add_comment({ pending = false })
@@ -120,7 +121,7 @@ function M.setup(buf, actions)
 		},
 		{
 			mode = "v",
-			lhs = "<leader>gRC",
+			lhs = "<leader>RC",
 			desc = "Add PR comment",
 			rhs = function()
 				actions.add_comment_range({ pending = false })
@@ -128,17 +129,17 @@ function M.setup(buf, actions)
 		},
 		{
 			mode = "n",
-			lhs = "<leader>gRt",
+			lhs = "<leader>Rt",
 			desc = "Add PR task",
 			rhs = function()
 				actions.add_comment({ pending = false, is_task = true })
 			end,
 		},
-		{ mode = "n", lhs = "<leader>gRv", desc = "View PR thread", rhs = actions.view_thread },
-		{ mode = "n", lhs = "<leader>gRV", desc = "View pending review", rhs = actions.view_review },
+		{ mode = "n", lhs = "<leader>Rv", desc = "View PR thread", rhs = actions.view_thread },
+		{ mode = "n", lhs = "<leader>RV", desc = "View pending review", rhs = actions.view_review },
 		{
 			mode = "n",
-			lhs = "<leader>gRa",
+			lhs = "<leader>Ra",
 			desc = "Approve PR",
 			rhs = function()
 				actions.submit_review("APPROVE")
@@ -146,13 +147,13 @@ function M.setup(buf, actions)
 		},
 		{
 			mode = "n",
-			lhs = "<leader>gRd",
+			lhs = "<leader>Rd",
 			desc = "Request PR changes",
 			rhs = function()
 				actions.submit_review("REQUEST_CHANGES")
 			end,
 		},
-		{ mode = "n", lhs = "<leader>gRr", desc = "Refresh PR comments", rhs = actions.refresh },
+		{ mode = "n", lhs = "<leader>Rr", desc = "Refresh PR comments", rhs = actions.refresh },
 		{
 			mode = "n",
 			lhs = "]c",
@@ -169,14 +170,30 @@ function M.setup(buf, actions)
 				actions.jump(-1)
 			end,
 		},
-		{ mode = "n", lhs = "<leader>gRx", desc = "Open PR", rhs = actions.open_pr_url },
+		{
+			mode = "n",
+			lhs = "]n",
+			desc = "Next branch note",
+			rhs = function()
+				actions.jump_note(1)
+			end,
+		},
+		{
+			mode = "n",
+			lhs = "[n",
+			desc = "Previous branch note",
+			rhs = function()
+				actions.jump_note(-1)
+			end,
+		},
+		{ mode = "n", lhs = "<leader>Rx", desc = "Open PR", rhs = actions.open_pr_url },
 	}
 
 	local opts = { buffer = buf, silent = true, nowait = true }
 	for _, e in ipairs(entries) do
 		vim.keymap.set(e.mode, e.lhs, e.rhs, vim.tbl_extend("force", opts, { desc = e.desc }))
 	end
-	vim.keymap.set("n", "<leader>gR?", function()
+	vim.keymap.set("n", "<leader>R?", function()
 		show_help(entries)
 	end, vim.tbl_extend("force", opts, { desc = "Show PR diff keymaps" }))
 end
