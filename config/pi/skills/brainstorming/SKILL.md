@@ -10,10 +10,10 @@ Turn a fuzzy idea into an approved spec through dialogue. **Do not write code or
 ## Flow
 
 1. **Scout in parallel.** Identify gaps (code, docs, APIs, constraints). Dispatch independent `explore` agents in one turn. Skip when the question is self-contained or a direct `read`/`grep` answers it.
-2. **Ask** what scouting couldn't answer — one `ask_user_question` per call, multiple-choice when possible.
+2. **Ask** what scouting couldn't answer — one focused question at a time. Use `ask_user_question` when choices are concrete.
 3. **Decompose** if the request spans subsystems → separate specs.
 4. **Propose 2–3 approaches** with tradeoffs and your pick.
-5. **Present the design** section by section (architecture, components, data flow, errors, testing), approval per section.
+5. **Present the design** clearly. For large designs, review section by section; for small designs, one concise spec is enough.
 6. **Write the spec** at a path the user agrees on.
 7. **Self-review** for placeholders, contradictions, scope drift. Fix inline.
 8. **Wait for explicit approval**, then hand off to `worker`.

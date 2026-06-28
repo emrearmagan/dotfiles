@@ -5,73 +5,62 @@ description: 'Implement code from a spec or requirement — plan, small steps, e
 
 # Worker
 
-Three gated phases: **PLAN → IMPLEMENT → VERIFY**. Don't pass a gate without meeting it.
+Implement requested changes with a tight loop: **plan → implement → verify → report**.
 
 ## Principles
 
 - **Read before edit.** Understand existing code before changing it.
 - **Targeted edits, not rewrites.** Smallest change that achieves the goal.
 - **Diagnose, don't guess.** If something fails, investigate (see `/skill:systematic-debugging`).
+- **Do not commit unless asked.** Only commit when the user explicitly asks.
 - **Report what changed.** End with a clear summary of files modified and verification done.
 
-## Phase 1: Plan Before Code
+## 1. Plan
 
-**Gate:** A plan exists in the `pi-tasks` tool before touching any file.
+For multi-step work, create `pi-tasks` entries before editing. Skip formal task planning for one small, obvious change.
 
-For anything beyond a one-line change, build the plan as `pi-tasks` entries — not as inline markdown. Tasks are queryable, persist across the session, and the model can mark them as it progresses.
+Each task should include:
 
-Workflow:
+- exact file path(s)
+- intended change
+- verification command or concrete manual check
 
-1. Define the goal (one sentence) and approach (2–3 sentences) in your first response.
-2. Use `pi-tasks` to add each task. Each task has:
-   - A short description (e.g. "Add `validateEmail` to `auth/utils.ts`").
-   - A verify command + expected output.
-3. Self-review the task list before starting:
-   - Does every spec requirement map to a task?
-   - Any placeholder phrases ("TBD", "add validation here")? Fix them.
-   - Do types / function names match across tasks?
+Keep tasks small and update them as reality changes.
 
-Rules for tasks:
+## 2. Implement
 
-- **Bite-sized**, 2–5 minutes each. "Add the function" is one task. "Add error handling" is not — be specific.
-- **No placeholders.** If a task touches code, you must know exactly what change. If it runs a command, you must know the exact command and expected output.
-- **Exact file paths.** Always.
-- **One responsibility per file.** Don't bundle unrelated changes.
-- **Frequent commits.** End tasks at sensible commit boundaries.
+Work one task at a time.
 
-## Phase 2: Implement One Task at a Time
+- Make the smallest change that satisfies the task.
+- Do not bundle unrelated cleanup.
+- If the plan becomes wrong, update the task before continuing.
 
-**Gate:** Each task's verify command passes before the next task starts.
+## 3. Verify
 
-- Implement the task exactly as planned.
-- Run the verify command. Confirm output.
-- If it fails, do not stack a second fix. Revert, understand why, fix once.
-- No "while I'm here" cleanup or refactoring outside the plan.
-- Mark the task done in `pi-tasks` before moving on.
+Use the tightest useful feedback loop:
 
-If the plan is wrong, update the task list, then continue. Don't drift silently.
+- focused test/check for the changed code
+- one command that reproduces the bug or validates the feature
+- manual check only when automation is not practical
 
-## Phase 3: Verify Before Claiming Done
+Run the relevant check before claiming success. Broader checks are for broad or risky changes.
 
-**Iron Law:** if you haven't run the verification command **in this message**, you cannot claim it passes.
+If a check fails, do not stack guesses. Diagnose the failure first.
 
-See AGENTS.md's Validation section for the always-on rule. For the full claim→evidence table, red flags, and rationalization catchers, read `references/verification.md`.
+Iron law: if you have not run the verification command in this message, do not claim it passes.
 
-## Final Report
+For the full claim→evidence table, see `references/verification.md`.
 
-When done, end with this structure:
+## 4. Report
+
+End with:
 
 ```markdown
 ## Changes Made
-
-- `path/to/file.ts` — what changed and why
-- `path/to/other.ts` — what changed and why
+- `path/to/file` — what changed and why
 
 ## Verification
-
-- Ran `npm test` — 34/34 passing.
-- Ran `npm run build` — exit 0.
-- Reproduced original bug, now fixed.
+- Ran `<command>` — result
 ```
 
-No "should work" or "looks right" — only evidence-backed claims.
+No "should work". Only evidence-backed claims.

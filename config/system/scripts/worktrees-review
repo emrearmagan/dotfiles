@@ -99,19 +99,8 @@ else
 fi
 
 SESSION="reviews"
-PROMPT='Review this branch versus its base branch (fallback: main).
-
-1. Check whether the branch has any changes. If none, stop and report: No changes on this branch.
-
-2. If there are changes, dispatch the code-review subagent in BACKGROUND mode to do the deep review of the diff (findings by severity + recommended fixes).
-
-3. While the subagent runs, you (the main agent) analyze the diff yourself and immediately return:
-   - A concise summary of what changed (files, intent, scope).
-   - Why the change was made if discernible from commit messages / PR title.
-
-4. When the subagent finishes, append its findings to your response: findings grouped by severity (Critical, Important, Minor) and recommended fixes.
-
-Output structure: summary first (yours), then the subagent review (when ready).'
+MODEL="openai-codex/gpt-5.3-codex"
+PROMPT='Load /skill:review and review this branch versus its base branch (fallback: main).'
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
@@ -133,7 +122,7 @@ if [ -z "$WINDOW_TARGET" ]; then
 fi
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
-COMMAND="pi '$ESCAPED_PROMPT'"
+COMMAND="pi --model '$MODEL' '$ESCAPED_PROMPT'"
 
 while IFS= read -r pane; do
 	tmux send-keys -t "$pane" "$COMMAND" Enter

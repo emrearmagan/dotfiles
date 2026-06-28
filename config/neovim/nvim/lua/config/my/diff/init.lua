@@ -45,6 +45,7 @@ local function prompt_body(opts)
 end
 
 local ns = vim.api.nvim_create_namespace("diff_pr_comments")
+local note_ns = vim.api.nvim_create_namespace("diff_agent_notes_demo")
 
 local function notify(level, msg)
 	vim.notify("[PR comments] " .. tostring(msg), level)
@@ -121,6 +122,145 @@ end
 -- Rendering
 --------------------------------------------------------------------------------
 
+---@param value string
+---@return integer
+local function display_width(value)
+	return vim.fn.strdisplaywidth(value)
+end
+
+---@param value string
+---@param width integer
+---@return string
+local function truncate_display(value, width)
+	if display_width(value) <= width then
+		return value
+	end
+	if width <= 1 then
+		return ""
+	end
+	local suffix = "…"
+	local target = width - display_width(suffix)
+	local out = ""
+	for i = 0, vim.fn.strchars(value) - 1 do
+		local ch = vim.fn.strcharpart(value, i, 1)
+		if display_width(out .. ch) > target then
+			break
+		end
+		out = out .. ch
+	end
+	return out .. suffix
+end
+
+---@param value string
+---@param width integer
+---@return string
+local function pad_right(value, width)
+	value = truncate_display(value, width)
+	return value .. string.rep(" ", math.max(0, width - display_width(value)))
+end
+
+---@param text string
+---@param width integer
+---@return string[]
+local function wrap_text(text, width)
+	local lines = {}
+	local current = ""
+	for word in text:gmatch("%S+") do
+		local candidate = current == "" and word or (current .. " " .. word)
+		if display_width(candidate) > width and current ~= "" then
+			table.insert(lines, current)
+			current = word
+		else
+			current = candidate
+		end
+	end
+	if current ~= "" then
+		table.insert(lines, current)
+	end
+	return lines
+end
+
+---@param bufnr integer
+---@return integer
+local function note_box_width(bufnr)
+	local win = vim.api.nvim_get_current_buf() == bufnr and vim.api.nvim_get_current_win() or nil
+	if not win then
+		for _, candidate in ipairs(vim.fn.win_findbuf(bufnr)) do
+			if vim.api.nvim_win_is_valid(candidate) then
+				win = candidate
+				break
+			end
+		end
+	end
+	local width = win and vim.api.nvim_win_get_width(win) or vim.o.columns
+	return math.max(32, width - 2)
+end
+
+---@param title string
+---@param body string
+---@param width integer
+---@return table[]
+local function note_box_lines(title, body, width)
+	local content_width = width - 4
+	local border_width = width - 2
+	local title_text = truncate_display("─ " .. title .. " ", border_width)
+	local top = "╭" .. title_text .. string.rep("─", math.max(0, border_width - display_width(title_text))) .. "╮"
+	local bottom = "╰" .. string.rep("─", border_width) .. "╯"
+	local lines = {
+		{ { top, "FloatBorder" } },
+	}
+	for _, wrapped in ipairs(wrap_text(body, content_width)) do
+		table.insert(lines, {
+			{ "│ ", "FloatBorder" },
+			{ pad_right(wrapped, content_width), "NormalFloat" },
+			{ " │", "FloatBorder" },
+		})
+	end
+	if #lines == 1 then
+		table.insert(lines, { { "│ " .. pad_right("", content_width) .. " │", "FloatBorder" } })
+	end
+	table.insert(lines, { { bottom, "FloatBorder" } })
+	return lines
+end
+
+---@param file_path string
+---@param side "LEFT"|"RIGHT"
+---@param line_count integer
+---@return integer
+local function demo_note_line(file_path, side, line_count)
+	local seed = side == "RIGHT" and 97 or 31
+	for i = 1, #file_path do
+		seed = (seed + file_path:byte(i) * i) % 104729
+	end
+	return (seed % math.max(1, line_count)) + 1
+end
+
+---@param bufnr integer
+---@param file_path string
+---@param side "LEFT"|"RIGHT"
+local function render_demo_note(bufnr, file_path, side)
+	if vim.g.my_diff_demo_agent_notes == false or vim.g.my_diff_demo_agent_notes == 0 then
+		return
+	end
+	-- Temporary prototype: show one local Pi note per file in the modified/new buffer.
+	-- In inline layout this is the single visible diff buffer.
+	if side ~= "RIGHT" then
+		return
+	end
+	local line_count = vim.api.nvim_buf_line_count(bufnr)
+	local line = demo_note_line(file_path, side, line_count)
+	vim.api.nvim_buf_set_extmark(bufnr, note_ns, line - 1, 0, {
+		virt_lines = note_box_lines(
+			("Pi note - %s R%d"):format(file_path, line),
+			"Design is like a fart. If you have to force it, it’s probably shit.",
+			note_box_width(bufnr)
+		),
+		virt_lines_above = true,
+		virt_lines_leftcol = true,
+		priority = 1200,
+	})
+end
+
 ---@param bufnr integer
 ---@param file_path string
 ---@param side "LEFT"|"RIGHT"
@@ -129,6 +269,7 @@ local function render(bufnr, file_path, side)
 		return
 	end
 	vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+	vim.api.nvim_buf_clear_namespace(bufnr, note_ns, 0, -1)
 
 	local pending_lines, normal_lines, resolved_lines = {}, {}, {}
 	for _, c in ipairs(state.comments) do
@@ -185,6 +326,8 @@ local function render(bufnr, file_path, side)
 			})
 		end
 	end
+
+	render_demo_note(bufnr, file_path, side)
 end
 
 ---@param tabpage integer|nil
@@ -735,12 +878,30 @@ vim.api.nvim_create_autocmd("User", {
 	pattern = "CodeDiffFileSelect",
 	callback = function(event)
 		local tabpage = event.data and event.data.tabpage or vim.api.nvim_get_current_tabpage()
-		local session = current_session(tabpage)
-		if session then
-			keymaps.setup(session.original_bufnr, actions)
-			keymaps.setup(session.modified_bufnr, actions)
-		end
-		load(tabpage)
+		vim.schedule(function()
+			local session = current_session(tabpage)
+			if session then
+				keymaps.setup(session.original_bufnr, actions)
+				keymaps.setup(session.modified_bufnr, actions)
+			end
+			load(tabpage)
+		end)
+	end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+	group = group,
+	pattern = "CodeDiffOpen",
+	callback = function(event)
+		local tabpage = event.data and event.data.tabpage or vim.api.nvim_get_current_tabpage()
+		vim.schedule(function()
+			local session = current_session(tabpage)
+			if session then
+				keymaps.setup(session.original_bufnr, actions)
+				keymaps.setup(session.modified_bufnr, actions)
+			end
+			show(tabpage)
+		end)
 	end,
 })
 

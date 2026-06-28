@@ -27,28 +27,14 @@ Any technical issue: test failures, production bugs, unexpected behavior, perfor
 ## Phase 1: Root Cause Investigation
 
 1. **Read errors carefully.** Don't skip stack traces. Line numbers, file paths, error codes often contain the exact answer.
-2. **Reproduce consistently.** Exact steps, every time. If not reproducible → gather more data, don't guess.
+2. **Reproduce consistently.** Build the tightest red/green feedback loop you can: focused test, one command, small script, or exact manual steps. If not reproducible → gather more data, don't guess.
 3. **Check recent changes.** Git diff, deploys, dep updates, config changes.
 4. **In multi-component systems, instrument every boundary** _before_ proposing fixes:
    - Log what data enters each component, what exits.
    - Verify env/config propagation across layers.
    - Run once to see _where_ it breaks, then investigate that layer.
-   - **Independent layers → parallel subagents.** When the boundaries don't depend on each other (e.g. terminal emulator config vs multiplexer config vs SSH config), dispatch one `explore` per layer in a single turn. Reading them sequentially wastes turns.
-
-   Example (CI → build → signing → app):
-
-   ```bash
-   # Layer 1: workflow secrets present?
-   echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
-   # Layer 2: env propagated to build?
-   env | grep IDENTITY
-   # Layer 3: keychain state?
-   security find-identity -v
-   # Layer 4: actual signing
-   codesign --sign "$IDENTITY" --verbose=4 "$APP"
-   ```
-
 5. **Trace data backward.** When the error is deep in the stack: where does the bad value originate? What called this with it? Keep tracing up. Fix at the source, not the symptom.
+6. **Minimize the repro** before hypothesizing. Remove inputs, steps, config, and callers until only load-bearing pieces remain.
 
 ## Phase 2: Pattern Analysis
 
@@ -60,37 +46,22 @@ Any technical issue: test failures, production bugs, unexpected behavior, perfor
 ## Phase 3: Hypothesis & Testing
 
 - **State one hypothesis clearly:** "I think X is the root cause because Y." Write it down.
-- **Test minimally:** smallest possible change, one variable at a time.
+- **Test minimally:** smallest possible probe, one variable at a time.
 - **If it didn't work, form a NEW hypothesis.** Do not stack fixes.
 - **If you don't know, say so.** Don't pretend. Research, ask, gather more data.
 
-## Phase 4: Implementation
+## Output
 
-1. **Write a failing test first.** Smallest reproduction possible. Automated if framework exists, one-off script if not.
-2. **Implement one fix.** No "while I'm here" cleanup. No bundled refactoring.
-3. **Verify:** test passes, no other tests broken, original issue actually resolved.
-4. **If the fix doesn't work — STOP.** Count attempts. If < 3: return to Phase 1 with new data. **If ≥ 3: question the architecture (next section).**
+Stop at diagnosis unless the user explicitly asked for a fix.
 
-## When 3+ Fixes Have Failed: Question Architecture
+Report:
 
-Pattern signal:
+- reproduction / feedback loop used
+- evidence gathered
+- root cause, or best current hypothesis
+- recommended next step
 
-- Each fix reveals a new shared-state / coupling problem in a different place.
-- Fixes require "massive refactoring" to implement.
-- Each fix creates new symptoms elsewhere.
-
-This is not a failed hypothesis — it's wrong architecture. Stop and discuss before attempting fix #4. Ask: is this pattern fundamentally sound, or are we sticking with it through inertia?
-
-## Common Bug Patterns
-
-| Pattern        | Cause           | Solution                        |
-| -------------- | --------------- | ------------------------------- |
-| Null/undefined | Missing checks  | Validate at boundary            |
-| Race condition | Concurrency     | Synchronization, transactions   |
-| Off-by-one     | Index errors    | Boundary testing                |
-| State mismatch | Stale data      | Cache invalidation, state sync  |
-| Type confusion | Dynamic typing  | Type checks, runtime validation |
-| Resource leak  | Missing cleanup | `defer`, `finally`, cleanup fns |
+If the user asks to implement the fix, use `/skill:worker`.
 
 ## Red Flags — STOP and Restart Phase 1
 
