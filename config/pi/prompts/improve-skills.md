@@ -78,7 +78,7 @@ Print one line: `done — <path> updated`.
 
 ## Hard rules
 
-Never write to `AGENTS.md`, `CLAUDE.md`, or any memory file.
+Never write to `AGENTS.md`, `CLAUDE.md`, or any memory file. If one is the culprit, report the needed change and wait for explicit approval.
 Never edit more than one skill per invocation.
 If two findings point to different skills, present both and let me pick — don't fan out.
 If the friction is a one-off (no pattern, single occurrence, no clear root cause), do nothing and say so.

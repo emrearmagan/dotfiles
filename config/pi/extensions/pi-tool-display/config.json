@@ -8,8 +8,8 @@
     "edit": true,
     "write": true
   },
-  "enableNativeUserMessageBox": true,
-  "readOutputMode": "hidden",
+  "enableNativeUserMessageBox": false,
+  "readOutputMode": "summary",
   "searchOutputMode": "count",
   "mcpOutputMode": "preview",
   "previewLines": 8,

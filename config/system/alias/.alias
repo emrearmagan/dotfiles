@@ -106,8 +106,8 @@ alias gca='git commit -a'
 alias gcam='git commit -a -m'
 
 # Diff / log
-alias gd='git diff'
-alias gdiff='git diff'
+alias gd='git add -N . && git diff'
+alias gdiff='git add -N . && git diff'
 alias gds='git diff --staged'
 alias gstaged='git diff --staged'
 alias glog="git log --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"

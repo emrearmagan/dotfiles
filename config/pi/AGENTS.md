@@ -39,7 +39,7 @@ pi cannot batch tool calls in one turn — serial reads waste real time. Use par
 | Agent         | When                                                                                                                                                                                                                    |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `explore`     | Finding unknown locations, auditing skills/agents/prompts, summarizing a single large file. Give it a **narrow, specific question** — it stops at 20 turns. Do NOT use for open-ended tracing or deep dependency walks. |
-| `researcher`  | Multi-source external research, trade-off comparisons.                                                                                                                                                                  |
+| `researcher`  | Multi-source external research and trade-off comparisons. Prefer dedicated source tools when available; use CLI/search fallbacks only when needed.                                      |
 | `code-review` | Explicit review of a diff/PR/branch or files. Strict read-only reviewer for bugs, security, maintainability.                                                                                                            |
 | `spec-review` | Review specs, tickets, issues, or PR plans for engineering readiness. Read-only, pastable output.                                                                                                                       |
 
