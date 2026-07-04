@@ -98,14 +98,26 @@ end
 -- Store
 --------------------------------------------------------------------------------
 
+---@param command string[]
+---@param branch string|nil
+---@return string[]
+local function with_branch(command, branch)
+	if type(branch) == "string" and branch ~= "" then
+		vim.list_extend(command, { "--branch", branch })
+	end
+	return command
+end
+
 ---@param session DiffCommentsSession
+---@param opts { branch: string|nil }|nil
 ---@return string|nil
-function M.path(session)
+function M.path(session, opts)
+	opts = opts or {}
 	local root = session and session.git_root
 	if type(root) ~= "string" or root == "" then
 		return nil
 	end
-	local result = vim.system({ "branch-notes", "path" }, { text = true, cwd = root }):wait()
+	local result = vim.system(with_branch({ "branch-notes", "path" }, opts.branch), { text = true, cwd = root }):wait()
 	if not result or result.code ~= 0 then
 		return nil
 	end
@@ -113,14 +125,17 @@ function M.path(session)
 end
 
 ---@param session DiffCommentsSession
+---@param opts { notify: boolean|nil, branch: string|nil }|nil
 ---@return table[]
-function M.load(session)
+function M.load(session, opts)
+	opts = opts or {}
 	local root = session and session.git_root
 	if type(root) ~= "string" or root == "" then
 		return {}
 	end
 
-	local result = vim.system({ "branch-notes", "list", "--json" }, { text = true, cwd = root }):wait()
+	local result =
+		vim.system(with_branch({ "branch-notes", "list", "--json" }, opts.branch), { text = true, cwd = root }):wait()
 	if not result or result.code ~= 0 then
 		return {}
 	end
@@ -130,15 +145,23 @@ function M.load(session)
 		vim.notify_once("[branch notes] Failed to parse branch-notes output", vim.log.levels.WARN)
 		return {}
 	end
+
+	if opts.notify then
+		local noun = #decoded == 1 and "note" or "notes"
+		local suffix = opts.branch and opts.branch ~= "" and (" for " .. opts.branch) or ""
+		vim.notify(("[branch notes] %d %s loaded%s"):format(#decoded, noun, suffix), vim.log.levels.INFO)
+	end
+
 	return decoded
 end
 
 ---@param session DiffCommentsSession
 ---@param file_path string
+---@param opts { branch: string|nil }|nil
 ---@return integer[]
-function M.note_lines(session, file_path)
+function M.note_lines(session, file_path, opts)
 	local seen, lines = {}, {}
-	for _, note in ipairs(M.load(session)) do
+	for _, note in ipairs(M.load(session, opts)) do
 		local line = tonumber(note.line)
 		if note.file_path == file_path and line and line > 0 and not seen[line] then
 			seen[line] = true
@@ -150,10 +173,11 @@ function M.note_lines(session, file_path)
 end
 
 ---@param session DiffCommentsSession
+---@param opts { branch: string|nil }|nil
 ---@return table<string, integer>
-function M.counts_by_file(session)
+function M.counts_by_file(session, opts)
 	local by_file = {}
-	for _, note in ipairs(M.load(session)) do
+	for _, note in ipairs(M.load(session, opts)) do
 		local file_path = note.file_path
 		if type(file_path) == "string" and file_path ~= "" then
 			by_file[file_path] = (by_file[file_path] or 0) + 1
@@ -215,7 +239,8 @@ end
 ---@param file_path string
 ---@param side "LEFT"|"RIGHT"
 ---@param session DiffCommentsSession
-function M.render(bufnr, file_path, side, session)
+---@param opts { branch: string|nil }|nil
+function M.render(bufnr, file_path, side, session, opts)
 	M.clear(bufnr)
 	if side ~= "RIGHT" or not vim.api.nvim_buf_is_valid(bufnr) then
 		return
@@ -224,7 +249,7 @@ function M.render(bufnr, file_path, side, session)
 	local width = box_width(bufnr)
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
 	local grouped = {}
-	for _, note in ipairs(M.load(session)) do
+	for _, note in ipairs(M.load(session, opts)) do
 		local line = tonumber(note.line)
 		if note.file_path == file_path and line then
 			line = math.max(1, math.min(line, line_count))

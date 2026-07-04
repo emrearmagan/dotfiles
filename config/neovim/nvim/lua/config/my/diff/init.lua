@@ -9,12 +9,14 @@ local keymaps = require("config.my.diff.keymaps")
 ---@field pr DiffCommentsPR|nil
 ---@field comments DiffComment[]
 ---@field session_key string|nil
+---@field notes_key string|nil
 ---@field loading boolean
 local state = {
 	provider = nil,
 	pr = nil,
 	comments = {},
 	session_key = nil,
+	notes_key = nil,
 	loading = false,
 }
 
@@ -81,6 +83,71 @@ local function session_key(session, provider_name)
 		return nil
 	end
 	return table.concat({ provider_name or "", root, rev }, ":")
+end
+
+---@param value any
+---@return string|nil
+local function non_empty_string(value)
+	if type(value) ~= "string" or value == "" then
+		return nil
+	end
+	return value
+end
+
+---@return string|nil
+local function note_branch()
+	local raw = state.pr and state.pr._raw or nil
+	if type(raw) ~= "table" then
+		return nil
+	end
+
+	local source = type(raw.source) == "table" and raw.source or {}
+	local source_branch = source.branch
+	if type(source_branch) == "table" then
+		return non_empty_string(source_branch.name)
+	end
+	return non_empty_string(source_branch)
+		or non_empty_string(source.ref)
+		or non_empty_string(raw.source_branch)
+		or non_empty_string(raw.head_ref)
+		or (type(raw.head) == "table" and non_empty_string(raw.head.ref) or nil)
+end
+
+---@return { branch: string|nil }
+local function note_opts()
+	return { branch = note_branch() }
+end
+
+---@param session DiffCommentsSession|nil
+---@return string|nil
+local function notes_key(session)
+	if not session then
+		return nil
+	end
+	local root = tostring(session.git_root or "")
+	if root == "" then
+		return nil
+	end
+	local opts = note_opts()
+	return table.concat(
+		{ root, tostring(session.modified_revision or ""), tostring(notes_ui.path(session, opts) or "") },
+		":"
+	)
+end
+
+---@param session DiffCommentsSession|nil
+---@param opts { force: boolean|nil }|nil
+local function notify_notes_loaded(session, opts)
+	opts = opts or {}
+	local key = notes_key(session)
+	if not key then
+		return
+	end
+	if not opts.force and state.notes_key == key then
+		return
+	end
+	state.notes_key = key
+	notes_ui.load(session, vim.tbl_extend("force", note_opts(), { notify = true }))
 end
 
 ---@param session DiffCommentsSession|nil
@@ -155,7 +222,7 @@ local function render_tree(tabpage)
 
 	vim.api.nvim_buf_clear_namespace(explorer.bufnr, tree_ns, 0, -1)
 
-	local note_counts = notes_ui.counts_by_file(session)
+	local note_counts = notes_ui.counts_by_file(session, note_opts())
 	local comment_counts = comment_counts_by_file()
 	local has_markers = false
 	for line = 1, vim.api.nvim_buf_line_count(explorer.bufnr) do
@@ -343,7 +410,7 @@ local function render(bufnr, file_path, side, session)
 	local pending_lines, normal_lines, resolved_lines = {}, {}, {}
 	local note_lines = {}
 	if side == "RIGHT" then
-		for _, line in ipairs(notes_ui.note_lines(session, file_path)) do
+		for _, line in ipairs(notes_ui.note_lines(session, file_path, note_opts())) do
 			note_lines[line] = true
 		end
 	end
@@ -427,7 +494,7 @@ local function render(bufnr, file_path, side, session)
 		end
 	end
 
-	notes_ui.render(bufnr, file_path, side, session)
+	notes_ui.render(bufnr, file_path, side, session, note_opts())
 end
 
 ---@param tabpage integer|nil
@@ -455,11 +522,17 @@ local function load(tabpage, opts)
 	end
 	local provider = provider_for(session)
 	if not provider then
+		if not opts.silent then
+			notify_notes_loaded(session, { force = opts.force })
+		end
 		show(tabpage)
 		return
 	end
 	local key = session_key(session, provider.name)
 	if not key then
+		if not opts.silent then
+			notify_notes_loaded(session, { force = opts.force })
+		end
 		show(tabpage)
 		return
 	end
@@ -503,6 +576,9 @@ local function load(tabpage, opts)
 			end
 			state.comments = comments or {}
 			notify(vim.log.levels.INFO, ("Loaded %d PR comments"):format(#state.comments))
+			if not opts.silent then
+				notify_notes_loaded(session, { force = opts.force })
+			end
 			show(tabpage)
 		end)
 	end)
@@ -968,7 +1044,7 @@ local actions = {
 		if not file_path or not session then
 			return
 		end
-		local lines = notes_ui.note_lines(session, file_path)
+		local lines = notes_ui.note_lines(session, file_path, note_opts())
 		if #lines == 0 then
 			notify(vim.log.levels.INFO, "No notes in this file")
 			return

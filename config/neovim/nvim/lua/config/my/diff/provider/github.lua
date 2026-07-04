@@ -221,6 +221,7 @@ function M.find_pr(session, on_done)
 							owner = owner,
 							repo = repo,
 							url = ("https://github.com/%s/%s/pull/%s"):format(owner, repo, selected.number),
+							_raw = selected,
 						})
 					end)
 				end)
