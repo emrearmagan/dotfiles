@@ -8,10 +8,34 @@ return {
 		-- global_keymaps = true,
 		-- global_keymaps_prefix = "<leader>Z",
 		-- kulala_keymaps_prefix = "",
-		vscode_rest_client_environmentvars = true, -- load from shell env vars
-		max_response_size = 500000,
+		vscode_rest_client_environmentvars = true,
+		kulala_keymaps = {
+			["Previous tab"] = {
+				"<S-Tab>",
+				function()
+					require("kulala.ui").show_previous_tab()
+				end,
+				mode = { "n" },
+			},
+			["Next tab"] = {
+				"<Tab>",
+				function()
+					require("kulala.ui").show_next_tab()
+				end,
+				mode = { "n" },
+			},
+			["Show headers"] = false,
+			["Show body"] = false,
+			["Show headers and body"] = false,
+			["Show verbose"] = false,
+			["Show script output"] = false,
+			["Show stats"] = false,
+			["Show report"] = false,
+			["Show filter"] = false,
+		},
 
 		ui = {
+			max_response_size = 500000,
 			display_mode = "split", -- show response in split
 			split_direction = "vertical", -- right side split
 			winbar = true,

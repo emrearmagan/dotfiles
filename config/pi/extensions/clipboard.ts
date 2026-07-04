@@ -9,6 +9,7 @@
  *   Ask the LLM: "write me a draft reply and put it into clipboard!"
  */
 
+import { spawnSync } from "node:child_process";
 import { Type } from "@sinclair/typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -26,6 +27,18 @@ function toBase64(text: string): string {
  * - tmux (with set-clipboard on), screen (with proper config)
  */
 function copyToClipboard(text: string): void {
+    if (process.platform === "darwin") {
+        const result = spawnSync("pbcopy", [], {
+            input: text,
+            encoding: "utf8",
+            stdio: ["pipe", "ignore", "pipe"],
+        });
+
+        if (!result.error && result.status === 0) {
+            return;
+        }
+    }
+
     const base64Text = toBase64(text);
     // OSC 52 ; c ; <base64-text> ST
     // \x1b] = OSC (Operating System Command)

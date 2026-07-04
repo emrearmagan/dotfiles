@@ -39,3 +39,6 @@ Config.swift
 .worktrees
 .reviews
 .claude/settings.local.json
+.pi/tasks
+.pi/subagents.json
+.notes

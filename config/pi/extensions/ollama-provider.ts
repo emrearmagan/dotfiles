@@ -1,9 +1,13 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const OLLAMA_BASE_URL = "https://ollama.local.emrearmagan.dev/v1";
-const FETCH_TIMEOUT_MS = 100;
+const FETCH_TIMEOUT_MS = 200;
 
-export default async function (pi: ExtensionAPI) {
+export default function (pi: ExtensionAPI) {
+  void registerOllamaProvider(pi);
+}
+
+async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {

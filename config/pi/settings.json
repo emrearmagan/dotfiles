@@ -11,13 +11,11 @@
   },
   "lastChangelogVersion": "0.80.2",
   "observational-memory": {
-    "observationThresholdTokens": 10000,
-    "reflectionThresholdTokens": 20000,
-    "compactionThresholdTokens": 81000,
-    "observerMaxTurnsPerRun": 16,
-    "reflectorMaxTurnsPerPass": 16,
-    "prunerMaxTurnsPerPass": 16,
-    "compactionModel": {
+    "observeAfterTokens": 30000,
+    "reflectAfterTokens": 60000,
+    "compactAfterTokens": 90000,
+    "agentMaxTurns": 16,
+    "model": {
       "provider": "openai-codex",
       "id": "gpt-5.4-mini"
     },
@@ -37,7 +35,6 @@
     "npm:@tintinweb/pi-tasks",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@juicesharp/rpiv-btw",
-    "npm:@juicesharp/rpiv-todo",
     {
       "source": "npm:@victor-software-house/pi-curated-themes",
       "skills": [],
