@@ -38,12 +38,6 @@ return {
 			folder = "templates",
 		},
 
-		completion = {
-			nvim_cmp = true,
-			blink = false,
-			-- Trigger completion at 2 chars.
-			min_chars = 2,
-		},
 
 		footer = {
 			enabled = true,
