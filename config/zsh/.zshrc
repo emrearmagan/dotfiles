@@ -13,8 +13,7 @@ source ~/.config/alias/.functions
 set -o vi
 export EDITOR=nvim
 export VISUAL=nvim
-# Pretty-print man pages with bat; col strips raw backspace formatting (^H).
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANPAGER='nvim +Man!'
 
 # ----------------------
 # Export
