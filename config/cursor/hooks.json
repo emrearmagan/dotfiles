@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh idle cursor"
+      }
+    ],
+    "stop": [
+      {
+        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh idle cursor"
+      }
+    ]
+  },
+  "version": 1
+}

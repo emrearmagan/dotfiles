@@ -43,6 +43,17 @@ BATTERY_25=􀛩
 BATTERY_0=􀛪
 BATTERY_CHARGING=􀢋
 
+# Agent status icons
+AGENT_WORKING=􀆿
+AGENT_WAIT=􀉻
+AGENT_IDLE=􀇁
+
+# Agent brand logos (claude/cursor/codex render with sketchybar-app-font)
+AGENT_ICON_CLAUDE=:claude:
+AGENT_ICON_CURSOR=:cursor:
+AGENT_ICON_CODEX=:openai:
+AGENT_ICON_PI=π
+
 # System / hardware icons
 CPU_ICON=􀫥
 MEM_ICON=􀫦
