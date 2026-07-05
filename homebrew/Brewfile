@@ -129,6 +129,7 @@ cask "raycast"              # spotlight replacement
 cask "notion"               # note taking
 cask "google-chrome"        # web browser
 cask "shortcat"             # mouse-free navigation
+cask "kindavim"             # vim keybindings for mac apps
 cask "aerospace"            # tiling window manager
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
