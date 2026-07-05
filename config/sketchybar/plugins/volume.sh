@@ -4,6 +4,7 @@ WIDTH=100
 
 volume_change() {
 	source "$HOME/.config/sketchybar/icons.sh"
+	CURRENT=$(sketchybar --query "$NAME" | jq -r ".slider.percentage")
 	case $INFO in
 	[6-9][0-9] | 100)
 		ICON=$VOLUME_100
@@ -24,9 +25,13 @@ volume_change() {
 	esac
 
 	sketchybar --set volume_icon label=$ICON
+	sketchybar --set $NAME slider.percentage=$INFO
 
-	sketchybar --set $NAME slider.percentage=$INFO \
-		--animate tanh 30 --set $NAME slider.width=$WIDTH
+	# Ignore spurious volume_change events (e.g. music play/pause) where the
+	# level didn't actually change — only reveal the slider on a real change.
+	[ "$CURRENT" = "$INFO" ] && return
+
+	sketchybar --animate tanh 30 --set $NAME slider.width=$WIDTH
 
 	sleep 2
 
@@ -61,5 +66,8 @@ case "$SENDER" in
 	;;
 "mouse.exited")
 	mouse_exited
+	;;
+"front_app_switched")
+	sketchybar --set "$NAME" popup.drawing=off
 	;;
 esac

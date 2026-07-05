@@ -1,29 +1,13 @@
 #!/bin/bash
+# Apple Music: music icon + "title — artist" on one line. Hidden unless playing;
+# click to play/pause.
 
-music=(
-	script="$PLUGIN_DIR/music.sh"
-	label.padding_right=8
-	padding_right=16
-	icon=􁁒
-	# drawing=off
-	label="Loading…"
-	scroll_texts=false
-	# background.image=media.artwork
-	# background.image.scale=0.9
-	# background.image.corner_radius=8
-	# background.image.border_color="$TRANSPARENT"
-	# background.color="$TRANSPARENT"
-	icon.padding_left=36
-	label.max_chars=15
-	label.align=left
-	label.width=130
-	--subscribe music media_change system_woke
-	# --subscribe music mouse.entered
-	# mouse.clicked
-	# mouse.exited
-	# mouse.exited.global
-)
-
-sketchybar \
-	--add item music right \
-	--set music "${music[@]}"
+sketchybar --add item music right \
+	--set music drawing=off updates=on update_freq=5 \
+	icon=:music: icon.color=$WHITE icon.font="sketchybar-app-font:Regular:$ICON_SIZE" \
+	label.font="$FONT:Regular:12.0" label.align=left \
+	scroll_texts=on label.scroll_duration=200 label.max_chars=25 \
+	padding_left=6 padding_right=6 \
+	script="$PLUGIN_DIR/music.sh" \
+	click_script="osascript -e 'tell application \"Music\" to playpause'; sketchybar --update" \
+	--subscribe music system_woke

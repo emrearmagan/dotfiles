@@ -13,7 +13,6 @@ PADDINGS=3 # All paddings use this value (icon, label, background)
 POPUP_BORDER_WIDTH=2
 POPUP_CORNER_RADIUS=11
 
-
 # Setting up the general bar appearance of the bar
 bar=(
   height=30
@@ -69,6 +68,8 @@ source "$ITEM_DIR/front_app.sh"
 
 # Right
 source "$ITEM_DIR/date_time.sh"
+source "$ITEM_DIR/vpn.sh"
+source "$ITEM_DIR/ssh.sh"
 # source "$ITEM_DIR/clock.sh"
 # source "$ITEM_DIR/calendar.sh"
 
@@ -76,10 +77,12 @@ source "$ITEM_DIR/brew.sh"
 source "$ITEM_DIR/taskbook.sh"
 source "$ITEM_DIR/battery.sh"
 
-source "$ITEM_DIR/volume.sh"
-# source "$ITEM_DIR/music.sh"
 source "$ITEM_DIR/meeting.sh"
-# source "$ITEM_DIR/cpu.sh"
+source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/music.sh"
+source "$ITEM_DIR/cpu.sh"
+# source "$ITEM_DIR/disk.sh"
+# source "$ITEM_DIR/bluetooth.sh"
 
 status_bracket=(
   background.color=$BACKGROUND_1
@@ -87,13 +90,13 @@ status_bracket=(
   background.border_width=2
   background.padding_left=20
 )
-sketchybar --add bracket status battery brew taskbook \
+sketchybar --add bracket status battery brew taskbook vpn ssh \
            --set status "${status_bracket[@]}"
 
 sketchybar --set battery padding_left=10
-sketchybar --set brew padding_right=10
+sketchybar --set brew padding_right=4
 sketchybar --set taskbook padding_right=5
-sketchybar --set taskbook padding_left=5
+sketchybar --set taskbook padding_left=3
 ############## FINALIZING THE SETUP ##############
 sketchybar --update
 

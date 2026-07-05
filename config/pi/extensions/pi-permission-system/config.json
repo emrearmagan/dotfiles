@@ -17,6 +17,7 @@
       "*.env.*": "deny",
       "*.env.example": "allow",
       "*.env.dist": "allow",
+      "*.env.sample": "allow",
       ".dev.vars": "deny"
     },
     "bash": {
@@ -30,6 +31,7 @@
       "grep *": "allow",
       "sed *": "allow",
       "awk *": "allow",
+      "wc *": "allow",
       "pwd": "allow",
       "echo *": "allow",
       "printf *": "allow",

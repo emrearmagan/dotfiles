@@ -83,6 +83,19 @@ dotfiles:
       src: "{{ playbook_dir }}/../config/pi",
       dest: "{{ ansible_env.HOME }}/.pi/agent",
     }
+
+  - {
+      src: "{{ playbook_dir }}/../config/claude/settings.json",
+      dest: "{{ ansible_env.HOME }}/.claude/settings.json",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/cursor/hooks.json",
+      dest: "{{ ansible_env.HOME }}/.cursor/hooks.json",
+    }
+  - {
+      src: "{{ playbook_dir }}/../config/codex/hooks.json",
+      dest: "{{ ansible_env.HOME }}/.codex/hooks.json",
+    }
   - {
       src: "{{ playbook_dir }}/../config/mcp/mcp.json",
       dest: "{{ ansible_env.HOME }}/.config/mcp/mcp.json",

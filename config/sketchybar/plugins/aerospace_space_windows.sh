@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+source "$HOME/.config/sketchybar/icons.sh" # for $ICON_SIZE
 
 # Update label of space.<workspace_id> with app icons from Aerospace
 # - If a workspace id is provided as $1 or via WORKSPACE env, update only that one
@@ -30,14 +31,14 @@ update_workspace() {
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="$icons" \
-			label.font="sketchybar-app-font:Regular:14.0" \
+			label.font="sketchybar-app-font:Regular:$ICON_SIZE" \
 			icon.drawing=on
 	elif [ "$ws" = "$focused_ws" ]; then
 		# Focused but empty: keep visible and show background
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="" \
-			label.font="sketchybar-app-font:Regular:14.0" \
+			label.font="sketchybar-app-font:Regular:$ICON_SIZE" \
 			icon.drawing=on \
 			background.drawing=on
 	else

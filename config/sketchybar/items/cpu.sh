@@ -1,34 +1,21 @@
-#!/usr/bin/env sh
+#!/bin/bash
+# Minimal system widget: chip icon + "cpu% · mem%". Click for a details popup
+# (CPU / RAM / SSD / Net / Top process).
 
-sketchybar --add item cpu.top right \
-	--set cpu.top label.font="$FONT:Medium:7" \
-	label=CPU \
-	icon.drawing=off \
-	width=0 \
-	y_offset=6 \
-	background.padding_right=10 \
-	\
-	--add item cpu.percent right \
-	--set cpu.percent label.font="$FONT:Bold:12" \
-	label=CPU \
-	y_offset=-4 \
-	width=40 \
-	icon.drawing=off \
-	update_freq=2 \
-	background.padding_right=10 \
-	\
-	--add graph cpu.sys right 100 \
-	--set cpu.sys width=0 \
-	graph.color=$RED \
-	graph.fill_color=$RED \
-	label.drawing=off \
-	icon.drawing=off \
-	background.padding_right=10 \
-	\
-	--add graph cpu.user right 100 \
-	--set cpu.user graph.color=$BLUE \
-	update_freq=2 \
-	label.drawing=off \
-	icon.drawing=off \
-	background.padding_right=10 \
-	script="$PLUGIN_DIR/cpu.sh"
+sketchybar --add item cpu right \
+	--set cpu \
+	icon=$CPU_ICON icon.color=$GREEN icon.font="$FONT:Bold:13.0" \
+	label.font="$FONT:Semibold:12.0" \
+	padding_left=6 padding_right=6 \
+	update_freq=5 \
+	popup.align=right popup.height=22 \
+	script="$PLUGIN_DIR/cpu.sh" \
+	--subscribe cpu mouse.clicked mouse.exited mouse.exited.global front_app_switched
+
+# Popup rows (monospace so the columns line up).
+for i in 1 2 3 4 5; do
+	sketchybar --add item cpu.row.$i popup.cpu \
+		--set cpu.row.$i icon.drawing=off \
+		label.font="JetBrainsMono Nerd Font:Medium:12.0" label.align=left \
+		label.padding_left=14 label.padding_right=16 label.color=$LABEL_COLOR
+done

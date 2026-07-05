@@ -4,7 +4,7 @@ calendar=(
 	icon.padding_right=0
 	label.width=45
 	label.align=right
-	padding_left=15
+	padding_left=6
 	update_freq=30
 	script="$PLUGIN_DIR/date_time.sh"
 )

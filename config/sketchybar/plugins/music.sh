@@ -1,11 +1,27 @@
 #!/bin/bash
+# Apple Music now-playing (icon + "title — artist") via AppleScript.
+# Hidden unless a track is playing.
 
-PLAYER_STATE="$(echo $INFO | jq -r '.state')"
-CURRENT_SONG="$(echo $INFO | jq -r '.title + "-" + .artist')"
+source "$HOME/.config/sketchybar/colors.sh"
+source "$HOME/.config/sketchybar/icons.sh"
 
-if [ "$PLAYER_STATE" = "playing" ]; then
-	ICON=􁁒
-else
-	ICON=􀊄
+[ "$(osascript -e 'application "Music" is running' 2>/dev/null)" = "true" ] || {
+	sketchybar --set music drawing=off
+	exit 0
+}
+
+info=$(osascript -e 'tell application "Music"
+  if player state is stopped then return "stopped||"
+  return (player state as text) & "|" & (name of current track) & "|" & (artist of current track)
+end tell' 2>/dev/null)
+state=${info%%|*}
+rest=${info#*|}
+title=${rest%%|*}
+artist=${rest#*|}
+
+if [ "$state" != "playing" ] || [ -z "$title" ]; then
+	sketchybar --set music drawing=off
+	exit 0
 fi
-sketchybar --set $NAME label="$CURRENT_SONG" icon="$ICON" drawing=on
+
+sketchybar --set music drawing=on label="$title - $artist"
