@@ -37,8 +37,8 @@ if [ -d "$CACHE_DIR" ]; then
 		[ -f "$f" ] || continue
 		IFS='|' read -r state agent epoch session window_id window_name <"$f" 2>/dev/null
 		[ -n "$state" ] || continue
-		# prune entries whose tmux window is gone
-		if ! printf '%s\n' "$LIVE_WINDOWS" | grep -qxF "$session:$window_id"; then
+		# prune entries whose tmux window is gone; local/non-tmux entries rely on close/stale.
+		if [ "$session" != "local" ] && ! printf '%s\n' "$LIVE_WINDOWS" | grep -qxF "$session:$window_id"; then
 			rm -f "$f"
 			continue
 		fi

@@ -1,6 +1,6 @@
 /**
  * Reports pi's state to the sketchybar `agent` item via agent-status.sh.
- * Only active inside tmux (status is keyed per tmux window).
+ * In tmux, status is keyed per tmux window; outside tmux, helper falls back to a local id.
  *   agent_start/turn_start/tool_execution_start -> working
  *   agent_end -> idle,  session_shutdown -> close
  *   permissions:ui_prompt -> attention,  permissions:decision -> working
@@ -25,7 +25,6 @@ function report(state: "working" | "idle" | "attention" | "close"): void {
 }
 
 export default function (pi: ExtensionAPI) {
-	if (!process.env.TMUX) return;
 	const working = async () => report("working");
 	pi.on("agent_start", working);
 	pi.on("turn_start", working);

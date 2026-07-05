@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Report an AI agent's state to the sketchybar `agent` item, keyed per tmux
-# window. Called from each agent's hooks.
+# Report an AI agent's state to the sketchybar `agent` item.
+# In tmux, status is keyed per window. Outside tmux, it falls back to
+# AGENT_STATUS_ID, TERM_SESSION_ID, tty, then parent pid.
 #   Usage: agent-status.sh <event|state> <agent-name>
-# Writes ~/.cache/agent-status/<session:window>.status and refreshes the bar.
+# Writes ~/.cache/agent-status/*.status and refreshes the bar.
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 CACHE_DIR="$HOME/.cache/agent-status"
@@ -12,16 +13,28 @@ HOOK_JSON=""
 
 EVENT="${1:-}"
 AGENT="${2:-agent}"
-[ -n "${TMUX:-}" ] || exit 0 # only track agents running inside tmux
 
-# Resolve the window of the pane the hook runs in (not the focused one).
-target=()
-[ -n "${TMUX_PANE:-}" ] && target=(-t "$TMUX_PANE")
-session=$(tmux display-message -p "${target[@]}" '#{session_name}' 2>/dev/null)
-window_id=$(tmux display-message -p "${target[@]}" '#{window_id}' 2>/dev/null)
-window_name=$(tmux display-message -p "${target[@]}" '#{window_name}' 2>/dev/null)
-[ -n "$session" ] && [ -n "$window_id" ] || exit 0
-[ -n "$window_name" ] || window_name="$session"
+if [ -n "${TMUX:-}" ]; then
+	# Resolve the window of the pane the hook runs in (not the focused one).
+	target=()
+	[ -n "${TMUX_PANE:-}" ] && target=(-t "$TMUX_PANE")
+	session=$(tmux display-message -p "${target[@]}" '#{session_name}' 2>/dev/null)
+	window_id=$(tmux display-message -p "${target[@]}" '#{window_id}' 2>/dev/null)
+	window_name=$(tmux display-message -p "${target[@]}" '#{window_name}' 2>/dev/null)
+	[ -n "$session" ] && [ -n "$window_id" ] || exit 0
+	[ -n "$window_name" ] || window_name="$session"
+else
+	session="local"
+	raw_id="${AGENT_STATUS_ID:-${TERM_SESSION_ID:-}}"
+	if [ -z "$raw_id" ]; then
+		raw_id=$(ps -o tty= -p "$$" 2>/dev/null | awk '{$1=$1};1')
+		[ "$raw_id" = "??" ] && raw_id=""
+	fi
+	[ -n "$raw_id" ] || raw_id="$PPID"
+	window_id=$(printf '%s:%s' "$AGENT" "$raw_id" | tr -c 'A-Za-z0-9._-' '_')
+	window_name="${AGENT_STATUS_NAME:-${PWD##*/}}"
+	[ -n "$window_name" ] || window_name="$AGENT"
+fi
 
 safe=$(printf '%s:%s' "$session" "$window_id" | tr -c 'A-Za-z0-9._-' '_')
 file="$CACHE_DIR/$safe.status"
