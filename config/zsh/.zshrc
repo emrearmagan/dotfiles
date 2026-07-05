@@ -42,6 +42,22 @@ source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $(brew --prefix)/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
+# Work around https://github.com/jeffreytse/zsh-vi-mode/issues/164: plugin uses `cat`, but alias cat=bat leaks ANSI UI into BUFFER.
+zvm_vi_edit_command_line() {
+  local tmp_file=$(mktemp "${ZVM_TMPDIR}/zshXXXXXX")
+  echo "$BUFFER" >! "$tmp_file"
+  "${(@Q)${(z)${ZVM_VI_EDITOR}}}" "$tmp_file" </dev/tty
+  BUFFER=$(command cat "$tmp_file")
+  command rm "$tmp_file"
+
+  case $ZVM_MODE in
+    $ZVM_MODE_VISUAL|$ZVM_MODE_VISUAL_LINE)
+      zvm_exit_visual_mode
+      ;;
+  esac
+}
+bindkey -M vicmd '^E' zvm_vi_edit_command_line
+
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 source /opt/homebrew/opt/fzf/shell/completion.zsh
 eval $(thefuck --alias)
