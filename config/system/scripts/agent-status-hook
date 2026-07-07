@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# Shared AI-agent hook entrypoint.
+# Writes SketchyBar status cache and triggers the bar update.
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+CACHE_DIR="$HOME/.cache/agent-status"
+mkdir -p "$CACHE_DIR"
+
+HOOK_JSON=""
+[ -t 0 ] || HOOK_JSON="$(cat 2>/dev/null || true)"
+
+EVENT=""
+PROVIDER="agent"
+STATE=""
+AGENT_NAME=""
+
+parse_args() {
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+		--event)
+			EVENT="${2:-}"
+			shift 2
+			;;
+		--provider)
+			PROVIDER="${2:-agent}"
+			shift 2
+			;;
+		--state)
+			STATE="${2:-}"
+			shift 2
+			;;
+		--agent)
+			AGENT_NAME="${2:-}"
+			shift 2
+			;;
+		--*)
+			shift 2
+			;;
+		*)
+			[ -n "$EVENT" ] || EVENT="$1"
+			[ "$PROVIDER" != "agent" ] || PROVIDER="${2:-agent}"
+			shift
+			;;
+		esac
+	done
+}
+
+safe_key() {
+	printf '%s' "$1" | tr -c 'A-Za-z0-9._-' '_'
+}
+
+resolve_window() {
+	if [ -n "${TMUX:-}" ]; then
+		target=()
+		[ -n "${TMUX_PANE:-}" ] && target=(-t "$TMUX_PANE")
+		session=$(tmux display-message -p "${target[@]}" '#{session_name}' 2>/dev/null)
+		window_id=$(tmux display-message -p "${target[@]}" '#{window_id}' 2>/dev/null)
+		window_name=$(tmux display-message -p "${target[@]}" '#{window_name}' 2>/dev/null)
+		[ -n "$session" ] && [ -n "$window_id" ] || return 1
+		[ -n "$window_name" ] || window_name="$session"
+		return 0
+	fi
+
+	session="local"
+	raw_id="${AGENT_STATUS_ID:-${TERM_SESSION_ID:-}}"
+	if [ -z "$raw_id" ]; then
+		raw_id=$(ps -o tty= -p "$$" 2>/dev/null | awk '{$1=$1};1')
+		[ "$raw_id" = "??" ] && raw_id=""
+	fi
+	[ -n "$raw_id" ] || raw_id="$PPID"
+	window_id=$(safe_key "$PROVIDER:$raw_id")
+	window_name="${AGENT_STATUS_NAME:-${AGENT_NAME:-${PWD##*/}}}"
+	[ -n "$window_name" ] || window_name="$PROVIDER"
+}
+
+status_for_event() {
+	case "${STATE:-$EVENT}" in
+	SessionEnd | session_shutdown | session_end | close | quit | finished)
+		printf '%s' close
+		;;
+	UserPromptSubmit | input | PreToolUse | PostToolUse | working | running | \
+		before_agent_start | agent_start | turn_start | message_start | message_end | \
+		tool_execution_start | tool_call | tool_result | tool_execution_end | \
+		beforeSubmitPrompt | beforeShellExecution | beforeMCPExecution | beforeReadFile)
+		printf '%s' working
+		;;
+	Notification)
+		case "$HOOK_JSON" in
+		*[Ww]aiting*) printf '%s' idle ;;
+		*) printf '%s' attention ;;
+		esac
+		;;
+	PermissionRequest | permission | attention | failed)
+		printf '%s' attention
+		;;
+	Stop | idle | done | agent_end | turn_end | stop | afterAgentResponse)
+		printf '%s' idle
+		;;
+	*)
+		printf '%s' ""
+		;;
+	esac
+}
+
+write_sketchybar_cache() {
+	resolve_window || return 0
+	status=$(status_for_event)
+	[ -n "$status" ] || return 0
+
+	file="$CACHE_DIR/$(safe_key "$session:$window_id").status"
+	if [ "$status" = close ]; then
+		rm -f "$file"
+		sketchybar --trigger agent_status_change 2>/dev/null || true
+		return 0
+	fi
+
+	printf '%s|%s|%s|%s|%s|%s\n' \
+		"$status" "$PROVIDER" "$(date +%s)" "$session" "$window_id" "$window_name" >"$file"
+	sketchybar --trigger agent_status_change 2>/dev/null || true
+}
+
+parse_args "$@"
+write_sketchybar_cache

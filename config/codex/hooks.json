@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.config/sketchybar/helpers/agent-status.sh UserPromptSubmit codex"
+            "command": "$HOME/.config/scripts/agent-status-hook --event UserPromptSubmit --provider codex"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.config/sketchybar/helpers/agent-status.sh PreToolUse codex"
+            "command": "$HOME/.config/scripts/agent-status-hook --event PreToolUse --provider codex"
           }
         ]
       }
@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.config/sketchybar/helpers/agent-status.sh PostToolUse codex"
+            "command": "$HOME/.config/scripts/agent-status-hook --event PostToolUse --provider codex"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.config/sketchybar/helpers/agent-status.sh PermissionRequest codex"
+            "command": "$HOME/.config/scripts/agent-status-hook --event PermissionRequest --provider codex"
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.config/sketchybar/helpers/agent-status.sh Stop codex"
+            "command": "$HOME/.config/scripts/agent-status-hook --event Stop --provider codex"
           }
         ]
       }

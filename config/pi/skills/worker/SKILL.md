@@ -10,6 +10,7 @@ Implement requested changes with a tight loop: **plan → implement → verify �
 ## Principles
 
 - **Read before edit.** Understand existing code before changing it.
+- **Lazy senior ladder.** Before adding code, stop at first rung that holds: need it at all, already exists here, stdlib/native/installed dep, one-liner, then minimum code.
 - **Targeted edits, not rewrites.** Smallest change that achieves the goal.
 - **Diagnose, don't guess.** If something fails, investigate (see `/skill:systematic-debugging`).
 - **Do not commit unless asked.** Only commit when the user explicitly asks.
@@ -32,6 +33,8 @@ Keep tasks small and update them as reality changes.
 Work one task at a time.
 
 - Make the smallest change that satisfies the task.
+- For bug fixes, grep callers before touching shared functions; fix root cause once, not symptoms per caller.
+- Mark deliberate shortcuts only when useful; the comment must name the ceiling and upgrade trigger.
 - Do not bundle unrelated cleanup.
 - If the plan becomes wrong, update the task before continuing.
 

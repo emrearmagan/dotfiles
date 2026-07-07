@@ -21,6 +21,7 @@ set cmdheight=1
 set signcolumn=yes   " always reserve gutter, prevents text jump
 set mouse=
 set termguicolors
+colorscheme sorbet
 
 " ── Indent ────────────────────────────────────────────────────────────────
 set tabstop=2
@@ -94,6 +95,7 @@ nnoremap [q :cprev<CR>
 nnoremap ]q :cnext<CR>
 nnoremap <leader>qq :copen<CR>
 nnoremap <leader>qc :cclose<CR>
+nnoremap <silent> <leader>q+ :call setqflist([{'bufnr': bufnr('%'), 'lnum': line('.'), 'col': col('.'), 'text': getline('.')}], 'a')<Bar>echo 'Added to quickfix'<CR>
 nnoremap <leader>qS :wa<CR>
 
 " File ops
@@ -111,17 +113,9 @@ nnoremap <leader>. :Lexplore<CR>
 " Clear search highlight
 nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
 
-" ── Autocmds ──────────────────────────────────────────────────────────────
-augroup my_vimrc
-  autocmd!
-  " Restore cursor to last position when reopening a file
-  autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-        \ | execute "normal! g`\"" | endif
-  " OSC 52 — push every yank to local clipboard over SSH
-  if exists("##TextYankPost")
-    autocmd TextYankPost * if v:event.operator ==# 'y' | call s:OscYank() | endif
-  endif
-augroup END
+" Copy whole buffer to your local terminal clipboard over SSH.
+" Same as: :%w !base64 | tr -d '\n' | awk '{print "\033]52;c;" $0 "\a"}'
+command! CopyBuffer execute "%w !base64 | tr -d '\\n' | awk '{print \"\\033]52;c;\" $0 \"\\a\"}'"
 
 " Close ephemeral buffers with <q>
 augroup close_with_q

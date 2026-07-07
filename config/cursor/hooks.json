@@ -2,27 +2,32 @@
   "hooks": {
     "beforeSubmitPrompt": [
       {
-        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+        "command": "$HOME/.config/scripts/agent-status-hook --event working --provider cursor"
       }
     ],
     "beforeShellExecution": [
       {
-        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+        "command": "$HOME/.config/scripts/agent-status-hook --event working --provider cursor"
       }
     ],
     "beforeMCPExecution": [
       {
-        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh working cursor"
+        "command": "$HOME/.config/scripts/agent-status-hook --event working --provider cursor"
       }
     ],
     "afterAgentResponse": [
       {
-        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh idle cursor"
+        "command": "$HOME/.config/scripts/agent-status-hook --event idle --provider cursor"
       }
     ],
     "stop": [
       {
-        "command": "$HOME/.config/sketchybar/helpers/agent-status.sh idle cursor"
+        "command": "$HOME/.config/scripts/agent-status-hook --event idle --provider cursor"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "$HOME/.config/scripts/agent-status-hook --event close --provider cursor"
       }
     ]
   },

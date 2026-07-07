@@ -3,7 +3,7 @@ description: Scan recent conversation for friction, locate the culprit skill, an
 argument-hint: "[skill-name]"
 ---
 
-You are running a self-correction loop on my agent skills. **Never write to AGENTS.md or CLAUDE.md** — they are read-only context. Every fix lands in a skill file.
+You are running a self-correction loop on my agent rules and skills. Prefer skill-file fixes, but if `AGENTS.md` is the actual culprit, target `AGENTS.md` instead after showing the gated diff.
 
 ## Step 1 — Detect friction in the recent conversation
 
@@ -78,7 +78,7 @@ Print one line: `done — <path> updated`.
 
 ## Hard rules
 
-Never write to `AGENTS.md`, `CLAUDE.md`, or any memory file. If one is the culprit, report the needed change and wait for explicit approval.
-Never edit more than one skill per invocation.
+Never write to `CLAUDE.md` or any memory file. `AGENTS.md` may be edited only when it is the actual culprit and only after the explicit approval gate.
+Never edit more than one target per invocation.
 If two findings point to different skills, present both and let me pick — don't fan out.
 If the friction is a one-off (no pattern, single occurrence, no clear root cause), do nothing and say so.

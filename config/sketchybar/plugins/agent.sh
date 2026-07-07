@@ -1,5 +1,6 @@
 #!/bin/bash
-# Renders the agent chips + popup from ~/.cache/agent-status/*.status.
+# Renders agent chips + popup from ~/.cache/agent-status/*.status.
+# Cache files are written by ~/.config/scripts/agent-status-hook.
 # Priority: attention (red) > working (yellow) > idle (blue). Chips show up to 3
 # agents, then "+N more". A new attention triggers a subtle bounce + optional sound.
 
@@ -24,7 +25,7 @@ ATTENTION_SOUND="/System/Library/Sounds/Tink.aiff"
 CACHE_DIR="$HOME/.cache/agent-status"
 ATTN_SEEN="$CACHE_DIR/.attention-seen"
 NOW=$(date +%s)
-STALE=1800 # drop a "working" entry older than 30 min (agent likely died)
+STALE=1800 # drop stale entries older than 30 min (agent likely died or lacks close hook)
 
 LIVE_WINDOWS="$(tmux list-windows -a -F '#{session_name}:#{window_id}' 2>/dev/null)"
 attention=()
@@ -37,10 +38,22 @@ if [ -d "$CACHE_DIR" ]; then
 		[ -f "$f" ] || continue
 		IFS='|' read -r state agent epoch session window_id window_name <"$f" 2>/dev/null
 		[ -n "$state" ] || continue
-		# prune entries whose tmux window is gone; local/non-tmux entries rely on close/stale.
+		# prune entries whose tmux window is gone; local pid-keyed entries also vanish after hard kills.
 		if [ "$session" != "local" ] && ! printf '%s\n' "$LIVE_WINDOWS" | grep -qxF "$session:$window_id"; then
 			rm -f "$f"
 			continue
+		fi
+		if [ "$session" = "local" ]; then
+			pid="${window_id#${agent}_}"
+			case "$pid" in
+			"$window_id" | "" | *[!0-9]*) ;;
+			*)
+				kill -0 "$pid" 2>/dev/null || {
+					rm -f "$f"
+					continue
+				}
+				;;
+			esac
 		fi
 		[ -n "$window_name" ] || window_name="$session"
 		case "$state" in
@@ -55,7 +68,13 @@ if [ -d "$CACHE_DIR" ]; then
 			attention+=("$window_name|$agent")
 			attn_keys="$attn_keys $session:$window_id"
 			;;
-		idle | done) idle+=("$window_name|$agent") ;;
+		idle | done)
+			[ $((NOW - ${epoch:-0})) -gt "$STALE" ] && {
+				rm -f "$f"
+				continue
+			}
+			idle+=("$window_name|$agent")
+			;;
 		esac
 	done
 fi

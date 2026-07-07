@@ -50,12 +50,20 @@ return {
 				end),
 			}),
 		},
-
-		-- use the default german shortut for ToggleFullScreen
+		{
+			key = "Enter",
+			mods = "ALT",
+			action = act.DisableDefaultAssignment,
+		},
 		{
 			key = "f",
 			mods = "CMD|CTRL",
 			action = wezterm.action.ToggleFullScreen,
+		},
+		{
+			key = "d",
+			mods = "CTRL",
+			action = act.Nop,
 		},
 		-- Pass through for custom tmux keymaps
 		{

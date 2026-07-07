@@ -107,7 +107,6 @@ brew "xcbeautify"           # xcode build formatter (duplicate)
 #   brew services start borders
 brew "borders"                 # window borders
 brew "sketchybar"              # status bar
-brew "floatpane/matcha/matcha" # email client
 
 # ───────────────────────────────
 # Applications (Casks)

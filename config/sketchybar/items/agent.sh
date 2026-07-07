@@ -1,7 +1,7 @@
 #!/bin/bash
 # Agent chips (left of front_app): one chip per running AI agent, max 3, then a
 # "+N more" chip. chip.1 is the controller + popup host; clicking any chip opens
-# a popup listing every agent. Fed by helpers/agent-status.sh.
+# a popup listing every agent. Fed by ~/.config/scripts/agent-status-hook.
 
 sketchybar --add event agent_status_change
 

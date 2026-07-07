@@ -34,14 +34,12 @@
     "npm:pi-mcp-adapter",
     "npm:@tintinweb/pi-tasks",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:@juicesharp/rpiv-btw",
     "npm:pi-observational-memory",
     "npm:@gotgenes/pi-permission-system",
     "npm:@gotgenes/pi-subagents",
     "npm:spotme",
     "git:github.com/MasuRii/pi-tool-display",
-    "git:github.com/DietrichGebert/ponytail",
-    "npm:context-mode"
+    "npm:@hypabolic/pi-hypa"
   ],
   "theme": "catppuccin-mocha-pi",
   "permissionLevel": "low"

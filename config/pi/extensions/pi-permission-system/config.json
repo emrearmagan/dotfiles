@@ -1,7 +1,7 @@
 {
   "debugLog": false,
   "permissionReviewLog": false,
-  "yoloMode": false,
+  "yoloMode": true,
   "permission": {
     "*": "allow",
     "edit": "allow",

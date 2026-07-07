@@ -17,7 +17,7 @@ POPUP_CORNER_RADIUS=11
 bar=(
   height=30
   color=$BAR_COLOR
-  shadow=on
+  shadow=off
   position=top
   sticky=on
   padding_right=5
@@ -25,7 +25,7 @@ bar=(
   corner_radius=9
   y_offset=5
   margin=10
-  blur_radius=20
+  blur_radius=0
   notch_width=0
 )
 
