@@ -1,8 +1,4 @@
 #!/bin/bash
-# Agent chips (left of front_app): chip.1 shows running/attention agents,
-# chip.2 shows idle agents. chip.1 is the controller + popup host; clicking any
-# chip opens a popup listing every agent. Fed by ~/.config/scripts/agent-status-hook.
-
 sketchybar --add event agent_status_change
 
 chip_common=(
@@ -15,21 +11,20 @@ chip_common=(
 )
 subs=(mouse.clicked mouse.exited mouse.exited.global front_app_switched)
 
-# chip.1: running/attention controller (updates=on) + popup host, extra left pad from front_app.
 sketchybar --add item agent.chip.1 left \
 	--set agent.chip.1 "${chip_common[@]}" updates=on update_freq=30 \
 	padding_left=18 popup.align=left popup.height=26 \
 	--subscribe agent.chip.1 agent_status_change system_woke "${subs[@]}"
 
-# chip.2: idle agents, updated by chip.1's script.
 sketchybar --add item agent.chip.2 left \
 	--set agent.chip.2 "${chip_common[@]}" updates=off \
 	--subscribe agent.chip.2 "${subs[@]}"
 
-# Popup rows (full list, with provider logos).
-for i in $(seq 1 8); do
-	sketchybar --add item agent.row.$i popup.agent.chip.1 \
-		--set agent.row.$i drawing=off icon.padding_left=10 \
-		label.font="$FONT:Semibold:$FONT_SIZE" label.padding_right=12 \
-		click_script="sketchybar --set agent.chip.1 popup.drawing=off"
+for chip in 1 2; do
+	for i in $(seq 1 8); do
+		sketchybar --add item agent.row.$chip.$i popup.agent.chip.$chip \
+			--set agent.row.$chip.$i drawing=off icon.padding_left=10 \
+			label.font="$FONT:Semibold:$FONT_SIZE" label.padding_right=12 \
+			click_script="sketchybar --set agent.chip.$chip popup.drawing=off"
+	done
 done

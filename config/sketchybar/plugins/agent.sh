@@ -1,26 +1,25 @@
 #!/bin/bash
-# Renders agent chips + popup from ~/.cache/agent-status/*.status.
-# Cache files are written by ~/.config/scripts/agent-status-hook.
-# Chips: running/attention (red/yellow) and idle (blue). Popup lists all agents.
-# A new attention triggers a subtle bounce + optional sound.
+# Renders agent chips and popups from ~/.cache/agent-status/*.status.
 
 source "$HOME/.config/sketchybar/colors.sh"
 source "$HOME/.config/sketchybar/icons.sh"
 
-# Mouse events (from any chip) just drive chip.1's popup.
 case "$SENDER" in
 mouse.clicked)
-	sketchybar --set agent.chip.1 popup.drawing=toggle
+	case "$NAME" in
+	agent.chip.1) sketchybar --set agent.chip.2 popup.drawing=off --set agent.chip.1 popup.drawing=toggle ;;
+	agent.chip.2) sketchybar --set agent.chip.1 popup.drawing=off --set agent.chip.2 popup.drawing=toggle ;;
+	esac
 	exit 0
 	;;
 mouse.exited | mouse.exited.global | front_app_switched)
-	sketchybar --set agent.chip.1 popup.drawing=off
+	sketchybar --set agent.chip.1 popup.drawing=off --set agent.chip.2 popup.drawing=off
 	exit 0
 	;;
 esac
 [ "$NAME" = "agent.chip.1" ] || exit 0 # only the controller recomputes
 
-SOUND_ON=1 # 1 = play a sound on attention, 0 = silent (bounce still happens)
+SOUND_ON=1
 ATTENTION_SOUND="/System/Library/Sounds/Tink.aiff"
 CACHE_DIR="$HOME/.cache/agent-status"
 ATTN_SEEN="$CACHE_DIR/.attention-seen"
@@ -31,7 +30,7 @@ LIVE_WINDOWS="$(tmux list-windows -a -F '#{session_name}:#{window_id}' 2>/dev/nu
 attention=()
 working=()
 idle=()
-attn_keys="" # session:window_id of agents currently needing attention
+attn_keys=""
 
 if [ -d "$CACHE_DIR" ]; then
 	for f in "$CACHE_DIR"/*.status; do
@@ -79,7 +78,6 @@ if [ -d "$CACHE_DIR" ]; then
 	done
 fi
 
-# priority order: attention, working, idle
 ordered=()
 for e in "${attention[@]}"; do ordered+=("$e|attention"); done
 for e in "${working[@]}"; do ordered+=("$e|working"); done
@@ -90,11 +88,9 @@ icon_for() { case "$1" in attention) printf '%s' "$AGENT_WAIT" ;; working) print
 color_for() { case "$1" in attention) printf '%s' "$RED" ;; working) printf '%s' "$YELLOW" ;; idle) printf '%s' "$BLUE" ;; esac; }
 agent_icon() { case "$1" in claude) printf '%s' "$AGENT_ICON_CLAUDE" ;; cursor) printf '%s' "$AGENT_ICON_CURSOR" ;; codex) printf '%s' "$AGENT_ICON_CODEX" ;; pi) printf '%s' "$AGENT_ICON_PI" ;; *) printf '%s' ":default:" ;; esac; }
 agent_font() { case "$1" in pi) printf '%s' "SF Pro:Semibold:$ICON_SIZE" ;; *) printf '%s' "sketchybar-app-font:Regular:$ICON_SIZE" ;; esac; }
-# chip label: always the window name (all states)
 set_chip() { sketchybar --set "agent.chip.$1" drawing=on icon="$2" icon.color="$3" label="$4" label.color="$3"; }
 hide_chip() { sketchybar --set "agent.chip.$1" drawing=off; }
 
-# ---- chips: running/attention and idle separated ----
 running_count=$((${#attention[@]} + ${#working[@]}))
 idle_count=${#idle[@]}
 
@@ -122,23 +118,23 @@ else
 	set_chip 2 "$(icon_for idle)" "$(color_for idle)" "$label"
 fi
 
-# ---- popup: full list with provider logos ----
-idx=1
-for e in "${ordered[@]}"; do
-	[ "$idx" -gt 8 ] && break
-	IFS='|' read -r name agent state <<<"$e"
-	case "$state" in attention) human="needs you" ;; working) human="working" ;; idle) human="idle" ;; esac
-	sketchybar --set agent.row.$idx drawing=on \
-		icon="$(agent_icon "$agent")" icon.font="$(agent_font "$agent")" icon.color="$(color_for "$state")" \
-		label="$name · $human" label.color=$LABEL_COLOR
-	idx=$((idx + 1))
-done
-while [ "$idx" -le 8 ]; do
-	sketchybar --set agent.row.$idx drawing=off
-	idx=$((idx + 1))
+for chip in 1 2; do
+	idx=1
+	for e in "${ordered[@]}"; do
+		[ "$idx" -gt 8 ] && break
+		IFS='|' read -r name agent state <<<"$e"
+		case "$state" in attention) human="needs you" ;; working) human="working" ;; idle) human="idle" ;; esac
+		sketchybar --set agent.row.$chip.$idx drawing=on \
+			icon="$(agent_icon "$agent")" icon.font="$(agent_font "$agent")" icon.color="$(color_for "$state")" \
+			label="$name · $human" label.color=$LABEL_COLOR
+		idx=$((idx + 1))
+	done
+	while [ "$idx" -le 8 ]; do
+		sketchybar --set agent.row.$chip.$idx drawing=off
+		idx=$((idx + 1))
+	done
 done
 
-# ---- attention cue: fire once when an agent newly needs you ----
 prev_attn="$(cat "$ATTN_SEEN" 2>/dev/null)"
 new_attention=0
 for k in $attn_keys; do

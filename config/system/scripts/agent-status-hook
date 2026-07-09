@@ -76,8 +76,14 @@ resolve_window() {
 
 status_for_event() {
 	case "${STATE:-$EVENT}" in
-	SessionEnd | session_shutdown | session_end | close | quit | finished)
+	SessionEnd | session_end | close | quit | finished)
 		printf '%s' close
+		;;
+	session_shutdown)
+		case "$HOOK_JSON" in
+		*'"reason":"quit"'* | *'"reason": "quit"'*) printf '%s' close ;;
+		*) printf '%s' idle ;;
+		esac
 		;;
 	UserPromptSubmit | input | PreToolUse | PostToolUse | working | running | \
 		before_agent_start | agent_start | turn_start | message_start | message_end | \
