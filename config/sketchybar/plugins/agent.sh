@@ -1,8 +1,8 @@
 #!/bin/bash
 # Renders agent chips + popup from ~/.cache/agent-status/*.status.
 # Cache files are written by ~/.config/scripts/agent-status-hook.
-# Priority: attention (red) > working (yellow) > idle (blue). Chips show up to 3
-# agents, then "+N more". A new attention triggers a subtle bounce + optional sound.
+# Chips: running/attention (red/yellow) and idle (blue). Popup lists all agents.
+# A new attention triggers a subtle bounce + optional sound.
 
 source "$HOME/.config/sketchybar/colors.sh"
 source "$HOME/.config/sketchybar/icons.sh"
@@ -94,14 +94,32 @@ agent_font() { case "$1" in pi) printf '%s' "SF Pro:Semibold:$ICON_SIZE" ;; *) p
 set_chip() { sketchybar --set "agent.chip.$1" drawing=on icon="$2" icon.color="$3" label="$4" label.color="$3"; }
 hide_chip() { sketchybar --set "agent.chip.$1" drawing=off; }
 
-# ---- chip: only the highest-priority agent (attention > working > idle); +N for the rest ----
-if [ "$count" -eq 0 ]; then
+# ---- chips: running/attention and idle separated ----
+running_count=$((${#attention[@]} + ${#working[@]}))
+idle_count=${#idle[@]}
+
+if [ "$running_count" -eq 0 ]; then
 	hide_chip 1
 else
-	IFS='|' read -r name agent state <<<"${ordered[0]}"
+	if [ "${#attention[@]}" -gt 0 ]; then
+		IFS='|' read -r name agent <<<"${attention[0]}"
+		state=attention
+	else
+		IFS='|' read -r name agent <<<"${working[0]}"
+		state=working
+	fi
 	label="$name"
-	[ "$count" -gt 1 ] && label="$name +$((count - 1))"
+	[ "$running_count" -gt 1 ] && label="$name +$((running_count - 1))"
 	set_chip 1 "$(icon_for "$state")" "$(color_for "$state")" "$label"
+fi
+
+if [ "$idle_count" -eq 0 ]; then
+	hide_chip 2
+else
+	IFS='|' read -r name agent <<<"${idle[0]}"
+	label="$name"
+	[ "$idle_count" -gt 1 ] && label="$name +$((idle_count - 1))"
+	set_chip 2 "$(icon_for idle)" "$(color_for idle)" "$label"
 fi
 
 # ---- popup: full list with provider logos ----

@@ -121,7 +121,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-pi -p --model "$MODEL" "$PROMPT" >"$OUT_FILE" 2>"$ERR_FILE" &
+pi -p --no-session --model "$MODEL" "$PROMPT" >"$OUT_FILE" 2>"$ERR_FILE" &
 pid=$!
 
 if [ -t 1 ] && command -v tput >/dev/null 2>&1; then

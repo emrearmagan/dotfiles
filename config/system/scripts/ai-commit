@@ -80,6 +80,7 @@ trap cleanup EXIT
 
 cmd_generate() {
 	pi -p \
+		--no-session \
 		--offline \
 		--no-extensions \
 		--no-skills \

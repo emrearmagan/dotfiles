@@ -4,6 +4,16 @@
 source "$HOME/.config/sketchybar/colors.sh"
 source "$HOME/.config/sketchybar/icons.sh"
 
+truncate_title() {
+	local title="$1"
+	local max=26
+	if [ ${#title} -gt $max ]; then
+		printf '%s…' "${title:0:$((max - 1))}"
+	else
+		printf '%s' "$title"
+	fi
+}
+
 case "$SENDER" in
 mouse.clicked)
 	sketchybar --set meeting popup.drawing=toggle
@@ -36,6 +46,7 @@ if [ -n "$NOW_EVENT" ]; then
 	START=$(printf '%s' "$NOW_EVENT" | grep -oE '[0-9]{1,2}:[0-9]{2}' | sed -n 1p)
 	END=$(printf '%s' "$NOW_EVENT" | grep -oE '[0-9]{1,2}:[0-9]{2}' | sed -n 2p)
 	TITLE=$(printf '%s\n' "$NOW_EVENT" | awk 'found && NF {sub(/^[[:space:]]+/, "", $0); print; exit} / - / {found=1}')
+	TITLE=$(truncate_title "$TITLE")
 	sketchybar --set meeting icon="$CALENDAR" icon.color=$RED label="$TITLE $START-$END" label.color=$RED
 else
 	NEXT=$($ICAL_BUDDY "${COMMON_ARGS[@]}" --includeOnlyEventsFromNowOn eventsToday 2>/dev/null)
@@ -51,6 +62,7 @@ else
 			ICON="$BELL"
 			COLOR=$RED
 		fi
+		TITLE=$(truncate_title "$TITLE")
 		sketchybar --set meeting icon="$ICON" label="$TITLE $TIME (${MINUTES}m)" icon.color=$COLOR label.color=$COLOR
 	fi
 fi

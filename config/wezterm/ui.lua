@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local scheme = wezterm.color.get_builtin_schemes()["Catppuccin Mocha"]
 
 wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 	local title = tab.tab_title
@@ -53,11 +54,11 @@ return {
 	font = wezterm.font("JetBrainsMono Nerd Font"),
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
-	window_background_opacity = 1,
+	window_background_opacity = 0.98,
 	window_padding = {
 		left = 0,
 		right = 0,
-		top = 10,
+		top = 0,
 		bottom = 0,
 	},
 	use_resize_increments = true,
@@ -69,10 +70,8 @@ return {
 	hide_tab_bar_if_only_one_tab = true,
 	colors = {
 		tab_bar = {
-			-- background = "#1e2030", -- or use the Catppuccin color
-			background = "rgba(0,0,0,0)",
+			background = scheme.background,
 
-			-- new-tab button: same trick
 			new_tab = { bg_color = "#1e2030", fg_color = "#cdd6f4" },
 			new_tab_hover = { bg_color = "#1e2030", fg_color = "#a6e3a1" },
 		},

@@ -4,8 +4,8 @@
 
 sketchybar --add item music right \
 	--set music drawing=off updates=on update_freq=5 \
-	icon=:music: icon.color=$WHITE icon.font="sketchybar-app-font:Regular:$ICON_SIZE" \
-	label.font="$FONT:Regular:12.0" label.align=left \
+	icon="$MUSIC_PLAY" icon.color=$WHITE icon.font="$FONT:Regular:$ICON_SIZE" \
+	label.font="$FONT:Semibold:12.0" label.align=left \
 	scroll_texts=on label.scroll_duration=200 label.max_chars=25 \
 	padding_left=6 padding_right=6 \
 	script="$PLUGIN_DIR/music.sh" \

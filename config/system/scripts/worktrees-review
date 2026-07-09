@@ -126,7 +126,7 @@ CODEDIFF_BASE="${BASE_BRANCH:-main}"
 CODEDIFF_RANGE="origin/$CODEDIFF_BASE...HEAD"
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
-COMMAND="pi --model '$MODEL' '$ESCAPED_PROMPT'"
+COMMAND="pi --no-session --model '$MODEL' '$ESCAPED_PROMPT'"
 CODEDIFF_COMMAND="nvim -c 'CodeDiff $CODEDIFF_RANGE'"
 
 while IFS= read -r pane; do
