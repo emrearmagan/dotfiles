@@ -8,9 +8,9 @@ wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 	end
 
 	local is_active = tab.is_active
-	local edge_bg = "#1e2030"
-	local bg = is_active and "#7aa2f7" or "#1e2030"
-	local fg = is_active and "#1e2030" or "#7aa2f7"
+	local edge_bg = "#181825"
+	local bg = is_active and "#7aa2f7" or "#181825"
+	local fg = is_active and "#181825" or "#7aa2f7"
 
 	local left_arrow = utf8.char(0xe0b6) -- 
 	local right_arrow = utf8.char(0xe0b4) -- 
@@ -28,10 +28,10 @@ end)
 
 -- INFO: Currently handled by Tmux
 -- Add current time and custom mode message to right side of status bar
--- wezterm.on("update-right-status", function(window)
--- 	local date = wezterm.strftime("󰥔 %Y-%m-%d  󰃰 %H:%M ")
--- 	window:set_right_status(date)
--- end)
+wezterm.on("update-right-status", function(window)
+	local date = wezterm.strftime("󰥔 %Y-%m-%d  󰃰 %H:%M ")
+	window:set_right_status(date)
+end)
 
 -- Allow user to dynamically change the tab title using `wezterm cli set-user-var tab_title "New Title"`
 local user_var_tab_title_key = "tab_title"
@@ -50,15 +50,15 @@ return {
 	webgpu_power_preference = "HighPerformance",
 
 	-- Appearance
-	color_scheme = "Catppuccin Mocha", -- or "Catppuccin Macchiato", etc.
+	color_scheme = "Catppuccin Mocha",
 	font = wezterm.font("JetBrainsMono Nerd Font"),
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
-	window_background_opacity = 0.98,
+	window_background_opacity = 100,
 	window_padding = {
 		left = 0,
 		right = 0,
-		top = 0,
+		top = 5,
 		bottom = 0,
 	},
 	use_resize_increments = true,
@@ -69,11 +69,13 @@ return {
 	use_fancy_tab_bar = false,
 	hide_tab_bar_if_only_one_tab = true,
 	colors = {
+		-- background = scheme.background,
+		background = "#181825",
 		tab_bar = {
-			background = scheme.background,
+			background = "#181825",
 
-			new_tab = { bg_color = "#1e2030", fg_color = "#cdd6f4" },
-			new_tab_hover = { bg_color = "#1e2030", fg_color = "#a6e3a1" },
+			new_tab = { bg_color = "#181825", fg_color = "#cdd6f4" },
+			new_tab_hover = { bg_color = "#181825", fg_color = "#a6e3a1" },
 		},
 	},
 
