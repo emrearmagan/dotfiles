@@ -1,7 +1,7 @@
 {
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "xhigh",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "thinkingBudgets": {
     "minimal": 1024,
@@ -9,7 +9,7 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.80.3",
+  "lastChangelogVersion": "0.82.0",
   "observational-memory": {
     "observeAfterTokens": 30000,
     "reflectAfterTokens": 60000,

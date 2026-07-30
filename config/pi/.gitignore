@@ -2,6 +2,7 @@ auth.json
 sessions/
 # this is taken from ~/.config/mcp
 mcp*.json
+models-store.json
 
 **/logs/
 **/log/
