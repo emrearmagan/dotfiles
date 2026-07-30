@@ -19,8 +19,7 @@ type RunResult = {
   stderr: string;
 };
 
-const SOURCE_SCHEMA = Type.Union([Type.Literal("pi"), Type.Literal("manual")]);
-const SEVERITY_SCHEMA = Type.Union([
+const IMPORTANCE_SCHEMA = Type.Union([
   Type.Literal("critical"),
   Type.Literal("important"),
   Type.Literal("minor"),
@@ -79,6 +78,37 @@ function appendOptional(args: string[], flag: string, value: unknown): void {
   }
 }
 
+function appendPresent(args: string[], flag: string, value: unknown): void {
+  if (typeof value === "string") args.push(flag, value);
+}
+
+function singleLineError(
+  command: string,
+  values: Record<string, unknown>,
+): ToolResult | null {
+  for (const [field, value] of Object.entries(values)) {
+    if (typeof value === "string" && /[\0\r\n]/u.test(value)) {
+      return fail(`${command} ${field} must be a single line`, {
+        error: "invalid_single_line_value",
+        field,
+      });
+    }
+  }
+  return null;
+}
+
+function bodyError(
+  command: string,
+  body: string | undefined,
+): ToolResult | null {
+  if (body?.includes("\0")) {
+    return fail(`${command} body cannot contain NUL`, {
+      error: "invalid_body",
+    });
+  }
+  return null;
+}
+
 function compactOutput(stdout: string, stderr: string): string {
   const output = stdout.trim() || stderr.trim();
   return output === "" ? "OK" : output;
@@ -135,6 +165,10 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
     }),
     async execute(_toolCallId, params, signal) {
       const p = params as { branch?: string };
+      const invalid = singleLineError("branch_notes_path", {
+        branch: p.branch,
+      });
+      if (invalid) return invalid;
       const args = ["path"];
       appendOptional(args, "--branch", p.branch);
       return executeBranchNotes(args, signal, "path");
@@ -145,14 +179,18 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
     name: "branch_notes_branches",
     label: "Branch Notes Branches",
     description: "List branches that currently have local review notes.",
-    parameters: Type.Object({}),
-    async execute(_toolCallId, _params, signal) {
-      return executeBranchNotes(
-        ["branches", "--json"],
-        signal,
-        "branches",
-        "json",
-      );
+    parameters: Type.Object({
+      includeArchived: Type.Optional(
+        Type.Boolean({
+          description: "Include branches with only archived notes.",
+        }),
+      ),
+    }),
+    async execute(_toolCallId, params, signal) {
+      const p = params as { includeArchived?: boolean };
+      const args = ["branches", "--json"];
+      if (p.includeArchived === true) args.push("--all");
+      return executeBranchNotes(args, signal, "branches", "json");
     },
   });
 
@@ -165,11 +203,27 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
       branch: Type.Optional(
         Type.String({ description: "Optional branch notes bucket to list." }),
       ),
+      includeArchived: Type.Optional(
+        Type.Boolean({ description: "Include archived notes in the result." }),
+      ),
+      archivedOnly: Type.Optional(
+        Type.Boolean({ description: "Return only archived notes." }),
+      ),
     }),
     async execute(_toolCallId, params, signal) {
-      const p = params as { branch?: string };
+      const p = params as {
+        branch?: string;
+        includeArchived?: boolean;
+        archivedOnly?: boolean;
+      };
+      const invalid = singleLineError("branch_notes_list", {
+        branch: p.branch,
+      });
+      if (invalid) return invalid;
       const args = ["list", "--json"];
       appendOptional(args, "--branch", p.branch);
+      if (p.archivedOnly === true) args.push("--archived");
+      else if (p.includeArchived === true) args.push("--all");
       return executeBranchNotes(args, signal, "list", "json");
     },
   });
@@ -191,19 +245,26 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
           "Actionable note body explaining impact and suggested fix.",
       }),
       title: Type.Optional(Type.String({ description: "Short note title." })),
-      severity: Type.Optional(SEVERITY_SCHEMA),
-      source: Type.Optional(SOURCE_SCHEMA),
+      importance: Type.Optional(IMPORTANCE_SCHEMA),
+      source: Type.Optional(
+        Type.String({
+          description:
+            "Free-form source label, for example pi, atlas, or manual.",
+        }),
+      ),
       branch: Type.Optional(
         Type.String({
           description: "Optional branch notes bucket to write to.",
         }),
       ),
-      baseRef: Type.Optional(
-        Type.String({ description: "Optional base ref override." }),
-      ),
       provider: Type.Optional(
         Type.String({
           description: "Optional PR provider, e.g. bitbucket or github.",
+        }),
+      ),
+      repoFullName: Type.Optional(
+        Type.String({
+          description: "Optional provider repository owner/name.",
         }),
       ),
       prId: Type.Optional(
@@ -216,11 +277,11 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
         line: number;
         body: string;
         title?: string;
-        severity?: string;
+        importance?: string;
         source?: string;
         branch?: string;
-        baseRef?: string;
         provider?: string;
+        repoFullName?: string;
         prId?: string;
       };
 
@@ -239,6 +300,22 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
           error: "missing_body",
         });
       }
+      if (p.source !== undefined && p.source.trim() === "") {
+        return fail("branch_notes_add source cannot be empty", {
+          error: "invalid_source",
+        });
+      }
+      const invalid =
+        singleLineError("branch_notes_add", {
+          file: p.file,
+          title: p.title,
+          source: p.source,
+          branch: p.branch,
+          provider: p.provider,
+          repoFullName: p.repoFullName,
+          prId: p.prId,
+        }) ?? bodyError("branch_notes_add", p.body);
+      if (invalid) return invalid;
 
       const args = [
         "add",
@@ -250,11 +327,11 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
         p.body,
       ];
       appendOptional(args, "--title", p.title);
-      appendOptional(args, "--severity", p.severity ?? "important");
+      appendOptional(args, "--importance", p.importance ?? "minor");
       appendOptional(args, "--source", p.source ?? "pi");
       appendOptional(args, "--branch", p.branch);
-      appendOptional(args, "--base-ref", p.baseRef);
       appendOptional(args, "--provider", p.provider);
+      appendOptional(args, "--repo", p.repoFullName);
       appendOptional(args, "--pr-id", p.prId);
 
       return executeBranchNotes(args, signal, "add");
@@ -268,7 +345,9 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
     parameters: Type.Object({
       id: Type.String({ description: "Note id to update." }),
       file: Type.Optional(
-        Type.String({ description: "Repository-relative file path for the note." }),
+        Type.String({
+          description: "Repository-relative file path for the note.",
+        }),
       ),
       line: Type.Optional(
         Type.Integer({
@@ -284,17 +363,26 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
       title: Type.Optional(
         Type.String({ description: "Updated short note title." }),
       ),
-      severity: Type.Optional(SEVERITY_SCHEMA),
-      source: Type.Optional(SOURCE_SCHEMA),
-      branch: Type.Optional(
-        Type.String({ description: "Optional branch notes bucket to update in." }),
+      importance: Type.Optional(IMPORTANCE_SCHEMA),
+      source: Type.Optional(
+        Type.String({
+          description:
+            "Free-form source label, for example pi, atlas, or manual.",
+        }),
       ),
-      baseRef: Type.Optional(
-        Type.String({ description: "Optional base ref override." }),
+      branch: Type.Optional(
+        Type.String({
+          description: "Optional branch notes bucket to update in.",
+        }),
       ),
       provider: Type.Optional(
         Type.String({
           description: "Optional PR provider, e.g. bitbucket or github.",
+        }),
+      ),
+      repoFullName: Type.Optional(
+        Type.String({
+          description: "Optional provider repository owner/name.",
         }),
       ),
       prId: Type.Optional(
@@ -308,11 +396,11 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
         line?: number;
         body?: string;
         title?: string;
-        severity?: string;
+        importance?: string;
         source?: string;
         branch?: string;
-        baseRef?: string;
         provider?: string;
+        repoFullName?: string;
         prId?: string;
       };
 
@@ -336,35 +424,55 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
           error: "invalid_body",
         });
       }
+      if (p.source !== undefined && p.source.trim() === "") {
+        return fail("branch_notes_update source cannot be empty", {
+          error: "invalid_source",
+        });
+      }
+      const invalid =
+        singleLineError("branch_notes_update", {
+          id: p.id,
+          file: p.file,
+          title: p.title,
+          source: p.source,
+          branch: p.branch,
+          provider: p.provider,
+          repoFullName: p.repoFullName,
+          prId: p.prId,
+        }) ?? bodyError("branch_notes_update", p.body);
+      if (invalid) return invalid;
 
       const hasUpdate = [
         p.file,
         p.line,
         p.body,
         p.title,
-        p.severity,
+        p.importance,
         p.source,
-        p.baseRef,
         p.provider,
+        p.repoFullName,
         p.prId,
       ].some((value) => value !== undefined);
       if (!hasUpdate) {
-        return fail("branch_notes_update requires at least one field to update", {
-          error: "missing_update_field",
-        });
+        return fail(
+          "branch_notes_update requires at least one field to update",
+          {
+            error: "missing_update_field",
+          },
+        );
       }
 
       const args = ["update", p.id];
       appendOptional(args, "--branch", p.branch);
-      appendOptional(args, "--file", p.file);
+      appendPresent(args, "--file", p.file);
       if (p.line !== undefined) args.push("--line", String(p.line));
-      appendOptional(args, "--body", p.body);
-      appendOptional(args, "--title", p.title);
-      appendOptional(args, "--severity", p.severity);
-      appendOptional(args, "--source", p.source);
-      appendOptional(args, "--base-ref", p.baseRef);
-      appendOptional(args, "--provider", p.provider);
-      appendOptional(args, "--pr-id", p.prId);
+      appendPresent(args, "--body", p.body);
+      appendPresent(args, "--title", p.title);
+      appendOptional(args, "--importance", p.importance);
+      appendPresent(args, "--source", p.source);
+      appendPresent(args, "--provider", p.provider);
+      appendPresent(args, "--repo", p.repoFullName);
+      appendPresent(args, "--pr-id", p.prId);
 
       return executeBranchNotes(args, signal, "update");
     },
@@ -389,10 +497,61 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
           error: "missing_id",
         });
       }
+      const invalid = singleLineError("branch_notes_delete", {
+        id: p.id,
+        branch: p.branch,
+      });
+      if (invalid) return invalid;
 
       const args = ["delete", p.id];
       appendOptional(args, "--branch", p.branch);
       return executeBranchNotes(args, signal, "delete");
+    },
+  });
+
+  pi.registerTool({
+    name: "branch_notes_archive",
+    label: "Branch Notes Archive",
+    description:
+      "Archive or unarchive one note, or every note in a branch when id is omitted.",
+    parameters: Type.Object({
+      id: Type.Optional(Type.String({ description: "Optional note id." })),
+      branch: Type.Optional(
+        Type.String({ description: "Optional branch notes bucket." }),
+      ),
+      archived: Type.Optional(
+        Type.Boolean({ description: "False unarchives; defaults to true." }),
+      ),
+      reason: Type.Optional(
+        Type.String({ description: "Optional archive reason." }),
+      ),
+    }),
+    async execute(_toolCallId, params, signal) {
+      const p = params as {
+        id?: string;
+        branch?: string;
+        archived?: boolean;
+        reason?: string;
+      };
+      const args = ["archive"];
+      if (p.id !== undefined) {
+        if (p.id.trim() === "") {
+          return fail("branch_notes_archive id cannot be empty", {
+            error: "invalid_id",
+          });
+        }
+        args.push(p.id);
+      }
+      const invalid = singleLineError("branch_notes_archive", {
+        id: p.id,
+        branch: p.branch,
+        reason: p.reason,
+      });
+      if (invalid) return invalid;
+      appendOptional(args, "--branch", p.branch);
+      appendOptional(args, "--reason", p.reason);
+      if (p.archived === false) args.push("--unarchive");
+      return executeBranchNotes(args, signal, "archive");
     },
   });
 
@@ -411,6 +570,10 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
     }),
     async execute(_toolCallId, params, signal) {
       const p = params as { branch?: string; confirm: boolean };
+      const invalid = singleLineError("branch_notes_clear", {
+        branch: p.branch,
+      });
+      if (invalid) return invalid;
       if (p.confirm !== true) {
         return fail("branch_notes_clear cancelled: confirm must be true", {
           cancelled: true,
@@ -441,6 +604,10 @@ export default function branchNotesExtension(pi: ExtensionAPI): void {
           error: "missing_branch",
         });
       }
+      const invalid = singleLineError("branch_notes_delete_branch", {
+        branch: p.branch,
+      });
+      if (invalid) return invalid;
       if (p.confirm !== true) {
         return fail(
           "branch_notes_delete_branch cancelled: confirm must be true",

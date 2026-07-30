@@ -1,12 +1,11 @@
 /**
  * Auto Session Name Extension
  *
- * Names new pi sessions from the first user prompt. Uses the configured pi
+ * Names pi sessions from recent conversation context. Uses the configured pi
  * model when possible, then falls back to a simple prompt-derived title.
  *
  * Usage:
- *   /auto-session-name              Regenerate from the first user prompt
- *   /auto-session-name <text>       Generate from explicit text
+ *   /auto-session-name              Regenerate from the last 5 user/assistant messages
  *
  * Environment:
  *   PI_AUTO_SESSION_NAME=0          Disable automatic naming
@@ -39,9 +38,9 @@ export default function (pi: ExtensionAPI) {
 	pi.on("session_tree", async (_event, ctx) => reconstructState(ctx));
 
 	pi.registerCommand("auto-session-name", {
-		description: "Regenerate the session name from the first user prompt (or provided text)",
-		handler: async (args, ctx) => {
-			const prompt = args.trim() || getFirstUserPrompt(ctx);
+		description: "Regenerate the session name from the last 5 user/assistant messages",
+		handler: async (_args, ctx) => {
+			const prompt = getRecentConversationPrompt(ctx);
 			if (!prompt) {
 				ctx.ui.notify("Auto session naming: no user prompt found.", "warning");
 				return;
@@ -116,7 +115,7 @@ export default function (pi: ExtensionAPI) {
 				model,
 				{
 					systemPrompt:
-						"Create a short, descriptive coding-agent session title from the user's first prompt. Return only the title. No quotes. Max 6 words. Prefer imperative/noun phrase style.",
+						"Create a short, descriptive coding-agent session title from the recent user/assistant conversation. Return only the title. No quotes. Max 6 words. Prefer imperative/noun phrase style.",
 					messages: [
 						{
 							role: "user",
@@ -144,20 +143,38 @@ export default function (pi: ExtensionAPI) {
 	}
 }
 
-function getFirstUserPrompt(ctx: ExtensionContext): string | undefined {
-	for (const entry of ctx.sessionManager.getBranch()) {
-		if (entry.type === "message" && entry.message.role === "user") {
-			const content = entry.message.content;
-			return typeof content === "string"
-				? content
-				: content
-						.filter((item) => item.type === "text")
-						.map((item) => item.text)
-						.join(" ");
-		}
-	}
+function getRecentConversationPrompt(ctx: ExtensionContext): string | undefined {
+	const messages = ctx.sessionManager
+		.getBranch()
+		.filter((entry) => entry.type === "message" && ["user", "assistant"].includes(entry.message.role))
+		.slice(-5)
+		.map((entry) => {
+			if (entry.type !== "message") return undefined;
+			const text = getMessageText(entry.message.content);
+			if (!text) return undefined;
+			const label = entry.message.role === "user" ? "User" : "Assistant";
+			return `${label}: ${text}`;
+		})
+		.filter((message): message is string => Boolean(message));
 
-	return undefined;
+	return messages.length ? messages.join("\n\n") : undefined;
+}
+
+function getMessageText(content: unknown): string | undefined {
+	const text = typeof content === "string"
+		? content
+		: Array.isArray(content)
+				? content
+						.map((item) => {
+							if (typeof item !== "object" || item === null) return undefined;
+							const block = item as { type?: unknown; text?: unknown };
+							return block.type === "text" && typeof block.text === "string" ? block.text : undefined;
+						})
+						.filter((item): item is string => Boolean(item))
+						.join(" ")
+				: undefined;
+
+	return text?.replace(/\s+/g, " ").trim() || undefined;
 }
 
 function getNamingModel(ctx: ExtensionContext): Model<any> | undefined {

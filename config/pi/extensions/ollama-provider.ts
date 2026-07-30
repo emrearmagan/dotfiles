@@ -15,12 +15,7 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
       signal: controller.signal,
     });
 
-    if (!response.ok) {
-      console.warn(
-        `[ollama-provider] Failed to fetch models: ${response.status} ${response.statusText}`,
-      );
-      return;
-    }
+    if (!response.ok) return;
 
     const payload = (await response.json()) as {
       data?: Array<{
@@ -52,10 +47,7 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
         cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
       }));
 
-    if (models.length === 0) {
-      console.warn("[ollama-provider] No models returned by Ollama endpoint");
-      return;
-    }
+    if (models.length === 0) return;
 
     pi.registerProvider("ollama", {
       name: "Ollama (local)",
@@ -68,17 +60,8 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
       },
       models,
     });
-  } catch (error) {
-    if ((error as Error)?.name === "AbortError") {
-      console.warn(
-        `[ollama-provider] Ollama unreachable after ${FETCH_TIMEOUT_MS}ms — skipping`,
-      );
-    } else {
-      console.warn(
-        "[ollama-provider] Failed to register Ollama provider",
-        error,
-      );
-    }
+  } catch {
+    // Ollama is optional. If it is unavailable, skip registering the provider.
   } finally {
     clearTimeout(timeout);
   }
