@@ -28,6 +28,10 @@ return {
 				diff = {
 					layout = "inline",
 				},
+				explorer = {
+					view_mode = "tree",
+					flatten_dirs = true,
+				},
 				view = {
 					merge_tool = {
 						disable_diagnostics = false,

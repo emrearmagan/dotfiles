@@ -14,7 +14,7 @@ local function buffer_root()
 	if vim.v.shell_error == 0 and out[1] and out[1] ~= "" then
 		return out[1]
 	end
-	return vim.fn.getcwd()
+	return nil
 end
 
 local function list_files(root)
@@ -34,7 +34,7 @@ function M.new()
 end
 
 function M:is_available()
-	return vim.tbl_contains(ENABLED_FILETYPES, vim.bo.filetype)
+	return vim.bo.buftype == "" and vim.tbl_contains(ENABLED_FILETYPES, vim.bo.filetype)
 end
 
 function M:get_trigger_characters()
@@ -47,6 +47,11 @@ end
 
 function M:complete(_, callback)
 	local root = buffer_root()
+	if not root then
+		callback({ items = {}, isIncomplete = false })
+		return
+	end
+
 	local files = list_files(root)
 	local items = {}
 	for _, abs in ipairs(files) do

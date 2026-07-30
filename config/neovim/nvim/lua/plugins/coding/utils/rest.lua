@@ -9,6 +9,13 @@ return {
 		-- global_keymaps_prefix = "<leader>Z",
 		-- kulala_keymaps_prefix = "",
 		vscode_rest_client_environmentvars = true,
+		treesitter = {
+			enable = false,
+		},
+		lsp = {
+			enable = true,
+			filetypes = { "http", "rest" },
+		},
 		kulala_keymaps = {
 			["Previous tab"] = {
 				"<S-Tab>",
@@ -58,17 +65,6 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = { "http", "rest" },
 			callback = function()
-				--  i dont know why there was no highlight for http filetypes, maybe treesitter was not started? this helps for now
-				local ft = vim.bo.filetype
-				local lang = vim.treesitter.language.get_lang(ft) or ft
-				local ok_parser, parser = pcall(vim.treesitter.get_parser, 0)
-				if ok_parser and parser and parser.lang and parser:lang() ~= lang then
-					pcall(vim.treesitter.stop, 0)
-				end
-				pcall(vim.treesitter.start, 0, lang)
-
-				--- Keymaps
-
 				local cfg = { buffer = true, silent = true }
 				vim.keymap.set({ "n", "v" }, "<leader>R", function()
 					require("kulala").run()

@@ -1,3 +1,10 @@
+local picker_exclude = {
+	".rulesync/**",
+	".claude/**",
+	".codex/**",
+	".cursor/**",
+}
+
 local function set_dashboard_highlights()
 	for _, group in ipairs({
 		"SnacksDashboardDesc",
@@ -133,12 +140,14 @@ return {
 					cmd = "rg",
 					hidden = true,
 					no_ignore = false,
+					exclude = picker_exclude,
 					preview = "file", -- show file contents
 				},
 				grep = {
 					cmd = "rg --vimgrep",
 					hidden = true,
 					no_ignore = false,
+					exclude = picker_exclude,
 					live = true,
 					preview = "file", -- open matching line
 				},
