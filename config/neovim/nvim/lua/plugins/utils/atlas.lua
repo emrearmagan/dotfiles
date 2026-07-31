@@ -37,6 +37,7 @@ return {
 	-- "emrearmagan/atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
 	event = "VeryLazy",
+	cmd = { "AtlasDiff" },
 	opts = {
 		---@class AtlasPullsConfig
 		pulls = {
@@ -49,6 +50,7 @@ return {
 				paths = {
 					["emrearmagan/*"] = "~/development/*",
 					["emrearmagan/*.nvim"] = "~/development/nvim/*.nvim",
+					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
 					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
@@ -112,14 +114,27 @@ return {
 						end
 
 						local destination = ctx.repo_path .. ".reviews"
-
-						open_live_command("worktrees-review", {
+						local target = tostring((ctx.pr.link or {}).html or "")
+						if target == "" then
+							done(false, "Missing pull request URL")
+							return
+						end
+						local base = tostring((ctx.pr.destination or {}).branch or "")
+						if base == "" then
+							done(false, "Missing destination branch")
+							return
+						end
+						local command = {
 							"worktrees-review",
 							branch,
 							destination,
 							ctx.repo_path,
 							"--skip-unchanged",
-						}, function(code)
+							"--target=" .. target,
+							"--base=" .. base,
+						}
+
+						open_live_command("worktrees-review", command, function(code)
 							if code ~= 0 then
 								done(false, "worktrees-review failed (exit " .. tostring(code) .. ")")
 								return
