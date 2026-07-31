@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
 # Create or reuse worktrees for one branch across multiple repositories,
-# then split every pane side-by-side: pi review on the left, CodeDiff on the right.
+# then split every pane side-by-side: pi review on the left, AtlasDiff on the right.
 #
 # Usage:
-#   worktrees-review <branch> [--skip-unchanged] [--base=<branch>] [--attach]
-#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--attach]
+#   worktrees-review <branch> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]
+#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]
 #
 # Notes:
 #   - Uses tmux session: reviews
 #   - Sends a fixed pi prompt to each original pane
-#   - Opens CodeDiff in a vertical split beside each review pane
+#   - Opens AtlasDiff in a vertical split beside each review pane
 #   - --skip-unchanged and --base are forwarded to `worktrees`
+#   - --target opens AtlasDiff for the pull request URL
+#   - Without --target, AtlasDiff opens origin/<base-or-main>...HEAD
 #   - --attach attaches after review commands are sent
 #   - branch-only mode uses current repo with destination at ./reviews
 #
@@ -19,6 +21,7 @@
 #   worktrees-review linux
 #   worktrees-review linux --skip-unchanged
 #   worktrees-review linux --base=develop
+#   worktrees-review linux --target=https://github.com/owner/repo/pull/123
 #   worktrees-review linux --attach
 #   worktrees-review linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged
 
@@ -26,23 +29,26 @@ set -euo pipefail
 
 usage() {
 	printf 'Usage:\n' >&2
-	printf '  %s <branch> [--skip-unchanged] [--base=<branch>] [--attach]\n' "$(basename "$0")" >&2
-	printf '  %s <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--attach]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n' "$(basename "$0")" >&2
 	printf '\nExamples:\n' >&2
 	printf '  %s linux\n' "$(basename "$0")" >&2
 	printf '  %s linux --skip-unchanged --base=develop\n' "$(basename "$0")" >&2
+	printf '  %s linux --target=https://github.com/owner/repo/pull/123\n' "$(basename "$0")" >&2
 	printf '  %s linux --attach\n' "$(basename "$0")" >&2
 	printf '  %s linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
 	printf '\nOptions:\n' >&2
 	printf '  -h, --help                  show help\n' >&2
 	printf '      --skip-unchanged        forward to worktrees\n' >&2
 	printf '      --base=<branch>         forward to worktrees\n' >&2
+	printf '      --target=<url>          open this pull request in AtlasDiff\n' >&2
 	printf '      --attach                attach after sending review commands\n' >&2
 }
 
 REPOS=()
 SKIP_SAME=0
 BASE_BRANCH=""
+TARGET=""
 ATTACH=0
 POSITIONAL=()
 
@@ -69,6 +75,13 @@ for ARG in "$@"; do
 		BASE_BRANCH="${ARG#--base=}"
 		if [ -z "$BASE_BRANCH" ]; then
 			printf 'Base branch cannot be empty.\n' >&2
+			usage
+			exit 1
+		fi
+	elif [[ "$ARG" == --target=* ]]; then
+		TARGET="${ARG#--target=}"
+		if [ -z "$TARGET" ]; then
+			printf 'Target cannot be empty.\n' >&2
 			usage
 			exit 1
 		fi
@@ -102,6 +115,9 @@ fi
 SESSION="reviews"
 MODEL="openai-codex/gpt-5.4"
 PROMPT='/review this branch versus its base branch (fallback: main).'
+if [ -n "$TARGET" ]; then
+	PROMPT="$PROMPT Pull request: $TARGET"
+fi
 
 WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
@@ -122,16 +138,15 @@ if [ -z "$WINDOW_TARGET" ]; then
 	exit 1
 fi
 
-CODEDIFF_BASE="${BASE_BRANCH:-main}"
-CODEDIFF_RANGE="origin/$CODEDIFF_BASE...HEAD"
+ATLASDIFF_TARGET="${TARGET:-origin/${BASE_BRANCH:-main}...HEAD}"
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
 COMMAND="pi --no-session --model '$MODEL' '$ESCAPED_PROMPT'"
-CODEDIFF_COMMAND="nvim -c 'CodeDiff $CODEDIFF_RANGE'"
+printf -v ATLASDIFF_COMMAND 'nvim -c %q' "AtlasDiff $ATLASDIFF_TARGET"
 
 while IFS= read -r pane; do
-	codediff_pane="$(tmux split-window -h -t "$pane" -c '#{pane_current_path}' -P -F '#{pane_id}')"
-	tmux send-keys -t "$codediff_pane" "$CODEDIFF_COMMAND" Enter
+	atlasdiff_pane="$(tmux split-window -h -t "$pane" -c '#{pane_current_path}' -P -F '#{pane_id}')"
+	tmux send-keys -t "$atlasdiff_pane" "$ATLASDIFF_COMMAND" Enter
 	tmux send-keys -t "$pane" "$COMMAND" Enter
 done < <(tmux list-panes -t "$WINDOW_TARGET" -F '#{pane_id}')
 

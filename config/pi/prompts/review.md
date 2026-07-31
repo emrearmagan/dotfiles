@@ -13,7 +13,7 @@ User review request:
 $ARGUMENTS
 ```
 
-Orchestrate the review only. The main session must not inspect the code, gather git context, read branch notes, fetch tickets, or write notes. The specialist agents must gather their own context and use their own available tools.
+Orchestrate the review only. The main session must not inspect the code, gather git context, read Atlas notes, fetch tickets, or write notes. The specialist agents must gather their own context and use their own available tools.
 
 Do not edit files. Do not commit. Do not change scripts/config unless the user explicitly asks.
 
@@ -28,7 +28,7 @@ Identify the requested review target from the user request:
 - PR / URL / ticket / spec
 - specific files or diff
 
-Do not run git commands or branch-note tools just to prepare context. If a target is not explicit, pass the user's request through and let the agents infer from the current repository.
+Do not run git commands or Atlas-note tools just to prepare context. If a target is not explicit, pass the user's request through and let the agents infer from the current repository.
 
 Ask a clarification only when the request cannot be routed at all.
 
@@ -41,9 +41,9 @@ Run the review agents in parallel whenever both reviewers are relevant.
 Ask it to:
 
 - gather its own git/diff context
-- read existing branch notes and current PR comments itself when available
+- read existing Atlas notes and current PR comments itself when available
 - review implementation correctness, safety, integration, and maintainability
-- add/update branch notes itself when its own instructions allow it
+- add Atlas notes itself when its own instructions allow it
 
 Pass only the user's review request and any context already present in the conversation. Do not pre-digest the diff for it.
 
@@ -56,7 +56,7 @@ Ask it to:
 - avoid inspecting implementation source code or full diffs unless the user explicitly requested spec-review code inspection
 - review spec readiness and, only from provided summaries/descriptions, whether the described implementation has requirement gaps or scope creep
 - skip or report blocked only after ticket/spec lookup was attempted or clearly impossible
-- add/update branch notes itself when its own instructions allow it
+- add Atlas notes itself when its own instructions allow it
 
 Pass only the user's review request and any context already present in the conversation. Do not pre-digest the spec or diff for it.
 
