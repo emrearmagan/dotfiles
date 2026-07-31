@@ -52,6 +52,7 @@ return {
 					["emrearmagan/*.nvim"] = "~/development/nvim/*.nvim",
 					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
 					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
+					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.test.gitlab",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
 			},

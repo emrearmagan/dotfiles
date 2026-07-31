@@ -55,7 +55,9 @@ zvm_vi_edit_command_line() {
       ;;
   esac
 }
-bindkey -M vicmd '^E' zvm_vi_edit_command_line
+bindkey -M emacs '^G' zvm_vi_edit_command_line
+bindkey -M viins '^G' zvm_vi_edit_command_line
+bindkey -M vicmd '^G' zvm_vi_edit_command_line
 
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 source /opt/homebrew/opt/fzf/shell/completion.zsh

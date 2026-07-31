@@ -57,9 +57,10 @@ resolve_window() {
 		session=$(tmux display-message -p "${target[@]}" '#{session_name}' 2>/dev/null)
 		window_id=$(tmux display-message -p "${target[@]}" '#{window_id}' 2>/dev/null)
 		window_name=$(tmux display-message -p "${target[@]}" '#{window_name}' 2>/dev/null)
-		[ -n "$session" ] && [ -n "$window_id" ] || return 1
-		[ -n "$window_name" ] || window_name="$session"
-		return 0
+		if [ -n "$session" ] && [ -n "$window_id" ]; then
+			[ -n "$window_name" ] || window_name="$session"
+			return 0
+		fi
 	fi
 
 	session="local"
