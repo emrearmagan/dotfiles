@@ -1,9 +1,19 @@
 import { spawn } from "node:child_process";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { Type } from "@sinclair/typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-// Expects atlas.nvim's bin/atlas-notes to be available on $PATH.
-const ATLAS_NOTES_BIN = "atlas-notes";
+const ATLAS_NOTES_BIN = join(
+  homedir(),
+  ".local",
+  "share",
+  "nvim",
+  "lazy",
+  "atlas.nvim",
+  "bin",
+  "atlas-notes",
+);
 
 type ToolResult = {
   content: Array<{ type: "text"; text: string }>;
