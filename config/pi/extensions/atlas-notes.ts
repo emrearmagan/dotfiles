@@ -1,9 +1,9 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { Type } from "@sinclair/typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+// Expects atlas.nvim's bin/atlas-notes to be available on $PATH.
+const ATLAS_NOTES_BIN = "atlas-notes";
 
 type ToolResult = {
   content: Array<{ type: "text"; text: string }>;
@@ -23,40 +23,12 @@ const NOTE_TYPE = Type.Union([
   Type.Literal("praise"),
 ]);
 
-function atlasNotesCommand(): string {
-  const dataHome =
-    process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share");
-  const candidates = [
-    process.env.ATLAS_NOTES_BIN,
-    join(
-      homedir(),
-      "development",
-      "Custom",
-      "nvim",
-      "atlas.nvim",
-      "bin",
-      "atlas-notes",
-    ),
-    join(dataHome, "nvim", "lazy", "atlas.nvim", "bin", "atlas-notes"),
-  ];
-  const command = candidates.find(
-    (candidate): candidate is string =>
-      typeof candidate === "string" && existsSync(candidate),
-  );
-  if (!command) {
-    throw new Error(
-      "Atlas notes CLI not found. Install atlas.nvim with lazy.nvim or set ATLAS_NOTES_BIN.",
-    );
-  }
-  return command;
-}
-
 function runAtlasNotes(
   args: string[],
   signal?: AbortSignal,
 ): Promise<RunResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn(atlasNotesCommand(), args, {
+    const child = spawn(ATLAS_NOTES_BIN, args, {
       cwd: process.cwd(),
       env: process.env,
       signal,
