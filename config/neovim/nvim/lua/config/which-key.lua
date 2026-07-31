@@ -699,11 +699,11 @@ wk.add({
 		desc = "Git Status",
 	},
 	{
-		"<leader>gd",
+		"<leader>gc",
 		function()
 			snacks.picker.git_diff()
 		end,
-		desc = "Git Diff (Hunks)",
+		desc = "Git Changes (Hunks)",
 	},
 	{
 		"<leader>gS",
@@ -765,7 +765,7 @@ wk.add({
 
 	-- Diffview / CodeDiff
 	{
-		"<leader>gD",
+		"<leader>gd",
 		function()
 			if vim.g.use_codediff then
 				vim.cmd("CodeDiff")
@@ -776,7 +776,7 @@ wk.add({
 		desc = "Open Diff",
 	},
 	{
-		"<leader>gO",
+		"<leader>gD",
 		"<cmd>GitOriginDiff<cr>",
 		desc = "Diff vs origin branch",
 	},
