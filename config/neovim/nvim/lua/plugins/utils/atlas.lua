@@ -35,20 +35,21 @@ end
 
 return {
 	-- "emrearmagan/atlas.nvim",
-	dir = "/Users/emrearmagan/development/nvim/atlas.nvim",
+	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
 	event = "VeryLazy",
 	opts = {
 		---@class AtlasPullsConfig
 		pulls = {
 			diff = {
-				open_cmd = "CodeDiff",
+				open_cmd = "AtlasDiff",
+				layout = "inline",
 			},
 
 			repo_config = {
 				paths = {
 					["emrearmagan/*"] = "~/development/*",
 					["emrearmagan/*.nvim"] = "~/development/nvim/*.nvim",
-					["emrearmagan/test"] = "~/development/nvim/atlas.testing/test",
+					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
 			},
@@ -150,12 +151,6 @@ return {
 							key = "3",
 							layout = "plain",
 							search = "repo:neovim/neovim sort:updated-desc",
-						},
-						{
-							name = "Best",
-							key = "4",
-							layout = "plain",
-							search = "repo:folke/lazy.nvim repo:nvim-telescope/telescope.nvim repo:hrsh7th/nvim-cmp repo:lewis6991/gitsigns.nvim repo:nvim-treesitter/nvim-treesitter sort:updated-desc",
 						},
 					},
 					bookmarks = {

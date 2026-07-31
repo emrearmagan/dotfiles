@@ -19,8 +19,6 @@ return {
 				end,
 			})
 
-			require("config.my.diff")
-
 			require("codediff").setup({
 				default = {
 					disable_diagnostics = false,

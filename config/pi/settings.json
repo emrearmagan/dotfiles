@@ -1,7 +1,7 @@
 {
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "medium",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "high",
   "hideThinkingBlock": true,
   "thinkingBudgets": {
     "minimal": 1024,
@@ -39,7 +39,8 @@
     "npm:@gotgenes/pi-subagents",
     "npm:spotme",
     "git:github.com/MasuRii/pi-tool-display",
-    "npm:@hypabolic/pi-hypa"
+    "npm:@hypabolic/pi-hypa",
+    "npm:@narumitw/pi-usage"
   ],
   "theme": "catppuccin-mocha-pi",
   "permissionLevel": "low"
