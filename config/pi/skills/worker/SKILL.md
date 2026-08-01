@@ -1,11 +1,11 @@
 ---
 name: worker
-description: 'Implement code from a spec or requirement — plan, small steps, evidence-verified. Triggers: "build", "implement", "fix", "work on", "let''s start", or any multi-step change after a spec.'
+description: 'Implement code from a spec or requirement — plan, small steps, and follow-up friendly. Triggers: "build", "implement", "fix", "work on", "let''s start", or any multi-step change after a spec.'
 ---
 
 # Worker
 
-Implement requested changes with a tight loop: **plan → implement → verify → report**.
+Implement requested changes with a tight loop: **plan → implement → collect follow-ups → report**.
 
 ## Principles
 
@@ -14,7 +14,7 @@ Implement requested changes with a tight loop: **plan → implement → verify �
 - **Targeted edits, not rewrites.** Smallest change that achieves the goal.
 - **Diagnose, don't guess.** If something fails, investigate (see `/skill:systematic-debugging`).
 - **Do not commit unless asked.** Only commit when the user explicitly asks.
-- **Report what changed.** End with a clear summary of files modified and verification done.
+- **Report what changed.** End with a concise summary of modified files and behavior.
 
 ## 1. Plan
 
@@ -24,7 +24,6 @@ Each task should include:
 
 - exact file path(s)
 - intended change
-- verification command or concrete manual check
 
 Keep tasks small and update them as reality changes.
 
@@ -38,32 +37,20 @@ Work one task at a time.
 - Do not bundle unrelated cleanup.
 - If the plan becomes wrong, update the task before continuing.
 
-## 3. Verify
+## 3. Verification
 
-Use the tightest useful feedback loop:
+For iterative work, defer verification through follow-up changes. Do not create a task solely to track it, and do not repeatedly ask whether to verify.
 
-- focused test/check for the changed code
-- one command that reproduces the bug or validates the feature
-- manual check only when automation is not practical
+When code or executable configuration behavior changed and a meaningful check was deferred, append this line to implementation summaries:
 
-Run the relevant check before claiming success. Broader checks are for broad or risky changes.
+> Verification: pending — say “verify” when ready.
 
-If a check fails, do not stack guesses. Diagnose the failure first.
+Omit verification status for documentation, prose, comments, formatting-only edits, and changes where no useful check exists or the edit itself fully establishes the requested outcome. Do not print a replacement such as `No verification needed`.
 
-Iron law: if you have not run the verification command in this message, do not claim it passes.
+Treat requests to verify, test, do a final pass, commit, or create a PR as verification requests. If the user otherwise signals that behavior-changing work is done, ask once whether to verify. After verification, remove the reminder until another behavioral change is made.
 
-For the full claim→evidence table, see `references/verification.md`.
+Diagnostic commands needed to investigate a failure are allowed, but do not run broader checks automatically.
 
 ## 4. Report
 
-End with:
-
-```markdown
-## Changes Made
-- `path/to/file` — what changed and why
-
-## Verification
-- Ran `<command>` — result
-```
-
-No "should work". Only evidence-backed claims.
+End with a concise summary of the files changed and behavior implemented. Add the verification reminder only when the criteria above apply.

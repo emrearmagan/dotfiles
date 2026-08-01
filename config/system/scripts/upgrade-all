@@ -5,9 +5,9 @@ set -u
 
 # name : label shown while running : command
 JOBS=(
-	"brew:Brewing fresh packages:brew update && brew upgrade --yes && brew cleanup"
+	"brew:Brewing fresh packages:brew update && brew upgrade --formula --yes && brew cleanup --formula --yes"
 	"tmux:Tightening tmux plugins:~/.tmux/plugins/tpm/bin/update_plugins all"
-	"pi:Baking fresh pi:pi update --all"
+	"pi:Baking fresh pi:pi update --extensions"
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
