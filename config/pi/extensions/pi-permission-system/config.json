@@ -60,7 +60,8 @@
       "git rebase*": "ask",
       "docker ps*": "allow",
       "rm -rf *": "deny",
-      "sudo *": "deny"
+      "sudo *": "deny",
+      "env *": "deny"
     }
   }
 }
