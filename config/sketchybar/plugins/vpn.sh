@@ -7,9 +7,12 @@ source "$CONFIG_DIR/colors.sh"
 source "$CONFIG_DIR/icons.sh"
 
 up=false
-tailscale status &>/dev/null && up=true
+tailscale status --json 2>/dev/null |
+	jq -e '.BackendState == "Running" and .Self.Online == true' >/dev/null && up=true
 ifconfig 2>/dev/null | awk '/^[a-z0-9]+:/{u=($0 ~ /^utun/)} u && /inet .*-->/{f=1} END{exit !f}' && up=true
-scutil --nc list 2>/dev/null | grep -qE '\(Connected\)' && up=true
+scutil --nc list 2>/dev/null |
+	grep -E '\(Connected\)' |
+	grep -qv 'io\.tailscale\.ipn\.macsys' && up=true
 
 if $up; then
 	sketchybar --set "$NAME" drawing=on icon.color=0xff${GREEN:2} label.drawing=off

@@ -14,7 +14,9 @@ mouse.exited | mouse.exited.global | front_app_switched)
 esac
 
 # Filter out any "JSON API ..." lines that appear during Homebrew metadata sync.
-LIST=$(zsh -l -c "brew outdated --quiet 2>/dev/null | grep -v 'JSON API'")
+BREW=/opt/homebrew/bin/brew
+[ -x "$BREW" ] || BREW=$(command -v brew)
+LIST=$("$BREW" outdated --quiet 2>/dev/null | grep -v 'JSON API')
 COUNT=$(printf '%s' "$LIST" | grep -c .)
 
 case "$COUNT" in

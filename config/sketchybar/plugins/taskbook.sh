@@ -13,7 +13,7 @@ fi
 COUNT=$(jq '[.[] | select(._isTask == true and .isComplete == false)] | length' "$STORAGE")
 
 if [ "$COUNT" -eq 0 ]; then
-	sketchybar --set "$NAME" icon=$TASK_DONE label="0" icon.color=$GREEN
+	sketchybar --set "$NAME" icon=$TASK_DONE label="" icon.color=$GREEN
 else
 	sketchybar --set "$NAME" icon=$TASK label="$COUNT" icon.color=$BLUE
 fi

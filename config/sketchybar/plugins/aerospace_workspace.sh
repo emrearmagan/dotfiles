@@ -2,11 +2,7 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-echo "called with $1"
-echo "$FOCUSED_WORKSPACE"
-
 if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
-	"$CONFIG_DIR/plugins/aerospace_space_windows.sh" "$1" >/dev/null 2>&1 || true
 	sketchybar --set "$NAME" background.drawing=on
 else
 	sketchybar --set "$NAME" background.drawing=off

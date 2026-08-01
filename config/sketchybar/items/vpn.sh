@@ -7,7 +7,7 @@ source "$HOME/.config/sketchybar/icons.sh"
 sketchybar --add event vpn_update \
 	--add item vpn right \
 	--set vpn \
-	drawing=off updates=on update_freq=30 \
+	drawing=off updates=on update_freq=60 \
 	icon=$VPN \
 	icon.color=0xff${RED:2} \
 	label.drawing=off \

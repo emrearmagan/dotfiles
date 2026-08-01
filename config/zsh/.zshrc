@@ -98,3 +98,5 @@ ex=92:\        # executables: green
 fi=97:\        # regular files: soft white
 "
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi

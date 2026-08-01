@@ -3,10 +3,12 @@
 source "$HOME/.config/sketchybar/icons.sh"
 source "$HOME/.config/sketchybar/colors.sh"
 
-PERCENTAGE=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
-CHARGING=$(pmset -g batt | grep 'AC Power')
+BATTERY_INFO=$(pmset -g batt)
+PERCENTAGE=$(printf '%s\n' "$BATTERY_INFO" | grep -Eo "\d+%" | cut -d% -f1)
+CHARGING=$(printf '%s\n' "$BATTERY_INFO" | grep 'AC Power')
 
-if [ $PERCENTAGE = "" ]; then
+if [ -z "$PERCENTAGE" ]; then
+	sketchybar --set "$NAME" drawing=off
 	exit 0
 fi
 

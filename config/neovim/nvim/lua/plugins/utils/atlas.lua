@@ -35,6 +35,7 @@ end
 
 return {
 	-- "emrearmagan/atlas.nvim",
+	name = "atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
 	event = "VeryLazy",
 	cmd = { "AtlasDiff" },

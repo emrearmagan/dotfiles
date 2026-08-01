@@ -1,6 +1,6 @@
 #!/bin/bash
 # Minimal system widget: chip icon + "cpu% · mem%". Click for a details popup
-# (CPU / RAM / SSD / Net / Top process).
+# (CPU / RAM / SSD / Top process).
 
 sketchybar --add item cpu right \
 	--set cpu \
@@ -13,7 +13,7 @@ sketchybar --add item cpu right \
 	--subscribe cpu mouse.clicked mouse.exited mouse.exited.global front_app_switched
 
 # Popup rows (monospace so the columns line up).
-for i in 1 2 3 4 5; do
+for i in 1 2 3 4; do
 	sketchybar --add item cpu.row.$i popup.cpu \
 		--set cpu.row.$i icon.drawing=off \
 		label.font="JetBrainsMono Nerd Font:Medium:12.0" label.align=left \

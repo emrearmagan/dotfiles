@@ -3,7 +3,7 @@
 
 sketchybar --add item ssh right \
 	--set ssh \
-	drawing=off updates=on update_freq=5 \
+	drawing=off updates=on update_freq=30 \
 	icon=$SSH_ICON icon.color=$TEAL icon.font="JetBrainsMono Nerd Font:Bold:$FONT_SIZE" \
 	label.drawing=off \
 	padding_left=3 padding_right=3 \
