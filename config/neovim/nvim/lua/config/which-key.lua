@@ -196,6 +196,13 @@ wk.add({
 		desc = "Find files",
 	},
 	{
+		"<leader>fb",
+		function()
+			require("config.my.buffer-list").toggle()
+		end,
+		desc = "Buffers",
+	},
+	{
 		"<leader>fg",
 		function()
 			snacks.picker.grep({ hidden = true, no_ignore = false })
@@ -272,7 +279,9 @@ wk.add({
 		end,
 		desc = "Quickfix",
 	},
+
 	{ "<leader>qa", ":BufferLineCloseOthers<CR>", desc = "Close all except current", mode = "n" },
+
 	{
 		"<leader>q+",
 		function()

@@ -53,6 +53,7 @@ return {
 					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
 					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
 					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.test.gitlab",
+					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.test.bitbucket",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
 			},
@@ -211,8 +212,7 @@ return {
 							key = "1",
 							layout = "compact",
 							repos = {
-								{ workspace = "emrearmaganxxx", repo = "atlas" },
-								{ workspace = "emrearmaganxxx", repo = "new" },
+								{ workspace = "atlasxx", repo = "atlas.test.bitbucket" },
 							},
 
 							---@param pr PullRequest

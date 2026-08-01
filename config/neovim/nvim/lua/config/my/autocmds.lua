@@ -111,6 +111,16 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 	end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup("wrap_prose"),
+	pattern = { "markdown", "text", "gitcommit" },
+	callback = function()
+		vim.opt_local.wrap = true
+		vim.opt_local.linebreak = true
+		vim.opt_local.breakindent = true
+	end,
+})
+
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 	group = augroup("env_filetype"),
 	pattern = { "*.env", ".env.*" },
