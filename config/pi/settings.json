@@ -1,7 +1,7 @@
 {
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "xhigh",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "thinkingBudgets": {
     "minimal": 1024,
@@ -17,7 +17,7 @@
     "agentMaxTurns": 16,
     "model": {
       "provider": "openai-codex",
-      "id": "gpt-5.4-mini"
+      "id": "gpt-5.6-terra"
     },
     "thinkingLevel": "low"
   },

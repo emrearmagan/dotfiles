@@ -1,7 +1,7 @@
 ---
 description: Deeper multi-step research on libraries, APIs, or technical topics. Returns a written report with citations. Use when you need more than `explore` provides — comparisons, trade-off analyses, "how does X differ from Y" investigations.
 mode: subagent
-model: openai/gpt-5.4
+model: openai/gpt-5.6-terra
 temperature: 0.2
 tools:
   read: true

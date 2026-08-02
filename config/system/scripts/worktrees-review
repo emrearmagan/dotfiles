@@ -113,7 +113,7 @@ else
 fi
 
 SESSION="reviews"
-MODEL="openai-codex/gpt-5.4"
+MODEL="openai-codex/gpt-5.6-sol"
 PROMPT='/review this branch versus its base branch (fallback: main).'
 if [ -n "$TARGET" ]; then
 	PROMPT="$PROMPT Pull request: $TARGET"

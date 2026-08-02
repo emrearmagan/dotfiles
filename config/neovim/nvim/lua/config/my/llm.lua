@@ -145,7 +145,7 @@ local PI_BASE = {
 	"--no-tools",
 	"--no-session",
 	"--model",
-	"openai-codex/gpt-5.4-mini",
+	"openai-codex/gpt-5.6-terra",
 }
 
 local function run_pi(args, prompt, on_done)

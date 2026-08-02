@@ -1,7 +1,7 @@
 ---
 description: Fast read-only scout — code recon and quick doc lookups. Terse, scannable summaries. For deeper multi-source research, dispatch `researcher` instead.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: openai/gpt-5.6-luna
 temperature: 0.1
 tools:
   bash: true

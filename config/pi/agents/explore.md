@@ -1,7 +1,7 @@
 ---
 name: explore
 description: Fast read-only scout for locating code, auditing local files, and single-page lookups. Use for "find/search/where is X" and narrow audits. Escalate multi-source research, recommendations, and trade-off comparisons to `researcher`.
-model: openai-codex/gpt-5.4-mini
+model: openai-codex/gpt-5.6-luna
 tools: read, grep, find, ls, web_search, fetch_content
 maxTurns: 20
 ---

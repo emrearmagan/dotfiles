@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: Multi-step external research with citations. Use for multi-source questions, comparisons, recommendations, or trade-offs that need deeper evidence than `explore`.
-model: openai-codex/gpt-5.4
+model: openai-codex/gpt-5.6-terra
 tools: read, grep, web_search, fetch_content, ctx_fetch_and_index, ctx_search, ctx_batch_execute
 ---
 

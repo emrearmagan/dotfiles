@@ -185,7 +185,7 @@ function getNamingModel(ctx: ExtensionContext): Model<any> | undefined {
 	// Keep the naming call on the user's configured auth/provider, but prefer a
 	// cheaper Codex model when available instead of spending the main model on it.
 	if (ctx.model?.provider === "openai-codex") {
-		return ctx.modelRegistry.find("openai-codex", modelId ?? "gpt-5.4-mini") ?? ctx.model;
+		return ctx.modelRegistry.find("openai-codex", modelId ?? "gpt-5.6-luna") ?? ctx.model;
 	}
 
 	return ctx.model;

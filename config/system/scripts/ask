@@ -48,7 +48,7 @@ run_with_spinner() {
 	tput cnorm -- normal
 }
 
-MODEL="openai-codex/gpt-5.4-mini"
+MODEL="openai-codex/gpt-5.6-terra"
 PROMPT_PARTS=()
 
 while [ "$#" -gt 0 ]; do

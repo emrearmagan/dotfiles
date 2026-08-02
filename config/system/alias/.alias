@@ -111,8 +111,18 @@ alias gdiff='git diff'
 alias gds='git diff --staged'
 alias gstaged='git diff --staged'
 alias gdc='nvim -c CodeDiff'
-alias glog="git log --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
-alias ghistory="git log --all --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(bold green)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
+alias glog="git log --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs='refs/tags/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(dim yellow)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
+glogbase() {
+  if (( $# != 1 )); then
+    echo 'Usage: glogbase <base-branch>' >&2
+    return 2
+  fi
+
+  local base
+  base=$(git merge-base "$1" HEAD) || return
+  glog "$base..HEAD"
+}
+alias ghistory="git log --all --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs='refs/tags/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(dim yellow)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
 
 # Push / pull
 alias gp='git push'
