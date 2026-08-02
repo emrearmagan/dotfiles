@@ -33,6 +33,10 @@ vim.api.nvim_create_autocmd("BufWinLeave", {
 	group = fold_group,
 	pattern = "?*",
 	callback = function()
+		-- CodeDiff manages its own temporary folds.
+		if vim.w.codediff_restore then
+			return
+		end
 		if vim.bo.buftype == "" and vim.bo.filetype ~= "" then
 			vim.cmd("silent! mkview 1")
 		end
@@ -42,6 +46,10 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 	group = fold_group,
 	pattern = "?*",
 	callback = function()
+		-- CodeDiff manages its own temporary folds.
+		if vim.w.codediff_restore then
+			return
+		end
 		if vim.bo.buftype == "" and vim.bo.filetype ~= "" then
 			vim.cmd("silent! loadview 1")
 		end

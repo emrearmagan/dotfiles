@@ -3,32 +3,19 @@ return {
 		"esmuellert/codediff.nvim",
 		cmd = "CodeDiff",
 		config = function()
-			vim.api.nvim_create_autocmd("FileType", {
-				group = vim.api.nvim_create_augroup("my_codediff_explorer_keymaps", { clear = true }),
-				pattern = "codediff-explorer",
-				callback = function(event)
-					for _, key in ipairs({ "l", "o" }) do
-						vim.keymap.set("n", key, "<CR>", {
-							buffer = event.buf,
-							desc = "Select/toggle entry",
-							nowait = true,
-							remap = true,
-							silent = true,
-						})
-					end
-				end,
-			})
-
 			require("codediff").setup({
 				default = {
 					disable_diagnostics = false,
 				},
 				diff = {
 					layout = "inline",
+					-- compact = true,
+					-- compact_context_lines = 2,
 				},
 				explorer = {
 					view_mode = "tree",
 					flatten_dirs = true,
+					-- focus_on_select = false,
 				},
 				view = {
 					merge_tool = {
@@ -41,16 +28,11 @@ return {
 					view = {
 						next_hunk = "]h",
 						prev_hunk = "[h",
+						toggle_compact = "u",
 					},
-				},
-				hooks = {
-					-- do not fold
-					diff_buf_win_enter = function(bufnr)
-						vim.opt_local.foldenable = false
-					end,
-
-					-- TODO: jump to first diff: https://github.com/sindrets/diffview.nvim/issues/440
-					-- TODO: enable diagnostics in diffview
+					explorer = {
+						select = { "<CR>", "l" },
+					},
 				},
 			})
 		end,
