@@ -31,7 +31,7 @@ return {
 						toggle_compact = "u",
 					},
 					explorer = {
-						select = { "<CR>", "l" },
+						select = "l",
 					},
 				},
 			})
