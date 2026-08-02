@@ -822,29 +822,8 @@ wk.add({
 	{ "<leader>nt", "<cmd>Obsidian tags<CR>", desc = "Tags" },
 	{ "<leader>no", "<cmd>Obsidian open<CR>", desc = "Open in Obsidian app" },
 	{ "<leader>nl", "<cmd>Obsidian dailies<CR>", desc = "Daily list" },
-	{
-		"<leader>nf",
-		function()
-			snacks.picker.files({
-				cwd = vim.g.obsidian_vault,
-				cmd = "rg",
-				args = { "--files", "-g", "*.md" },
-			})
-		end,
-		desc = "Find note",
-	},
-
-	{
-		"<leader>ng",
-		function()
-			snacks.picker.grep({
-				cwd = vim.g.obsidian_vault,
-				cmd = "rg",
-				args = { "-g", "*.md" },
-			})
-		end,
-		desc = "Search notes",
-	},
+	{ "<leader>nf", "<cmd>Obsidian quick_switch<CR>", desc = "Find note" },
+	{ "<leader>ng", "<cmd>Obsidian search<CR>", desc = "Search notes" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Snacks / Utils                 │

@@ -19,6 +19,9 @@ return {
 	},
 	opts = {
 		legacy_commands = false,
+		picker = {
+			name = "snacks.picker",
+		},
 		workspaces = {
 			{ name = "personal", path = M.personal },
 			{ name = "scratch", path = M.scratch },
