@@ -81,11 +81,29 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function(event)
 		local opts = { buffer = event.buf, silent = true, desc = "Remove qf entry" }
 
+		local function remove_entries(rows)
+			local qf = vim.fn.getqflist({ title = 0, items = 0 })
+			local is_haunt = qf.title == "Haunt" or qf.title == "Haunt (buffer)"
+			local haunt = is_haunt and require("haunt.api") or nil
+
+			for _, row in ipairs(rows) do
+				local item = qf.items[row]
+				if item and haunt and item.user_data then
+					haunt.delete_by_id(item.user_data)
+				end
+			end
+
+			for i = #rows, 1, -1 do
+				table.remove(qf.items, rows[i])
+			end
+			vim.fn.setqflist({}, "r", {
+				title = qf.title,
+				items = qf.items,
+			})
+		end
+
 		vim.keymap.set("n", "dd", function()
-			local row = vim.fn.line(".")
-			local list = vim.fn.getqflist()
-			table.remove(list, row)
-			vim.fn.setqflist(list, "r")
+			remove_entries({ vim.fn.line(".") })
 		end, opts)
 
 		vim.keymap.set("x", "d", function()
@@ -94,11 +112,11 @@ vim.api.nvim_create_autocmd("FileType", {
 			if s > e then
 				s, e = e, s
 			end
-			local list = vim.fn.getqflist()
-			for i = e, s, -1 do
-				table.remove(list, i)
+			local rows = {}
+			for i = s, e do
+				table.insert(rows, i)
 			end
-			vim.fn.setqflist(list, "r")
+			remove_entries(rows)
 		end, opts)
 	end,
 })

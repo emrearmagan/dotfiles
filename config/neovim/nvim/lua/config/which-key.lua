@@ -285,11 +285,12 @@ wk.add({
 		end,
 		desc = "Quickfix",
 	},
+	{ "<leader>qQ", "<cmd>HauntQf<CR>", desc = "Haunt notes" },
 
 	{ "<leader>qa", ":BufferLineCloseOthers<CR>", desc = "Close all except current", mode = "n" },
 
 	{
-		"<leader>q+",
+		"<leader>q=",
 		function()
 			vim.fn.setqflist({
 				{
@@ -302,6 +303,11 @@ wk.add({
 			vim.notify("Added to quickfix")
 		end,
 		desc = "Quickfix: Add current line",
+	},
+	{
+		"<leader>q+",
+		"<cmd>HauntAnnotate<cr>",
+		desc = "Haunt: Add or edit note",
 	},
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{

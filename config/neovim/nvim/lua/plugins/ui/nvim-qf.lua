@@ -10,9 +10,8 @@ return {
 		},
 	},
 	{
+		-- If removing Haunt, also remove its `dd` quickfix integration in config/my/autocmds.lua.
 		"TheNoeTrevino/haunt.nvim",
-		branch = "nightly",
-		-- dir = "/Users/emrearmagan/development/nvim/haunt.nvim",
 		opts = {},
 	},
 }
