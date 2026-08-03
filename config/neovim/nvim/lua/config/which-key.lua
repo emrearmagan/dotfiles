@@ -275,7 +275,13 @@ wk.add({
 			local open = vim.iter(vim.api.nvim_list_wins()):any(function(w)
 				return vim.bo[vim.api.nvim_win_get_buf(w)].buftype == "quickfix"
 			end)
-			vim.cmd(open and "cclose" or "copen")
+			if open then
+				vim.cmd("cclose")
+			elseif vim.tbl_isempty(vim.fn.getqflist()) then
+				vim.notify("Quickfix is empty")
+			else
+				vim.cmd("copen")
+			end
 		end,
 		desc = "Quickfix",
 	},

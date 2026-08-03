@@ -124,23 +124,20 @@ glogbase() {
 }
 alias ghistory="git log --all --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs='refs/tags/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(dim yellow)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
 
+# Merge
+alias gmn='git merge --no-ff --no-commit'
+
 # Push / pull
-alias gp='git push'
 alias gpush='git push'
-alias gpl='git pull'
 alias gpull='git pull'
 # Safer force push (refuses if remote has new commits you don't have).
-alias gpf='git push --force-with-lease'
 alias gforcepush='git push --force-with-lease'
 alias gsync='git fetch --prune && git pull'
 
 # Stash / restore
-alias gst='git stash'
 alias gstash='git stash'
-alias gsp='git stash pop'
 alias gunstash='git stash pop'
 # Unstage a file (keep working-tree changes).
-alias grs='git restore --staged'
 alias gunstage-file='git restore --staged'
 alias gunstage='git restore --staged --patch'
 alias gunstage-all='git restore --staged :/'
@@ -150,12 +147,10 @@ alias gdiscard='git restore --patch'
 
 # Navigation
 # Jump to repo root.
-alias grt='cd "$(git rev-parse --show-toplevel || echo .)"'
 alias groot='cd "$(git rev-parse --show-toplevel || echo .)"'
 # Fuzzy-find a remote branch and check out/create the matching local branch.
 alias gco='b=$(git branch -r --format="%(refname:short)" | grep -v "HEAD" | fzf --height 40% --layout=reverse --prompt="remote branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80") && l="${b#*/}" && (git show-ref --verify --quiet "refs/heads/$l" && git checkout "$l" || git checkout -b "$l" "$b")'
 alias gcob='gco'
-alias gcod='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
 alias gswitch='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
 
 # Maintenance

@@ -9,7 +9,7 @@ return {
 				},
 				diff = {
 					layout = "inline",
-					-- compact = true,
+					compact = true,
 					-- compact_context_lines = 2,
 				},
 				explorer = {
