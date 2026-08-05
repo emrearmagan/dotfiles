@@ -27,8 +27,12 @@ alias lsa=la
 # “lsd” → only directories
 alias lsd='eza -lh --only-dirs --color=always --icons --no-user'
 
-# ── copy current path to clipboard (macOS pbcopy) ────────────────────────
+# ── copy paths to clipboard (macOS pbcopy) ───────────────────────────────
 alias cpwd="pwd | tr -d '\n' | pbcopy"
+cppath() {
+  [[ -e "$1" ]] || { echo "usage: cppath <file-or-directory>" >&2; return 1; }
+  printf '%s' "${1:A}" | pbcopy
+}
 
 # Shortcuts
 alias dl="cd ~/Downloads"
