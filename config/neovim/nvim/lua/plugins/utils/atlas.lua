@@ -38,7 +38,7 @@ return {
 	name = "atlas.nvim",
 	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
 	event = "VeryLazy",
-	cmd = { "AtlasDiff" },
+	cmd = { "AtlasDiff", "AtlasPulls", "AtlasIssues" },
 	opts = {
 		---@class AtlasPullsConfig
 		pulls = {

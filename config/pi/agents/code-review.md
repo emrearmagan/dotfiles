@@ -1,4 +1,5 @@
 ---
+display_name: Code Review (gpt-5.6-sol)
 description: Strict read-only reviewer for explicit code/diff/PR review requests. Finds real bugs with file:line evidence.
 tools: read,bash,edit,write,grep,find,ls,mcp,atlas_notes_list,atlas_notes_add
 model: openai-codex/gpt-5.6-sol

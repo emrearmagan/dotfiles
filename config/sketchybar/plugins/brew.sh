@@ -16,7 +16,7 @@ esac
 # Filter out any "JSON API ..." lines that appear during Homebrew metadata sync.
 BREW=/opt/homebrew/bin/brew
 [ -x "$BREW" ] || BREW=$(command -v brew)
-LIST=$("$BREW" outdated --quiet 2>/dev/null | grep -v 'JSON API')
+LIST=$({ "$BREW" outdated --quiet --formula; "$BREW" outdated --quiet --cask; } 2>/dev/null | grep -v 'JSON API')
 COUNT=$(printf '%s' "$LIST" | grep -c .)
 
 case "$COUNT" in

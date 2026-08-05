@@ -48,6 +48,14 @@ alias cat=bat
 alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
+
+alias github='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls github]]) end)"'
+alias github-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues github]]) end)"'
+alias bitbucket='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls bitbucket]]) end)"'
+alias gitlab='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls gitlab]]) end)"'
+alias gitlab-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues gitlab]]) end)"'
+alias jira='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues jira]]) end)"'
+
 alias v=nvim
 alias vim=nvim
 alias cursor="cursor-agent"
@@ -166,40 +174,4 @@ alias scan='nmap -Pn -F -sV'
 
 alias dig='doggo'
 
-# Expand aliases when pressing Enter so history shows the real command.
-# Aliases listed here stay as typed because expanding them is noisy or pointless.
-typeset -gA _expand_alias_on_enter_blacklist=(
-  cls 1 cl 1
-  .. 1 ... 1 .... 1 ..... 1 cd 1 oo 1 dl 1
-  ls 1 l 1 la 1 lsa 1 lsd 1
-  grep 1 cat 1 how 1 pcopy 1 ppaste 1 v 1 vim 1 cursor 1
-  proxy-local 1
-)
 
-_expand_alias_on_enter() {
-  emulate -L zsh
-
-  # zsh-autosuggestions renders ghost text through POSTDISPLAY. Clear it before
-  # rewriting BUFFER, otherwise can visually clutter.
-  POSTDISPLAY=
-
-  local leading=${BUFFER%%[^[:space:]]*}
-  local command_part=${BUFFER#$leading}
-  local first=${command_part%%[[:space:]]*}
-  local rest=${command_part#$first}
-
-  if [[ -n $first && -n ${aliases[$first]} && -z ${_expand_alias_on_enter_blacklist[$first]-} ]]; then
-    BUFFER="${leading}${aliases[$first]}${rest}"
-    CURSOR=${#BUFFER}
-  fi
-
-  zle -R
-  zle .accept-line
-}
-
-_setup_expand_alias_on_enter() {
-  zle -N _expand_alias_on_enter
-  bindkey -M emacs '^M' _expand_alias_on_enter
-  bindkey -M viins '^M' _expand_alias_on_enter
-  bindkey -M vicmd '^M' _expand_alias_on_enter
-}
