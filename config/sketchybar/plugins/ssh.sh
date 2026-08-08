@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Detects outgoing SSH sessions and shows the host(s). Skips `-W` ProxyJump
-# helpers and extracts the host from each ssh client's command line.
+# Detects direct SSH login/tunnel sessions and shows the host(s). Skips `-W`
+# ProxyJump helpers and clients running remote commands, such as Git transports.
 
 source "$HOME/.config/sketchybar/colors.sh"
 source "$HOME/.config/sketchybar/icons.sh"
@@ -20,12 +20,14 @@ hosts=()
 while IFS= read -r cmd; do
 	[ -n "$cmd" ] || continue
 	case " $cmd " in *" -W "*) continue ;; esac # skip ProxyJump helper
-	# host = first non-option token (options in `oa` take a following argument)
+	# Host must be the final token; anything after it is a remote command.
+	# Options in `oa` take a following argument.
 	host=$(printf '%s\n' "$cmd" | awk '{
 		oa="bcDEeFIiJLlmOopQRSWw"
 		for (i=2; i<=NF; i++) { t=$i
 			if (t ~ /^-/) { if (length(t)==2 && index(oa, substr(t,2,1))>0) i++; continue }
-			print t; exit }
+			if (i == NF) print t
+			exit }
 	}')
 	[ -n "$host" ] && hosts+=("$host")
 done < <(ps -axo command | awk '$1=="ssh" || $1 ~ /\/ssh$/')

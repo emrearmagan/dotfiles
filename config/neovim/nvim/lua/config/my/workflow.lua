@@ -1,23 +1,23 @@
 local actions = {
 	{
-		label = "󰌃 JIRA",
-		command = "AtlasIssues jira",
+		label = " GitHub",
+		command = "AtlasPulls Github",
+	},
+	{
+		label = " GitLab",
+		command = "AtlasPulls Gitlab",
 	},
 	{
 		label = " Bitbucket",
 		command = "AtlasPulls bitbucket",
 	},
 	{
-		label = " GitHub",
-		command = "AtlasPulls Github",
+		label = "󰌃 JIRA",
+		command = "AtlasIssues jira",
 	},
 	{
 		label = " GitHub Issues",
 		command = "AtlasIssues Github",
-	},
-	{
-		label = " GitLab",
-		command = "AtlasPulls Gitlab",
 	},
 	{
 		label = " GitLab Issues",

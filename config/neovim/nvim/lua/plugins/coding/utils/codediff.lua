@@ -10,7 +10,7 @@ return {
 				diff = {
 					layout = "inline",
 					compact = true,
-					-- compact_context_lines = 2,
+					compact_context_lines = 2,
 				},
 				explorer = {
 					view_mode = "tree",
@@ -31,7 +31,7 @@ return {
 						toggle_compact = "u",
 					},
 					explorer = {
-						select = "l",
+						select = "<cr>",
 					},
 				},
 			})

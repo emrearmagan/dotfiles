@@ -39,7 +39,13 @@ return {
 		end
 
 		require("ufo").setup({
-			provider_selector = function()
+			provider_selector = function(bufnr)
+				for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
+					if vim.w[win].codediff_restore then
+						return ""
+					end
+				end
+
 				return { "treesitter", "indent" }
 			end,
 			enable_get_fold_virt_text = true,

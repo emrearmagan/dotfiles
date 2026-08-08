@@ -26,6 +26,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- Remember folds (and cursor) per file across sessions.
+--[[
 vim.opt.viewoptions = { "folds", "cursor", "curdir" }
 
 local fold_group = augroup("remember_folds")
@@ -55,6 +56,7 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 		end
 	end,
 })
+--]]
 
 -- Remember the quickfix list per project across sessions.
 local qf_dir = vim.fn.stdpath("state") .. "/quickfix"

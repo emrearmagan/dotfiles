@@ -1,38 +1,3 @@
-local function open_live_command(title, cmd, on_exit)
-	local width = math.floor(vim.o.columns * 0.4)
-	local height = math.floor(vim.o.lines * 0.25)
-	local row = math.floor((vim.o.lines - height) / 2) - 1
-	local col = math.floor((vim.o.columns - width) / 2)
-	local buf = vim.api.nvim_create_buf(false, true)
-	vim.bo[buf].bufhidden = "wipe"
-	local win = vim.api.nvim_open_win(buf, true, {
-		relative = "editor",
-		style = "minimal",
-		border = "rounded",
-		title = " " .. title .. " ",
-		title_pos = "center",
-		width = width,
-		height = height,
-		row = math.max(0, row),
-		col = math.max(0, col),
-	})
-	vim.keymap.set("n", "q", function()
-		if vim.api.nvim_win_is_valid(win) then
-			vim.api.nvim_win_close(win, true)
-		end
-	end, { buffer = buf, silent = true })
-	vim.fn.jobstart(cmd, {
-		term = true,
-		on_exit = function(_, code, _)
-			vim.schedule(function()
-				if on_exit then
-					on_exit(code)
-				end
-			end)
-		end,
-	})
-end
-
 return {
 	-- "emrearmagan/atlas.nvim",
 	name = "atlas.nvim",
@@ -43,7 +8,7 @@ return {
 		---@class AtlasPullsConfig
 		pulls = {
 			diff = {
-				open_cmd = "AtlasDiff",
+				-- open_cmd = "CodeDiff",
 				layout = "inline",
 			},
 
@@ -54,6 +19,8 @@ return {
 					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
 					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
 					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.test.gitlab",
+					["atlas/atlas.test.forgejo"] = "~/development/nvim/atlas/atlas.test.forgejo",
+					["atlas/atlas.test.gitea"] = "~/development/nvim/atlas/atlas.test.gitea",
 					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.test.bitbucket",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
@@ -74,14 +41,10 @@ return {
 						end
 
 						local branch = tostring(ctx.pr.source.branch or "")
-						if branch == "" then
-							done(false, "Missing source branch")
-							return
-						end
-
 						local destination = ctx.repo_path .. ".worktrees"
 
-						open_live_command("worktrees", {
+						local output = ctx.output("worktrees")
+						output:run({
 							"worktrees",
 							branch,
 							destination,
@@ -111,22 +74,9 @@ return {
 						end
 
 						local branch = tostring(ctx.pr.source.branch or "")
-						if branch == "" then
-							done(false, "Missing source branch")
-							return
-						end
-
 						local destination = ctx.repo_path .. ".reviews"
 						local target = tostring((ctx.pr.link or {}).html or "")
-						if target == "" then
-							done(false, "Missing pull request URL")
-							return
-						end
 						local base = tostring((ctx.pr.destination or {}).branch or "")
-						if base == "" then
-							done(false, "Missing destination branch")
-							return
-						end
 						local command = {
 							"worktrees-review",
 							branch,
@@ -137,13 +87,29 @@ return {
 							"--base=" .. base,
 						}
 
-						open_live_command("worktrees-review", command, function(code)
+						local output = ctx.output("worktrees-review")
+						output:run(command, function(code)
 							if code ~= 0 then
 								done(false, "worktrees-review failed (exit " .. tostring(code) .. ")")
 								return
 							end
 							done(true, "Code review started for " .. branch)
 						end)
+					end,
+				},
+				{
+					id = "test_async_output",
+					label = "Test Async Output",
+					run = function(_, ctx, done)
+						local output = ctx.output("Pull request output")
+						output:write("Started")
+						vim.defer_fn(function()
+							output:write("Still running...")
+						end, 500)
+						vim.defer_fn(function()
+							output:write("Finished")
+							done(true, "Async output finished")
+						end, 1000)
 					end,
 				},
 			},
@@ -246,9 +212,9 @@ return {
 					label = "Review Ticket",
 
 					---@param issue Issue
-					---@param _ AtlasIssuesCustomActionContext
+					---@param ctx AtlasIssuesCustomActionContext
 					---@param done fun(ok: boolean|nil, message: string|nil)
-					run = function(issue, _, done)
+					run = function(issue, ctx, done)
 						local issue_key = tostring(issue.key or "")
 						if issue_key == "" then
 							done(false, "Missing issue key")
@@ -275,7 +241,8 @@ return {
 							"Priority: " .. priority,
 						}, "\n")
 
-						open_live_command("ticket-review", {
+						local output = ctx.output("ticket-review")
+						output:run({
 							"tmux-sessions",
 							"run-window",
 							session,
@@ -290,6 +257,21 @@ return {
 							end
 							done(true, "Ticket review started in tmux session " .. session)
 						end)
+					end,
+				},
+				{
+					id = "test_async_output",
+					label = "Test Async Output",
+					run = function(_, ctx, done)
+						local output = ctx.output("Issue output")
+						output:write("Started")
+						vim.defer_fn(function()
+							output:write("Still running...")
+						end, 500)
+						vim.defer_fn(function()
+							output:write("Finished")
+							done(true, "Async output finished")
+						end, 1000)
 					end,
 				},
 			},
