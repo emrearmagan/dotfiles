@@ -256,4 +256,50 @@ return {
 			})
 		end,
 	},
+	{
+		"nvim-mini/mini.tabline",
+		version = "*",
+		event = "VeryLazy",
+		opts = {},
+		config = function(_, opts)
+			require("mini.tabline").setup(opts)
+
+			local function set_highlights()
+				local colors = require("catppuccin.palettes").get_palette()
+				local highlights = {
+					MiniTablineCurrent = { fg = colors.blue, bg = colors.surface0 },
+					MiniTablineVisible = { fg = colors.subtext0, bg = "NONE" },
+					MiniTablineHidden = { fg = colors.overlay1, bg = "NONE" },
+					MiniTablineModifiedCurrent = { fg = colors.peach, bg = colors.surface0 },
+					MiniTablineModifiedVisible = { fg = colors.peach, bg = "NONE" },
+					MiniTablineModifiedHidden = { fg = colors.peach, bg = "NONE" },
+					MiniTablineFill = { bg = "NONE" },
+					MiniTablineTabpagesection = { fg = colors.overlay1, bg = "NONE" },
+				}
+
+				for group, highlight in pairs(highlights) do
+					vim.api.nvim_set_hl(0, group, highlight)
+				end
+			end
+
+			local group = vim.api.nvim_create_augroup("mini_tabline", { clear = true })
+			set_highlights()
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				group = group,
+				callback = set_highlights,
+			})
+
+			local function update_visibility()
+				vim.o.showtabline = #vim.fn.getbufinfo({ buflisted = 1 }) > 1 and 2 or 0
+			end
+
+			update_visibility()
+			vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufEnter" }, {
+				group = group,
+				callback = function()
+					vim.schedule(update_visibility)
+				end,
+			})
+		end,
+	},
 }

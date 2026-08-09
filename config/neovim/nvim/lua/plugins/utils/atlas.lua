@@ -17,11 +17,11 @@ return {
 					["emrearmagan/*"] = "~/development/*",
 					["emrearmagan/*.nvim"] = "~/development/nvim/*.nvim",
 					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
-					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.test",
-					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.test.gitlab",
-					["atlas/atlas.test.forgejo"] = "~/development/nvim/atlas/atlas.test.forgejo",
-					["atlas/atlas.test.gitea"] = "~/development/nvim/atlas/atlas.test.gitea",
-					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.test.bitbucket",
+					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.testing/atlas.test",
+					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.testing/atlas.test.gitlab",
+					["atlas/atlas.test.forgejo"] = "~/development/nvim/atlas/atlas.testing/atlas.test.forgejo",
+					["atlas/atlas.test.gitea"] = "~/development/nvim/atlas/atlas.testing/atlas.test.gitea",
+					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.testing/atlas.test.bitbucket",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
 				},
 			},
@@ -115,8 +115,38 @@ return {
 			},
 
 			providers = {
+				---@type AtlasGiteaPullsConfig
+				gitea = {
+					base_url = "http://localhost:3001",
+					token = vim.env.GITEA_TOKEN,
+					views = {
+						{
+							name = "Gitea",
+							key = "1",
+							layout = "compact",
+							repo = "atlas/atlas.test.gitea",
+						},
+					},
+				},
+
+				-- Forgejo:
+				-- gitea = {
+				-- 	api_type = "forgejo",
+				-- 	base_url = "http://localhost:3000",
+				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	views = {
+				-- 		{
+				-- 			name = "Forgejo",
+				-- 			key = "1",
+				-- 			layout = "compact",
+				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 		},
+				-- 	},
+				-- },
+
 				---@type AtlasGitHubConfig
 				github = {
+					cache_ttl = 3000,
 					views = {
 						{
 							name = "Review",
@@ -277,6 +307,34 @@ return {
 			},
 
 			providers = {
+				---@type AtlasGiteaIssuesConfig
+				gitea = {
+					base_url = "http://localhost:3001",
+					token = vim.env.GITEA_TOKEN,
+					views = {
+						{
+							name = "Gitea",
+							key = "1",
+							layout = "compact",
+							repo = "atlas/atlas.test.gitea",
+						},
+					},
+				},
+				-- Forgejo:
+				-- gitea = {
+				-- 	api_type = "forgejo",
+				-- 	base_url = "http://localhost:3000",
+				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	views = {
+				-- 		{
+				-- 			name = "Forgejo",
+				-- 			key = "1",
+				-- 			layout = "compact",
+				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 		},
+				-- 	},
+				-- },
+
 				github = {
 					views = {
 						{

@@ -72,8 +72,6 @@ return {
 		-- background = scheme.background,
 		background = "#181825",
 		tab_bar = {
-			background = "#181825",
-
 			new_tab = { bg_color = "#181825", fg_color = "#cdd6f4" },
 			new_tab_hover = { bg_color = "#181825", fg_color = "#a6e3a1" },
 		},
