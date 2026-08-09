@@ -264,6 +264,62 @@ return {
 		config = function(_, opts)
 			require("mini.tabline").setup(opts)
 
+			-- Mini has no public ordering API, so sort its generated tabs by first-listed order.
+			local function preserve_buffer_order()
+				local helpers
+				for index = 1, math.huge do
+					local name, value = debug.getupvalue(MiniTabline.make_tabline_string, index)
+					if not name then
+						break
+					end
+					if name == "H" then
+						helpers = value
+						break
+					end
+				end
+
+				if not helpers or type(helpers.list_tabs) ~= "function" or type(helpers.tabs) ~= "table" then
+					vim.notify("Unable to customize mini.tabline buffer order", vim.log.levels.WARN)
+					return
+				end
+				if helpers.user_preserves_buffer_order then
+					return
+				end
+
+				local next_order = 0
+				local function get_order(buf_id)
+					local order = vim.b[buf_id].user_minitabline_order
+					if type(order) ~= "number" then
+						next_order = next_order + 1
+						order = next_order
+						vim.b[buf_id].user_minitabline_order = order
+					else
+						next_order = math.max(next_order, order)
+					end
+					return order
+				end
+
+				for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
+					if vim.bo[buf_id].buflisted then
+						get_order(buf_id)
+					end
+				end
+
+				local list_tabs = helpers.list_tabs
+				helpers.list_tabs = function()
+					list_tabs()
+					for _, tab in ipairs(helpers.tabs) do
+						get_order(tab.buf_id)
+					end
+					table.sort(helpers.tabs, function(a, b)
+						return get_order(a.buf_id) < get_order(b.buf_id)
+					end)
+				end
+				helpers.user_preserves_buffer_order = true
+			end
+
+			preserve_buffer_order()
+
 			local function set_highlights()
 				local colors = require("catppuccin.palettes").get_palette()
 				local highlights = {
