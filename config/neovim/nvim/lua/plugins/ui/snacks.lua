@@ -166,7 +166,7 @@ return {
 		quickfile = { enabled = true },
 		scope = { enabled = true },
 		scroll = {
-			enabled = true,
+			enabled = false,
 			animate = {
 				duration = { step = 10, total = 250 }, -- step: per-frame delay; total: total ms per scroll
 				easing = "outQuad", -- smooth and natural easing
