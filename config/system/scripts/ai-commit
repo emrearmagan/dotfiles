@@ -20,7 +20,7 @@ need sed
 need tr
 need grep
 
-MODEL="openai-codex/gpt-5.3-codex-spark"
+MODEL="openai-codex/gpt-5.6-luna"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 	printf 'Not inside a git repository.\n' >&2

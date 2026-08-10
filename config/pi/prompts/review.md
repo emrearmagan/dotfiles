@@ -64,11 +64,13 @@ If the user explicitly requests only one reviewer, dispatch only that agent.
 
 ### 3. Relay results
 
-Do not summarize, merge, deduplicate, rerank, or synthesize the agents' findings.
+Do not merge, deduplicate, or rerank the agents' findings.
 
 Output each agent's result under its own section. Preserve the substance and ordering of each agent output; only trim obvious wrapper text if needed.
 
 If a reviewer was not run, write `Skipped` for that section.
+
+After both sections, add a combined summary containing each reviewer's verdict and concise conclusion, followed by the total number of Atlas notes added. Derive this only from the agents' outputs; do not introduce new findings or judgments. Show the per-reviewer note counts when available.
 
 ```markdown
 ## Code Review
@@ -78,4 +80,10 @@ If a reviewer was not run, write `Skipped` for that section.
 ## Spec Review
 
 <paste the spec-review agent output, "Skipped", or "No issues found.">
+
+## Summary
+
+- **Code Review:** <verdict and concise conclusion>
+- **Spec Review:** <verdict and concise conclusion, or "Skipped">
+- **Atlas notes:** <total> added (<code-review count> code review, <spec-review count> spec review)
 ```

@@ -1,0 +1,412 @@
+import { getMarkdownTheme, type Theme } from "@earendil-works/pi-coding-agent";
+import {
+	Key,
+	Markdown,
+	SelectList,
+	fuzzyFilter,
+	matchesKey,
+	truncateToWidth,
+	visibleWidth,
+	type Component,
+	type MarkdownTheme,
+	type SelectItem,
+	type SelectListTheme,
+} from "@earendil-works/pi-tui";
+import type { SessionDetail } from "./parse.js";
+import { pageOffset, peekAnchorIndex } from "./search.js";
+
+/** One result, carrying everything the list row and the preview pane need. */
+export interface FinderEntry {
+	/** Absolute session path (returned on selection). */
+	path: string;
+	/** One-line list label: "title · project · ago · N msg". */
+	header: string;
+	/** Preview line 1 — the session title (fuller). */
+	title: string;
+	/** Preview line 2 — "cwd · modified DATE · N messages". */
+	detail: string;
+	/** Preview line 3+ — longer, keyword-centered snippet. */
+	snippet: string;
+	/** Full session text (`allMessagesText`) for in-pane peek paging (item 5).
+	 *  Optional: when present, `<`/`>` page through it; when absent, only the
+	 *  term-anchored snippet is shown. */
+	fullText?: string;
+	/** Effective query terms, for highlighting in the snippet. */
+	terms: string[];
+}
+
+export interface FinderOptions {
+	/** Header line, e.g. "Find sessions · 42 matches". */
+	title: string;
+	entries: FinderEntry[];
+	theme: Theme;
+	/** Target total component height in rows. When set, the list and preview
+	 * snippet are sized to fill it (more matches + more context on tall terms).
+	 * Overrides are still honored via maxVisible/snippetLines. */
+	targetHeight?: number;
+	/** Visible header rows before scrolling. Overrides the target-derived value. */
+	maxVisible?: number;
+	/** Preview snippet rows. Overrides the target-derived value. */
+	snippetLines?: number;
+	/** Lazy rich-facet loader (PLAN item 1). When set, the component parses the
+	 * focused session's facets on demand (async), caches them per path, and
+	 * renders them above the snippet. Omit to keep the pane snippet-only. */
+	loadDetail?: (path: string) => Promise<SessionDetail | null>;
+}
+
+export const clamp = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, n));
+
+/** Collapse all whitespace (incl. newlines/tabs) and strip control chars so the
+ * result is a single terminal row. A rendered "line" must NEVER contain embedded
+ * newlines: pi's differential renderer treats each array entry as one physical
+ * row, and an embedded \n desyncs the hardware cursor so stale frames stack. */
+const singleLine = (s: string): string =>
+	s.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
+
+function frameLine(content: string, width: number, theme: Theme): string {
+	if (width < 2) return truncateToWidth(content, width, "");
+	const innerWidth = width - 2;
+	const clipped = truncateToWidth(content, innerWidth, "…");
+	const padding = " ".repeat(Math.max(0, innerWidth - visibleWidth(clipped)));
+	return `${theme.fg("border", "│")}${clipped}${padding}${theme.fg("border", "│")}`;
+}
+
+function frameRule(left: string, right: string, label: string, width: number, theme: Theme): string {
+	if (width < 5) return theme.fg("border", truncateToWidth(`${left}${"─".repeat(width)}${right}`, width, ""));
+	const innerWidth = width - 2;
+	const visibleLabel = truncateToWidth(label, Math.max(1, innerWidth - 3), "…");
+	const fill = "─".repeat(Math.max(0, innerWidth - visibleWidth(visibleLabel) - 3));
+	return `${theme.fg("border", `${left}─ `)}${theme.fg("accent", theme.bold(visibleLabel))}${theme.fg("border", ` ${fill}${right}`)}`;
+}
+
+/** Format a token count compactly: 1_234_567 → "1.2M tokens". */
+function formatTokens(n: number): string {
+	if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M tokens`;
+	if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k tokens`;
+	return `${n} tokens`;
+}
+
+/** True for a key sequence that should be inserted into the filter text. */
+function isPrintable(data: string): boolean {
+	return (
+		data.length > 0 &&
+		data[0] !== "\x1b" &&
+		data.charCodeAt(0) >= 0x20 &&
+		data !== "\x7f" // DEL — handled as backspace
+	);
+}
+
+/**
+ * Finder component. Return an instance from `ctx.ui.custom(...)`; wire `onSelect`
+ * / `onCancel` and set `requestRender` to the TUI's redraw hook.
+ */
+export class FinderComponent implements Component {
+	private readonly theme: Theme;
+	private readonly title: string;
+	private readonly maxVisible: number;
+	private readonly maxSnippet: number;
+	private readonly targetHeight?: number;
+	private readonly entries: FinderEntry[];
+	private readonly byPath: Map<string, FinderEntry>;
+	private readonly filter: { value: string } = { value: "" };
+	private readonly loadDetail?: (path: string) => Promise<SessionDetail | null>;
+	/** Per-path facet cache: undefined = not loaded, null = loaded-but-none. */
+	private readonly detailCache = new Map<string, SessionDetail | null>();
+	/** Paths whose loadDetail() is in flight (drives the "loading…" line). */
+	private readonly pending = new Set<string>();
+	private list: SelectList;
+	private focusedEntry: FinderEntry | null;
+	/** Markdown renderer (pi's own chat renderer) for the preview snippet. */
+	private readonly markdownTheme: MarkdownTheme;
+	private md: Markdown | null = null;
+	private mdText = "";
+	/** Per-path char offset into fullText for peek paging (item 5). Absent ⇒
+	 *  show the term-anchored snippet; present ⇒ page through fullText. */
+	private readonly peekOffset = new Map<string, number>();
+	/** Last render width, so peek-page sizing can approximate the char budget. */
+	private lastWidth = 80;
+
+	onSelect?: (path: string) => void;
+	onCancel?: () => void;
+	/** Call this (e.g. `() => tui.requestRender()`) so keystrokes redraw. */
+	requestRender: () => void = () => {};
+
+	constructor(opts: FinderOptions) {
+		this.theme = opts.theme;
+		this.title = opts.title;
+		this.entries = opts.entries;
+		this.byPath = new Map(this.entries.map((e) => [e.path, e]));
+		this.loadDetail = opts.loadDetail;
+		// Reuse pi's chat markdown theme so the preview looks like the real chat
+		// (tables, headings, code blocks, lists, bold, …).
+		this.markdownTheme = getMarkdownTheme();
+
+		// Layout caps. When targetHeight (terminal-derived) is set the picker fills
+		// the available rows: the list takes ~55%, the preview snippet fills the
+		// rest up to maxSnippet. render() derives the per-frame snippet budget from
+		// the actual visible list rows so the total tracks targetHeight closely.
+		this.targetHeight = opts.targetHeight;
+		this.maxVisible =
+			opts.maxVisible ?? (opts.targetHeight ? clamp(Math.floor(opts.targetHeight * 0.55), 6, 30) : 8);
+		this.maxSnippet = opts.snippetLines ?? (opts.targetHeight ? clamp(opts.targetHeight - 12, 8, 24) : 4);
+
+		this.list = this.makeList(this.headerItems());
+		this.focusedEntry = null;
+		this.setFocus(this.entries[0] ?? null);
+	}
+
+	private headerItems(): SelectItem[] {
+		return this.entries.map((e) => ({ value: e.path, label: singleLine(e.header) }));
+	}
+
+	private listTheme(): SelectListTheme {
+		const th = this.theme;
+		return {
+			selectedPrefix: (t) => th.fg("accent", th.bold(t)),
+			selectedText: (t) => th.fg("accent", th.bold(t)),
+			description: (t) => th.fg("muted", t),
+			scrollInfo: (t) => th.fg("dim", t),
+			noMatch: (t) => th.fg("warning", t),
+		};
+	}
+
+	private makeList(items: SelectItem[]): SelectList {
+		const visible = items.length ? Math.min(items.length, this.maxVisible) : this.maxVisible;
+		const list = new SelectList(items, visible, this.listTheme());
+		list.onSelect = (item) => this.onSelect?.(item.value);
+		list.onCancel = () => this.onCancel?.();
+		list.onSelectionChange = (item) => {
+			this.setFocus(this.byPath.get(item.value) ?? null);
+		};
+		return list;
+	}
+
+	/** Set the focused entry and trigger a lazy facet load for it. */
+	private setFocus(entry: FinderEntry | null): void {
+		this.focusedEntry = entry;
+		this.peekOffset.clear(); // peek resets to the anchor on every focus change
+		if (entry) this.maybeLoadDetail(entry.path);
+	}
+
+	/** Kick off an async facet parse for `path` if not already cached/pending. */
+	private maybeLoadDetail(path: string): void {
+		if (!this.loadDetail) return;
+		if (this.detailCache.has(path) || this.pending.has(path)) return;
+		this.pending.add(path);
+		void this.loadDetail(path)
+			.then((d) => {
+				this.detailCache.set(path, d);
+			})
+			.catch(() => {
+				this.detailCache.set(path, null); // treat error as no detail
+			})
+			.finally(() => {
+				this.pending.delete(path);
+				this.requestRender();
+			});
+	}
+
+	/** Text shown in the preview pane: a page of `fullText` when peeking, else
+	 *  the term-anchored snippet (item 5). */
+	private currentSnippetView(e: FinderEntry): string {
+		const ft = e.fullText;
+		if (!ft) return e.snippet;
+		const off = this.peekOffset.get(e.path);
+		if (off === undefined) return e.snippet; // anchor view
+		const window = this.peekWindowChars();
+		const start = Math.min(off, Math.max(0, ft.length - window));
+		const slice = ft.slice(start, start + window);
+		const pre = start > 0 ? "…" : "";
+		const post = start + window < ft.length ? "…" : "";
+		return pre + slice + post;
+	}
+
+	/** Char budget for one peek page ≈ snippet rows × terminal width. */
+	private peekWindowChars(): number {
+		return Math.max(160, this.maxSnippet * this.lastWidth);
+	}
+
+	/** Page the focused entry's fullText forward (1) / back (−1). No-op when the
+	 *  text is absent or fits a single window. First page starts at the match
+	 *  anchor; step is 0.8× the window so context overlaps at the seam. */
+	private pagePeek(dir: 1 | -1): void {
+		const e = this.focusedEntry;
+		if (!e || !e.fullText) return;
+		const len = e.fullText.length;
+		const window = this.peekWindowChars();
+		if (len <= window) return; // whole text fits — nothing to page
+		const inPeek = this.peekOffset.has(e.path);
+		const cur = inPeek ? (this.peekOffset.get(e.path) as number) : peekAnchorIndex(e.fullText, e.terms);
+		const step = Math.max(1, Math.floor(window * 0.8));
+		const next = pageOffset(cur, dir * step, len, window);
+		if (next === cur && !inPeek) return; // bound hit from anchor — stay on snippet
+		this.peekOffset.set(e.path, next);
+		this.requestRender();
+	}
+
+	/** Recompute the visible list from the current filter text (fuzzy). */
+	private refreshFilter(): void {
+		const q = this.filter.value.trim();
+		const all = this.headerItems();
+		const items = q
+			? fuzzyFilter(all, q, (it) => {
+					const e = this.byPath.get(it.value);
+					return e ? `${e.header} ${e.snippet}` : it.label;
+				})
+			: all;
+		this.list = this.makeList(items);
+		this.setFocus(items[0] ? (this.byPath.get(items[0].value) ?? null) : null);
+	}
+
+	/** Rich facet lines for the focused entry (item 1). Empty when rich preview
+	 *  is off, when loading is in flight (→ single dim line), or when the detail
+	 *  is null/absent (snippet-only fallback). */
+	private renderFacetLines(e: FinderEntry, width: number): string[] {
+		const th = this.theme;
+		if (!this.loadDetail) return []; // rich preview disabled → snippet-only
+		const path = e.path;
+		if (this.pending.has(path)) return [th.fg("dim", "loading details…")];
+		const detail = this.detailCache.get(path);
+		if (!detail) return []; // absent or parsed-null
+		const f = detail.facets;
+		const lines: string[] = [];
+		if (f.models.length) {
+			lines.push(th.fg("muted", truncateToWidth(`Models: ${f.models.join(", ")}`, width, "…")));
+		}
+		if (f.toolCalls.length) {
+			const parts = f.toolCalls.map((t) => `${t.name}(${t.count})`).join(", ");
+			lines.push(th.fg("muted", truncateToWidth(`Tools: ${parts}`, width, "…")));
+		}
+		if (f.filesModified.length) {
+			lines.push(th.fg("muted", truncateToWidth(`Modified: ${f.filesModified.join(", ")}`, width, "…")));
+		}
+		const bits: string[] = [];
+		if (typeof f.totalCost === "number") bits.push(`$${f.totalCost.toFixed(2)}`);
+		if (typeof f.totalTokens === "number") bits.push(formatTokens(f.totalTokens));
+		if (bits.length) lines.push(th.fg("muted", truncateToWidth(`Cost: ${bits.join(" · ")}`, width, "…")));
+		return lines;
+	}
+
+	handleInput(data: string): void {
+		if (matchesKey(data, Key.ctrl("k"))) {
+			this.list.handleInput("\x1b[A");
+		} else if (matchesKey(data, Key.ctrl("j"))) {
+			this.list.handleInput("\x1b[B");
+		} else if (
+			matchesKey(data, "up") ||
+			matchesKey(data, "down") ||
+			matchesKey(data, "pageUp") ||
+			matchesKey(data, "pageDown") ||
+			matchesKey(data, "home") ||
+			matchesKey(data, "end")
+		) {
+			this.list.handleInput(data);
+		} else if (matchesKey(data, "return") || matchesKey(data, "enter")) {
+			const sel = this.list.getSelectedItem();
+			if (sel) this.onSelect?.(sel.value);
+		} else if (matchesKey(data, "escape") || matchesKey(data, "ctrl+c")) {
+			this.onCancel?.();
+		} else if (matchesKey(data, "backspace") || data === "\x7f" || data === "\b") {
+			if (this.filter.value.length > 0) {
+				this.filter.value = this.filter.value.slice(0, -1);
+				this.refreshFilter();
+			}
+		} else if (matchesKey(data, "tab") || matchesKey(data, "shift+tab")) {
+			// swallow — single filter field
+		} else if (this.focusedEntry != null && (data === ">" || data === "<")) {
+			this.pagePeek(data === ">" ? 1 : -1);
+		} else if (isPrintable(data)) {
+			this.filter.value += data;
+			this.refreshFilter();
+		}
+		this.requestRender();
+	}
+
+	render(width: number): string[] {
+		const th = this.theme;
+		if (width < 4) return [truncateToWidth(this.title, width, "")];
+
+		const innerWidth = width - 2;
+		this.lastWidth = innerWidth;
+		const lines: string[] = [];
+
+		lines.push(frameRule("╭", "╮", this.title, width, th));
+		lines.push(frameLine(th.fg("dim", "type to filter  ·  ↑↓/ctrl+jk navigate  ·  < > peek  ·  enter jump  ·  esc cancel"), width, th));
+
+		// Filter line (plain text — no Input component / no cursor marker).
+		const placeholder = th.fg("dim", "type to filter…");
+		const filterLine = this.filter.value ? this.filter.value : placeholder;
+		lines.push(frameLine(`${th.fg("dim", "filter: ")}${filterLine}`, width, th));
+		lines.push(frameRule("├", "┤", "Results", width, th));
+
+		// Scrollable header list — show one row per match (capped at maxVisible by
+		// the SelectList scroll window). No list padding: the snippet fills any
+		// leftover height instead, so blanks (when any) sit at the bottom.
+		const listRows = this.list.render(innerWidth);
+		lines.push(...listRows.map((line) => frameLine(line, width, th)));
+
+		lines.push(frameRule("├", "┤", "Preview", width, th));
+		const e = this.focusedEntry;
+		if (e) {
+			lines.push(frameLine(th.fg("accent", th.bold(singleLine(e.title))), width, th));
+			lines.push(frameLine(th.fg("muted", singleLine(e.detail)), width, th));
+			// Rich facets (item 1): 0 lines when off/snippet-only, 1 while loading,
+			// up to 4 when resolved. Counted into the chrome so the snippet budget
+			// keeps the total tracking targetHeight.
+			const facetLines = this.renderFacetLines(e, innerWidth);
+			lines.push(...facetLines.map((line) => frameLine(line, width, th)));
+			// chrome = border + help + filter + two section rules + preview title /
+			// detail + bottom border = 8, plus facet lines.
+			const snippetBudget = this.targetHeight
+				? clamp(this.targetHeight - 8 - facetLines.length - listRows.length, 4, this.maxSnippet)
+				: this.maxSnippet;
+			// Preview snippet rendered as MARKDOWN via pi's own chat renderer, so
+			// headings, lists, tables and code blocks keep their structure instead of
+			// collapsing into a wall of text. Cached per snippet text. Each output line
+			// is split on any stray newline / \r-stripped / width-capped, so no array
+			// entry ever carries an embedded newline (renderer-safe).
+			const snippetView = this.currentSnippetView(e);
+			if (this.mdText !== snippetView) {
+				this.md = new Markdown(snippetView.trim(), 0, 0, this.markdownTheme);
+				this.mdText = snippetView;
+			}
+			const mdLines = (this.md?.render(innerWidth) ?? [])
+				.flatMap((line) => line.split(/\r?\n/))
+				.map((line) => truncateToWidth(line.replace(/\r/g, ""), innerWidth, "…"))
+				.slice(0, snippetBudget);
+			while (mdLines.length < snippetBudget) mdLines.push("");
+			lines.push(...mdLines.map((line) => frameLine(line, width, th)));
+		} else {
+			lines.push(frameLine(th.fg("warning", "  No matching sessions"), width, th));
+			lines.push(frameLine("", width, th));
+		}
+
+		lines.push(th.fg("border", `╰${"─".repeat(innerWidth)}╯`));
+		return lines;
+	}
+
+	invalidate(): void {
+		this.list.invalidate();
+	}
+
+	/** Test/debug hook: current filter text. */
+	getFilterValue(): string {
+		return this.filter.value;
+	}
+
+	/** Test/debug hook: whether a facet load is in flight for `path`. */
+	isLoadingDetail(path: string): boolean {
+		return this.pending.has(path);
+	}
+
+	/** Test/debug hook: cached detail (undefined = not loaded, null = none). */
+	getCachedDetail(path: string): SessionDetail | null | undefined {
+		return this.detailCache.get(path);
+	}
+
+	/** Test/debug hook: current peek page offset for `path` (undefined = at the
+	 *  anchor, showing the term-centered snippet). */
+	getPeekOffset(path: string): number | undefined {
+		return this.peekOffset.get(path);
+	}
+}

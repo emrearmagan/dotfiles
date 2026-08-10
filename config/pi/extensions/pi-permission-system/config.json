@@ -55,7 +55,7 @@
       "git tag*": "allow",
       "git show-ref*": "allow",
       "git commit*": "ask",
-      "git push*": "ask",
+      "git push*": "deny",
       "git reset --hard*": "ask",
       "git rebase*": "ask",
       "docker ps*": "allow",

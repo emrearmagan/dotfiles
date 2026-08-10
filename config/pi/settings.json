@@ -37,10 +37,10 @@
     "npm:pi-observational-memory",
     "npm:@gotgenes/pi-permission-system",
     "npm:@gotgenes/pi-subagents",
-    "npm:spotme",
     "git:github.com/MasuRii/pi-tool-display",
     "npm:@hypabolic/pi-hypa",
-    "npm:@narumitw/pi-usage"
+    "npm:@narumitw/pi-usage",
+    "npm:pi-session-search"
   ],
   "theme": "catppuccin-mocha-pi",
   "permissionLevel": "low"
