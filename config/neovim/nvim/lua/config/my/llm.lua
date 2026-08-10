@@ -142,19 +142,23 @@ local PI_BASE = {
 	"-p",
 	"--no-skills",
 	"--no-extensions",
-	"--no-tools",
 	"--no-session",
 	"--model",
 	"openai-codex/gpt-5.6-terra",
 }
 
-local function run_pi(args, prompt, on_done)
+local function run_pi(args, prompt, on_done, options)
+	options = options or {}
 	local cmd = vim.list_extend(vim.deepcopy(PI_BASE), args)
 	table.insert(cmd, prompt)
-	vim.system(cmd, { text = true }, function(result)
+	vim.system(cmd, { text = true, cwd = options.cwd }, function(result)
 		vim.schedule(function()
+			if options.on_finish then
+				options.on_finish()
+			end
 			if result.code ~= 0 then
-				vim.notify(result.stderr ~= "" and result.stderr or "pi failed", vim.log.levels.ERROR)
+				local message = vim.trim(result.stderr or "")
+				vim.notify(message ~= "" and message or "pi failed", vim.log.levels.ERROR)
 				return
 			end
 			local output = vim.trim(result.stdout or "")
@@ -177,13 +181,12 @@ local function pi_write(prompt)
 		"You are a code generator. Output only the requested code — no explanations, usage examples, markdown fences, headings, or surrounding prose. Use the buffer context provided in the user message to pick the correct language and style. If the request is ambiguous, choose the most likely implementation and still output only code."
 	local user = table.concat({ get_context(buf), "", "Request:", prompt }, "\n")
 
-	run_pi({ "--system-prompt", system }, user, function(output)
-		stop()
+	run_pi({ "--no-tools", "--system-prompt", system }, user, function(output)
 		local n = insert_at_position(buf, insert_row, output)
 		if n then
-			vim.notify("PiWrite inserted " .. n .. " line" .. (n == 1 and "" or "s"), vim.log.levels.INFO)
+			vim.notify("Write inserted " .. n .. " line" .. (n == 1 and "" or "s"), vim.log.levels.INFO)
 		end
-	end)
+	end, { on_finish = stop })
 end
 
 local MAX_BUFFER_BYTES = 24000
@@ -223,16 +226,96 @@ local function pi_ask(prompt, has_selection)
 	table.insert(user_parts, "Question:")
 	table.insert(user_parts, prompt)
 
-	run_pi({ "--system-prompt", system }, table.concat(user_parts, "\n"), function(output)
-		stop()
+	run_pi({ "--no-tools", "--system-prompt", system }, table.concat(user_parts, "\n"), function(output)
 		open_markdown_split(prompt:sub(1, 40), output)
-	end)
+	end, { on_finish = stop })
 end
 
-vim.api.nvim_create_user_command("PiWrite", function(opts)
+local function decode_search_results(output, cwd)
+	local first = output:find("%[")
+	local last
+	for i = #output, 1, -1 do
+		if output:sub(i, i) == "]" then
+			last = i
+			break
+		end
+	end
+	if not first or not last or last < first then
+		return nil, "Pi returned search results in an unexpected format"
+	end
+
+	local ok, results = pcall(vim.json.decode, output:sub(first, last))
+	if not ok or type(results) ~= "table" then
+		return nil, "Pi returned invalid JSON search results"
+	end
+
+	local items = {}
+	for _, result in ipairs(results) do
+		if type(result) == "table" then
+			local filename = result.filename or result.file or result.path
+			if type(filename) == "string" and filename ~= "" then
+				if not filename:match("^/") and not filename:match("^%a:[/\\]") then
+					filename = cwd .. "/" .. filename
+				end
+				filename = vim.fs.normalize(filename)
+
+				local stat = (vim.uv or vim.loop).fs_stat(filename)
+				if stat and stat.type == "file" then
+					table.insert(items, {
+						filename = filename,
+						lnum = math.max(1, math.floor(tonumber(result.lnum or result.line) or 1)),
+						col = math.max(1, math.floor(tonumber(result.col or result.column) or 1)),
+						text = tostring(result.text or result.reason or "Relevant location"),
+					})
+				end
+			end
+		end
+	end
+
+	return items
+end
+
+local function pi_search(prompt)
+	local cwd = vim.fn.getcwd()
+	local stop = start_corner_spinner("searching with pi")
+	local system = table.concat({
+		"You are a repository search agent.",
+		"Search only the current working directory using the available read-only tools.",
+		"Return only a JSON array with no markdown or surrounding text.",
+		'Each item must be {"filename":"relative/path","lnum":1,"col":1,"text":"concise reason this location answers the request"}.',
+		"Return concrete source locations, ordered by relevance, with at most 50 items.",
+		"Return [] when nothing relevant exists.",
+	}, " ")
+	local request = table.concat({ "Working directory: " .. cwd, "", "Search request:", prompt }, "\n")
+
+	run_pi({ "--tools", "read,grep,find,ls", "--system-prompt", system }, request, function(output)
+		local items, err = decode_search_results(output, cwd)
+		if not items then
+			vim.notify(err, vim.log.levels.ERROR)
+			return
+		end
+		if #items == 0 then
+			vim.fn.setqflist({}, "r", { title = "AI Search: " .. prompt, items = {} })
+			vim.notify("Search found no relevant locations", vim.log.levels.INFO)
+			return
+		end
+
+		vim.fn.setqflist({}, "r", {
+			title = "AI Search: " .. prompt,
+			items = items,
+		})
+		vim.cmd("botright copen")
+	end, { cwd = cwd, on_finish = stop })
+end
+
+vim.api.nvim_create_user_command("Write", function(opts)
 	pi_write(opts.args)
 end, { nargs = "+", desc = "Generate code with pi and insert at cursor" })
 
-vim.api.nvim_create_user_command("PiAsk", function(opts)
+vim.api.nvim_create_user_command("Ask", function(opts)
 	pi_ask(opts.args, opts.range > 0)
-end, { nargs = "+", range = true, desc = "Ask pi about the buffer or visual selection; output in a markdown vsplit" })
+end, { nargs = "+", range = true, desc = "Ask pi about the buffer or visual selection; output in a markdown split" })
+
+vim.api.nvim_create_user_command("Search", function(opts)
+	pi_search(opts.args)
+end, { nargs = "+", desc = "Search the current directory with pi and populate quickfix" })

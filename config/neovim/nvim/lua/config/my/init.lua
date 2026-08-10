@@ -1,4 +1,5 @@
 require("config.my.autocmds")
+require("config.my.mode-line-number")
 require("config.my.buffer-list")
 require("config.my.session")
 require("config.my.add-header")
