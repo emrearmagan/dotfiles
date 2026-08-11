@@ -260,7 +260,13 @@ return {
 		"nvim-mini/mini.tabline",
 		version = "*",
 		event = "VeryLazy",
-		opts = {},
+		opts = {
+			tabpage_section = "right",
+			format = function(buf_id, label)
+				local modified = vim.bo[buf_id].modified and "● " or ""
+				return MiniTabline.default_format(buf_id, label) .. modified
+			end,
+		},
 		config = function(_, opts)
 			require("mini.tabline").setup(opts)
 
@@ -346,11 +352,13 @@ return {
 			})
 
 			local function update_visibility()
-				vim.o.showtabline = #vim.fn.getbufinfo({ buflisted = 1 }) > 1 and 2 or 0
+				local has_multiple_buffers = #vim.fn.getbufinfo({ buflisted = 1 }) > 1
+				local has_multiple_tabpages = vim.fn.tabpagenr("$") > 1
+				vim.o.showtabline = (has_multiple_buffers or has_multiple_tabpages) and 2 or 0
 			end
 
 			update_visibility()
-			vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufEnter" }, {
+			vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufEnter", "TabNew", "TabClosed", "TabEnter" }, {
 				group = group,
 				callback = function()
 					vim.schedule(update_visibility)
