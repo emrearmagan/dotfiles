@@ -1,0 +1,4 @@
+worktree-path = "{{ repo_path }}/../worktrees/{{ repo }}/{{ branch | sanitize }}"
+
+[pre-switch]
+reject-review = 'test {{ branch }} != review || { echo "Branch name review is reserved for review worktrees." >&2; exit 1; }'

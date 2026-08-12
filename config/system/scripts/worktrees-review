@@ -1,47 +1,48 @@
 #!/usr/bin/env bash
 
-# Create or reuse worktrees for one branch across multiple repositories,
-# then split every pane side-by-side: pi review on the left, AtlasDiff on the right.
+# Create or reuse review worktrees for one branch across repositories,
+# then split every pane side-by-side: pi review on the left, Atlas diff on the right.
 #
 # Usage:
-#   worktrees-review <branch> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]
-#   worktrees-review <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]
+#   worktrees-review <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--initial-width=<columns>] [--attach]
 #
 # Notes:
 #   - Uses tmux session: reviews
 #   - Sends a fixed pi prompt to each original pane
-#   - Opens AtlasDiff in a vertical split beside each review pane
+#   - Opens Atlas diff in a vertical split beside each review pane
 #   - --skip-unchanged and --base are forwarded to `worktrees`
-#   - --target opens AtlasDiff for the pull request URL
-#   - Without --target, AtlasDiff opens origin/<base-or-main>...HEAD
+#   - --target opens Atlas diff for the pull request URL
+#   - Without --target, Atlas diff opens origin/<base-or-main>...HEAD
+#   - --initial-width is forwarded for first-time tmux session creation
 #   - --attach attaches after review commands are sent
-#   - branch-only mode uses current repo with destination at ./reviews
+#   - Reviews use <repo-parent>/worktrees/<repo>/review/<branch>.
 #
 # Examples:
 #   worktrees-review linux
 #   worktrees-review linux --skip-unchanged
 #   worktrees-review linux --base=develop
 #   worktrees-review linux --target=https://github.com/owner/repo/pull/123
+#   worktrees-review linux ~/repo/a ~/repo/b --skip-unchanged
 #   worktrees-review linux --attach
-#   worktrees-review linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged
 
 set -euo pipefail
 
 usage() {
 	printf 'Usage:\n' >&2
-	printf '  %s <branch> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n' "$(basename "$0")" >&2
-	printf '  %s <branch> <destination> <repo-path...> [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--initial-width=<columns>] [--attach]\n' "$(basename "$0")" >&2
 	printf '\nExamples:\n' >&2
 	printf '  %s linux\n' "$(basename "$0")" >&2
 	printf '  %s linux --skip-unchanged --base=develop\n' "$(basename "$0")" >&2
 	printf '  %s linux --target=https://github.com/owner/repo/pull/123\n' "$(basename "$0")" >&2
+	printf '  %s linux --initial-width=236\n' "$(basename "$0")" >&2
+	printf '  %s linux ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
 	printf '  %s linux --attach\n' "$(basename "$0")" >&2
-	printf '  %s linux ~/reviews ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
 	printf '\nOptions:\n' >&2
 	printf '  -h, --help                  show help\n' >&2
 	printf '      --skip-unchanged        forward to worktrees\n' >&2
 	printf '      --base=<branch>         forward to worktrees\n' >&2
-	printf '      --target=<url>          open this pull request in AtlasDiff\n' >&2
+	printf '      --target=<url>          open this pull request in Atlas diff\n' >&2
+	printf '      --initial-width=<cols>  initial tmux session width\n' >&2
 	printf '      --attach                attach after sending review commands\n' >&2
 }
 
@@ -49,8 +50,8 @@ REPOS=()
 SKIP_SAME=0
 BASE_BRANCH=""
 TARGET=""
+INITIAL_WIDTH=""
 ATTACH=0
-POSITIONAL=()
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
 	usage
@@ -63,7 +64,6 @@ if [ "$#" -lt 1 ] || [[ "$1" == --* ]]; then
 fi
 
 BRANCH="$1"
-DESTINATION=""
 shift
 
 for ARG in "$@"; do
@@ -85,32 +85,42 @@ for ARG in "$@"; do
 			usage
 			exit 1
 		fi
+	elif [[ "$ARG" == --initial-width=* ]]; then
+		INITIAL_WIDTH="${ARG#--initial-width=}"
+		if ! [[ "$INITIAL_WIDTH" =~ ^[1-9][0-9]*$ ]]; then
+			printf 'Initial width must be a positive integer.\n' >&2
+			usage
+			exit 1
+		fi
 	elif [[ "$ARG" == --* ]]; then
 		printf 'Unknown flag: %s\n' "$ARG" >&2
 		usage
 		exit 1
 	else
-		POSITIONAL+=("$ARG")
+		REPOS+=("$ARG")
 	fi
 done
 
-if [ "${#POSITIONAL[@]}" -eq 0 ]; then
+if [ "${#REPOS[@]}" -eq 0 ]; then
 	if ! REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"; then
-		printf 'Branch-only mode requires running inside a git repository.\n' >&2
+		printf 'worktrees-review must run inside a git repository when no repo path is provided.\n' >&2
 		exit 1
 	fi
-	DESTINATION="$REPO_ROOT/reviews"
 	REPOS=("$REPO_ROOT")
-	printf 'Using current repo: %s\n' "$REPO_ROOT"
-else
-	if [ "${#POSITIONAL[@]}" -lt 2 ]; then
-		printf 'When passing positional args after <branch>, provide both <destination> and at least one <repo-path>.\n' >&2
-		usage
+fi
+
+for REPO_INPUT in "${REPOS[@]}"; do
+	if ! REPO_ROOT="$(git -C "$REPO_INPUT" rev-parse --show-toplevel 2>/dev/null)"; then
+		printf 'Not a git repository: %s\n' "$REPO_INPUT" >&2
 		exit 1
 	fi
-	DESTINATION="${POSITIONAL[0]}"
-	REPOS=("${POSITIONAL[@]:1}")
-fi
+	REPO_NAME="$(basename "$REPO_ROOT")"
+	REVIEW_ROOT="$(dirname "$REPO_ROOT")/worktrees/$REPO_NAME/review"
+	if [ -d "$REVIEW_ROOT/.git" ] || [ -f "$REVIEW_ROOT/.git" ]; then
+		printf 'Branch name "review" is reserved for review worktrees.\n' >&2
+		exit 1
+	fi
+done
 
 SESSION="reviews"
 MODEL="openai-codex/gpt-5.6-sol"
@@ -119,12 +129,15 @@ if [ -n "$TARGET" ]; then
 	PROMPT="$PROMPT Pull request: $TARGET"
 fi
 
-WORKTREES_ARGS=("$BRANCH" "$DESTINATION" "${REPOS[@]}" "--session=$SESSION")
+WORKTREES_ARGS=("$BRANCH" "${REPOS[@]}" "--namespace=review" "--session=$SESSION")
 if [ "$SKIP_SAME" -eq 1 ]; then
 	WORKTREES_ARGS+=("--skip-unchanged")
 fi
 if [ -n "$BASE_BRANCH" ]; then
 	WORKTREES_ARGS+=("--base=$BASE_BRANCH")
+fi
+if [ -n "$INITIAL_WIDTH" ]; then
+	WORKTREES_ARGS+=("--initial-width=$INITIAL_WIDTH")
 fi
 
 if ! worktrees "${WORKTREES_ARGS[@]}"; then
@@ -138,15 +151,15 @@ if [ -z "$WINDOW_TARGET" ]; then
 	exit 1
 fi
 
-ATLASDIFF_TARGET="${TARGET:-origin/${BASE_BRANCH:-main}...HEAD}"
+DIFF_TARGET="${TARGET:-origin/${BASE_BRANCH:-main}...HEAD}"
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
 COMMAND="pi --no-session --model '$MODEL' '$ESCAPED_PROMPT'"
-printf -v ATLASDIFF_COMMAND 'nvim -c %q' "AtlasDiff $ATLASDIFF_TARGET"
+printf -v ATLAS_COMMAND 'nvim -c %q' "Atlas diff $DIFF_TARGET"
 
 while IFS= read -r pane; do
-	atlasdiff_pane="$(tmux split-window -h -t "$pane" -c '#{pane_current_path}' -P -F '#{pane_id}')"
-	tmux send-keys -t "$atlasdiff_pane" "$ATLASDIFF_COMMAND" Enter
+	diff_pane="$(tmux split-window -h -p 70 -t "$pane" -c '#{pane_current_path}' -P -F '#{pane_id}')"
+	tmux send-keys -t "$diff_pane" "$ATLAS_COMMAND" Enter
 	tmux send-keys -t "$pane" "$COMMAND" Enter
 done < <(tmux list-panes -t "$WINDOW_TARGET" -F '#{pane_id}')
 

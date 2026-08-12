@@ -3,7 +3,7 @@
 # Create or replace tmux windows in named sessions.
 #
 # Usage:
-#   tmux-sessions run-window <session> <window> [--cwd=<path>] [--attach] [-- <command> [args...]]
+#   tmux-sessions run-window <session> <window> [--cwd=<path>] [--initial-width=<columns>] [--attach] [-- <command> [args...]]
 #
 # Behavior:
 #   - Creates <session> if it does not exist.
@@ -15,7 +15,7 @@ set -euo pipefail
 
 usage() {
 	printf 'Usage:\n' >&2
-	printf '  %s run-window <session> <window> [--cwd=<path>] [--attach] [-- <command> [args...]]\n' "$(basename "$0")" >&2
+	printf '  %s run-window <session> <window> [--cwd=<path>] [--initial-width=<columns>] [--attach] [-- <command> [args...]]\n' "$(basename "$0")" >&2
 }
 
 quote_command() {
@@ -51,12 +51,21 @@ WINDOW="$2"
 shift 2
 
 CWD=""
+INITIAL_WIDTH=""
 ATTACH=0
 
 while [ "$#" -gt 0 ]; do
 	case "$1" in
 	--cwd=*)
 		CWD="${1#--cwd=}"
+		shift
+		;;
+	--initial-width=*)
+		INITIAL_WIDTH="${1#--initial-width=}"
+		if ! [[ "$INITIAL_WIDTH" =~ ^[1-9][0-9]*$ ]]; then
+			printf 'Initial width must be a positive integer.\n' >&2
+			exit 1
+		fi
 		shift
 		;;
 	--attach)
@@ -97,17 +106,23 @@ window_exists() {
 }
 
 new_session() {
+	local initial_size_args=()
+
+	if [ -n "$INITIAL_WIDTH" ]; then
+		initial_size_args=(-x "$INITIAL_WIDTH")
+	fi
+
 	if [ -n "$COMMAND" ]; then
 		if [ -n "$CWD" ]; then
-			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "$CWD" "$COMMAND"
+			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" -c "$CWD" "$COMMAND"
 		else
-			tmux new-session -d -s "$SESSION" -n "$WINDOW" "$COMMAND"
+			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" "$COMMAND"
 		fi
 	else
 		if [ -n "$CWD" ]; then
-			tmux new-session -d -s "$SESSION" -n "$WINDOW" -c "$CWD"
+			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" -c "$CWD"
 		else
-			tmux new-session -d -s "$SESSION" -n "$WINDOW"
+			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW"
 		fi
 	fi
 }

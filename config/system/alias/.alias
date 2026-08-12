@@ -53,12 +53,12 @@ alias how=tldr
 alias pcopy=pbcopy
 alias ppaste=pbpaste
 
-alias github='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls github]]) end)"'
-alias github-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues github]]) end)"'
-alias bitbucket='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls bitbucket]]) end)"'
-alias gitlab='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasPulls gitlab]]) end)"'
-alias gitlab-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues gitlab]]) end)"'
-alias jira='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[AtlasIssues jira]]) end)"'
+alias github='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas pulls github]]) end)"'
+alias github-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas issues github]]) end)"'
+alias bitbucket='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas pulls bitbucket]]) end)"'
+alias gitlab='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas pulls gitlab]]) end)"'
+alias gitlab-issues='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas issues gitlab]]) end)"'
+alias jira='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas issues jira]]) end)"'
 
 alias v=nvim
 alias vim=nvim

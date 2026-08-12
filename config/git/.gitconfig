@@ -40,6 +40,7 @@
   tool = difftastic
 
 [alias]
+    cdiff = !nvim \"+CodeDiff --exit-on-close\"
     # Difftastic aliases
     dlog = -c diff.external=difft log --ext-diff
     dshow = -c diff.external=difft show --ext-diff

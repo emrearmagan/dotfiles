@@ -36,7 +36,7 @@ deleted = "✘"
 
 [custom.git_worktree]
 command = 'printf '
-when = 'test "$(git rev-parse --git-dir 2>/dev/null)" != "$(git rev-parse --git-common-dir 2>/dev/null)"'
+when = 'test "$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)" != "$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"'
 format = " [$output]($style)"
 style = "bold peach"
 
