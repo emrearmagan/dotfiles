@@ -5,11 +5,19 @@ return {
 	event = "VeryLazy",
 	cmd = { "AtlasDiff", "AtlasPulls", "AtlasIssues" },
 	opts = {
+		picker = "snacks",
 		---@class AtlasPullsConfig
 		pulls = {
+			delete_notes = true, -- Delete local PR notes after approval or merge.
+			default_merge_method = "merge", -- "merge" or "squash".
+			default_delete_branch = true,
+
 			diff = {
 				-- open_cmd = "CodeDiff",
 				layout = "inline",
+				explorer = {
+					grouped = true, -- Group changed files by directory.
+				},
 			},
 
 			repo_config = {
@@ -200,7 +208,7 @@ return {
 				bitbucket = {
 					user = vim.env.BITBUCKET_USER,
 					token = vim.env.BITBUCKET_TOKEN,
-					cache_ttl = 300,
+					cache_ttl = 3000,
 
 					---@type AtlasBitbucketViewConfig[]
 					views = {
@@ -399,7 +407,7 @@ return {
 					base_url = vim.env.JIRA_BASE_URL,
 					email = vim.env.JIRA_EMAIL,
 					token = vim.env.JIRA_TOKEN,
-					cache_ttl = 300,
+					cache_ttl = 3000,
 
 					bookmarks = {
 						-- key = "J", -- default

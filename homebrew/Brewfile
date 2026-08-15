@@ -49,9 +49,7 @@ brew "ical-buddy"           # calendar cli
 brew "neovim"               # editor
 brew "tmux"                 # terminal multiplexer
 brew "lazygit"              # git ui
-brew "delta"                # git diff tool
 brew "opencode"             # ai code cli
-brew "copilot"              # ai code cli
 brew "pi-coding-agent"      # ai code cli
 
 # Security
@@ -76,6 +74,7 @@ brew "ruby"                 # ruby lang
 brew "luarocks"             # lua package manager
 brew "tree-sitter-cli"      # tree-sitter cli for nvim
 brew "tree-sitter"
+brew "httpstat"             # http request stats
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server
@@ -108,13 +107,13 @@ brew "xcbeautify"           # xcode build formatter (duplicate)
 #   brew services start borders
 brew "borders"                 # window borders
 brew "sketchybar"              # status bar
+brew "mole"                    # mac cleaner
 
 # ───────────────────────────────
 # Applications (Casks)
 # ───────────────────────────────
 cask "iterm2"               # terminal emulator
 cask "wezterm"              # gpu terminal
-cask "ghostty"              # gpu terminal
 cask "docker-desktop"       # container platform
 cask "mitmproxy"            # http proxy
 cask "fork"                 # git gui
@@ -126,7 +125,6 @@ cask "xcodes-app"           # xcode version manager
 cask "swiftformat-for-xcode" # xcode swift formatter
 
 cask "raycast"              # spotlight replacement
-cask "notion"               # note taking
 cask "google-chrome"        # web browser
 cask "shortcat"             # mouse-free navigation
 cask "kindavim"             # vim keybindings for mac apps

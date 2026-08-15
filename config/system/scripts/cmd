@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/spinner.sh" spinner1
+
+need() {
+	command -v "$1" >/dev/null 2>&1 || {
+		printf 'Missing dependency: %s\n' "$1" >&2
+		exit 1
+	}
+}
+
+usage() {
+	printf 'Usage: cmd <request>\n'
+}
+
+if [ "$#" -eq 0 ]; then
+	usage >&2
+	exit 1
+fi
+
+case "$1" in
+-h | --help)
+	usage
+	exit 0
+	;;
+esac
+
+need pi
+need fzf
+need awk
+need sed
+need tr
+
+MODEL="openai-codex/gpt-5.6-luna"
+REQUEST="$*"
+
+PROMPT="You translate natural-language requests into shell commands.
+
+Environment:
+- Operating system: macOS
+- Shell: zsh
+- Standard macOS command-line utilities and zsh builtins are available.
+
+Generate 8 distinct command candidates that satisfy the user request.
+
+Rules:
+- Output only complete commands, one per line.
+- Do not include Markdown, code fences, numbering, descriptions, or commentary.
+- Keep every candidate on a single line.
+- Put the most direct and idiomatic option first.
+- Quote paths, globs, and user-controlled values correctly for zsh.
+- Prefer read-only commands for informational requests.
+- Do not use sudo or destructive operations unless the request explicitly requires them.
+- Do not attempt to inspect files, execute commands, browse the web, or modify anything. Only return command text.
+
+User request:
+$REQUEST"
+
+RAW_OUT=""
+CANDIDATES_FILE=""
+
+cleanup() {
+	tput cnorm -- normal >/dev/null 2>&1 || true
+	[ -z "$RAW_OUT" ] || rm -f "$RAW_OUT"
+	[ -z "$CANDIDATES_FILE" ] || rm -f "$CANDIDATES_FILE"
+}
+trap cleanup EXIT
+
+RAW_OUT="$(mktemp)"
+CANDIDATES_FILE="$(mktemp)"
+
+cmd_generate() {
+	pi -p \
+		--no-session \
+		--offline \
+		--no-extensions \
+		--no-skills \
+		--no-prompt-templates \
+		--no-context-files \
+		--no-tools \
+		--thinking off \
+		--model "$MODEL" \
+		"$PROMPT" >"$RAW_OUT" </dev/null
+}
+
+if [ -t 2 ] && command -v tput >/dev/null 2>&1; then
+	STEPS=("Generating commands")
+	CMDS=("cmd_generate")
+	if ! start >&2; then
+		exit 1
+	fi
+else
+	cmd_generate
+fi
+
+tr -d '\r' <"$RAW_OUT" |
+	sed $'s/\033\\[[0-9;]*m//g' |
+	sed -E 's/^[[:space:]]*[-*][[:space:]]+//' |
+	sed -E 's/^[[:space:]]*[0-9]+[.)][[:space:]]+//' |
+	awk '
+		{
+			sub(/^[[:space:]]+/, "")
+			sub(/[[:space:]]+$/, "")
+		}
+		$0 == "" || $0 ~ /^(#|```|\*\*)/ { next }
+		!seen[$0]++ { print }
+	' >"$CANDIDATES_FILE"
+
+if [ ! -s "$CANDIDATES_FILE" ]; then
+	printf 'No command candidates were generated.\n' >&2
+	exit 1
+fi
+
+if ! SELECTED="$(
+	fzf \
+		--height 40% \
+		--layout=reverse \
+		--border \
+		--no-ansi \
+		--no-preview \
+		--prompt='command> ' <"$CANDIDATES_FILE"
+)"; then
+	printf 'Cancelled.\n' >&2
+	exit 1
+fi
+
+if [ -z "$SELECTED" ]; then
+	printf 'Cancelled.\n' >&2
+	exit 1
+fi
+
+printf '%s\n' "$SELECTED"

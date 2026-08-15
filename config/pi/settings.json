@@ -39,8 +39,7 @@
     "npm:@gotgenes/pi-subagents",
     "git:github.com/MasuRii/pi-tool-display",
     "npm:@hypabolic/pi-hypa",
-    "npm:@narumitw/pi-usage",
-    "npm:pi-session-search"
+    "npm:@narumitw/pi-usage"
   ],
   "theme": "catppuccin-mocha-pi",
   "permissionLevel": "low"

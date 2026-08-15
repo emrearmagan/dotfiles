@@ -145,3 +145,10 @@ ipcheck() {
       "is_tor\t\(.is_tor)\t\(if .is_tor then "yel" else "" end)"' \
     | awk -F'\t' -v K="$KEY" -v G="$GRN" -v RED="$RED" -v YEL="$YEL" -v R="$RST" "$fmt"
 }
+
+cmd() {
+    local selected
+    selected="$(command cmd "$@")" || return
+    [[ -n "$selected" ]] || return 1
+    print -z -- "$selected"
+}
