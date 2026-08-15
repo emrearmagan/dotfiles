@@ -114,15 +114,15 @@ new_session() {
 
 	if [ -n "$COMMAND" ]; then
 		if [ -n "$CWD" ]; then
-			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" -c "$CWD" "$COMMAND"
+			tmux new-session -d ${initial_size_args[@]+"${initial_size_args[@]}"} -s "$SESSION" -n "$WINDOW" -c "$CWD" "$COMMAND"
 		else
-			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" "$COMMAND"
+			tmux new-session -d ${initial_size_args[@]+"${initial_size_args[@]}"} -s "$SESSION" -n "$WINDOW" "$COMMAND"
 		fi
 	else
 		if [ -n "$CWD" ]; then
-			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW" -c "$CWD"
+			tmux new-session -d ${initial_size_args[@]+"${initial_size_args[@]}"} -s "$SESSION" -n "$WINDOW" -c "$CWD"
 		else
-			tmux new-session -d "${initial_size_args[@]}" -s "$SESSION" -n "$WINDOW"
+			tmux new-session -d ${initial_size_args[@]+"${initial_size_args[@]}"} -s "$SESSION" -n "$WINDOW"
 		fi
 	fi
 }

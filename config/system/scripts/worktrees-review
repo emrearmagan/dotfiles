@@ -4,7 +4,7 @@
 # then split every pane side-by-side: pi review on the left, Atlas diff on the right.
 #
 # Usage:
-#   worktrees-review <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--initial-width=<columns>] [--attach]
+#   worktrees-review <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]
 #
 # Notes:
 #   - Uses tmux session: reviews
@@ -13,7 +13,6 @@
 #   - --skip-unchanged and --base are forwarded to `worktrees`
 #   - --target opens Atlas diff for the pull request URL
 #   - Without --target, Atlas diff opens origin/<base-or-main>...HEAD
-#   - --initial-width is forwarded for first-time tmux session creation
 #   - --attach attaches after review commands are sent
 #   - Reviews use <repo-parent>/worktrees/<repo>/review/<branch>.
 #
@@ -29,12 +28,11 @@ set -euo pipefail
 
 usage() {
 	printf 'Usage:\n' >&2
-	printf '  %s <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--initial-width=<columns>] [--attach]\n' "$(basename "$0")" >&2
+	printf '  %s <branch> [<repo-path...>] [--skip-unchanged] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n' "$(basename "$0")" >&2
 	printf '\nExamples:\n' >&2
 	printf '  %s linux\n' "$(basename "$0")" >&2
 	printf '  %s linux --skip-unchanged --base=develop\n' "$(basename "$0")" >&2
 	printf '  %s linux --target=https://github.com/owner/repo/pull/123\n' "$(basename "$0")" >&2
-	printf '  %s linux --initial-width=236\n' "$(basename "$0")" >&2
 	printf '  %s linux ~/repo/a ~/repo/b --skip-unchanged\n' "$(basename "$0")" >&2
 	printf '  %s linux --attach\n' "$(basename "$0")" >&2
 	printf '\nOptions:\n' >&2
@@ -42,7 +40,6 @@ usage() {
 	printf '      --skip-unchanged        forward to worktrees\n' >&2
 	printf '      --base=<branch>         forward to worktrees\n' >&2
 	printf '      --target=<url>          open this pull request in Atlas diff\n' >&2
-	printf '      --initial-width=<cols>  initial tmux session width\n' >&2
 	printf '      --attach                attach after sending review commands\n' >&2
 }
 
@@ -50,7 +47,6 @@ REPOS=()
 SKIP_SAME=0
 BASE_BRANCH=""
 TARGET=""
-INITIAL_WIDTH=""
 ATTACH=0
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
@@ -82,13 +78,6 @@ for ARG in "$@"; do
 		TARGET="${ARG#--target=}"
 		if [ -z "$TARGET" ]; then
 			printf 'Target cannot be empty.\n' >&2
-			usage
-			exit 1
-		fi
-	elif [[ "$ARG" == --initial-width=* ]]; then
-		INITIAL_WIDTH="${ARG#--initial-width=}"
-		if ! [[ "$INITIAL_WIDTH" =~ ^[1-9][0-9]*$ ]]; then
-			printf 'Initial width must be a positive integer.\n' >&2
 			usage
 			exit 1
 		fi
@@ -136,8 +125,11 @@ fi
 if [ -n "$BASE_BRANCH" ]; then
 	WORKTREES_ARGS+=("--base=$BASE_BRANCH")
 fi
-if [ -n "$INITIAL_WIDTH" ]; then
-	WORKTREES_ARGS+=("--initial-width=$INITIAL_WIDTH")
+
+if [ -n "${TMUX:-}" ] &&
+	CLIENT_WIDTH="$(tmux display-message -p '#{client_width}' 2>/dev/null)" &&
+	[[ "$CLIENT_WIDTH" =~ ^[1-9][0-9]*$ ]]; then
+	WORKTREES_ARGS+=("--initial-width=$CLIENT_WIDTH")
 fi
 
 if ! worktrees "${WORKTREES_ARGS[@]}"; then
@@ -154,7 +146,7 @@ fi
 DIFF_TARGET="${TARGET:-origin/${BASE_BRANCH:-main}...HEAD}"
 
 ESCAPED_PROMPT="${PROMPT//\'/\'\\\'\'}"
-COMMAND="pi --no-session --model '$MODEL' '$ESCAPED_PROMPT'"
+COMMAND=" pi --no-session --model '$MODEL' '$ESCAPED_PROMPT'"
 printf -v ATLAS_COMMAND 'nvim -c %q' "Atlas diff $DIFF_TARGET"
 
 while IFS= read -r pane; do

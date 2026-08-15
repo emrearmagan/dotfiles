@@ -385,7 +385,7 @@ TMUX_SESSION_ARGS=()
 if [ -n "$INITIAL_WIDTH" ]; then
 	TMUX_SESSION_ARGS+=("--initial-width=$INITIAL_WIDTH")
 fi
-WINDOW_TARGET="$("$SCRIPT_DIR/tmux-sessions" run-window "$SESSION" "$WINDOW" --cwd="${ACTIVE_WORKTREES[0]}" "${TMUX_SESSION_ARGS[@]}")"
+WINDOW_TARGET="$("$SCRIPT_DIR/tmux-sessions" run-window "$SESSION" "$WINDOW" --cwd="${ACTIVE_WORKTREES[0]}" ${TMUX_SESSION_ARGS[@]+"${TMUX_SESSION_ARGS[@]}"})"
 
 printf -v SESSION_ESC '%q' "$SESSION"
 printf -v WINDOW_TARGET_ESC '%q' "$WINDOW_TARGET"
