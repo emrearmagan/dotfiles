@@ -55,20 +55,6 @@ return {
 					},
 				},
 			})
-
-			vim.api.nvim_create_autocmd("WinLeave", {
-				callback = function()
-					if vim.bo.filetype ~= "neo-tree" then
-						return
-					end
-
-					vim.schedule(function()
-						pcall(function()
-							require("neo-tree.command").execute({ action = "close" })
-						end)
-					end)
-				end,
-			})
 		end,
 	},
 }

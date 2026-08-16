@@ -23,7 +23,7 @@ return {
 				lsp_trouble = true,
 				dadbod_ui = true,
 				snacks = {
-					enabled = false,
+					enabled = true,
 				},
 			},
 			dim_inactive = {
@@ -40,7 +40,44 @@ return {
 					Search = searchInactive,
 					IncSearch = searchActive,
 					EndOfBuffer = { fg = colors.flamingo },
-					WinSeparator = { fg = colors.surface0, bg = colors.surface0 },
+
+					WinSeparator = {
+						fg = colors.surface0,
+						bg = "NONE",
+					},
+					NormalFloat = {
+						bg = colors.mantle,
+					},
+					FloatBorder = {
+						fg = colors.surface0,
+						bg = colors.mantle,
+					},
+
+					-- Completion menus
+					Pmenu = {
+						bg = colors.mantle,
+						fg = colors.text,
+					},
+
+					PmenuSel = {
+						bg = colors.surface0,
+						fg = colors.text,
+						bold = false,
+					},
+
+					PmenuBorder = {
+						fg = colors.surface0,
+						bg = colors.mantle,
+					},
+
+					PmenuSbar = {
+						bg = colors.mantle,
+					},
+
+					PmenuThumb = {
+						bg = colors.surface1,
+					},
+
 					-- Solid background for completion popup (overrides transparent_background)
 					-- Pmenu = { bg = colors.mantle, fg = colors.text },
 					-- PmenuSel = { bg = colors.surface0, fg = colors.text, bold = true },

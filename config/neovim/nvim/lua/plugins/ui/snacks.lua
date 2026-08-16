@@ -121,8 +121,83 @@ return {
 		},
 		notify = { enabled = false },
 		picker = {
-			matcher = { smartcase = false },
+			prompt = "❯ ",
+
+			matcher = {
+				smartcase = false,
+			},
+
+			-- fzf-lua-ish layout:
+			-- ┌─────────────────────────── Files h f ───────────────────────────┐
+			-- │ > search...              │ preview                              │
+			-- ├──────────────────────────┤                                      │
+			-- │ file                     │                                      │
+			-- │ file                     │                                      │
+			-- │ file                     │                                      │
+			-- └──────────────────────────┴──────────────────────────────────────┘
+			layout = {
+				preset = "fzf",
+			},
+
+			layouts = {
+				fzf = {
+					layout = {
+						box = "horizontal",
+						backdrop = false,
+						height = 0.65,
+						width = 0.60,
+						border = "rounded",
+						title = "{title} {live} {flags}",
+						title_pos = "center",
+
+						{
+							box = "vertical",
+
+							-- search bar
+							{
+								win = "input",
+								height = 1,
+								border = "bottom",
+							},
+
+							-- results
+							{
+								win = "list",
+								border = "none",
+							},
+						},
+
+						-- preview
+						{
+							win = "preview",
+							width = 0.55,
+							border = "left",
+						},
+					},
+				},
+			},
+
 			sources = {
+				select = {
+					layout = {
+						layout = {
+							backdrop = false,
+
+							row = 0.3,
+
+							width = 0.45,
+							min_width = 50,
+							max_width = 80,
+
+							box = "vertical",
+							border = "rounded",
+
+							{ win = "input", height = 1, border = "bottom" },
+							{ win = "list", border = "none" },
+						},
+					},
+				},
+
 				git_status = {
 					preview = function(ctx)
 						Snacks.picker.preview.cmd({
@@ -136,21 +211,24 @@ return {
 						}, ctx, { ft = "diff" })
 					end,
 				},
+
 				files = {
 					cmd = "rg",
 					hidden = true,
 					no_ignore = false,
 					exclude = picker_exclude,
-					preview = "file", -- show file contents
+					preview = "file",
 				},
+
 				grep = {
 					cmd = "rg --vimgrep",
 					hidden = true,
 					no_ignore = false,
 					exclude = picker_exclude,
 					live = true,
-					preview = "file", -- open matching line
+					preview = "file",
 				},
+
 				git_files = {
 					cmd = "git ls-files --exclude-standard --cached --others",
 					preview = "file",
@@ -159,7 +237,18 @@ return {
 
 			formatters = {
 				file = {
-					filename_first = true, -- display filename before the file path
+					filename_first = false,
+					truncate = "left",
+				},
+			},
+
+			win = {
+				preview = {
+					wo = {
+						number = true,
+						relativenumber = false,
+						signcolumn = "no",
+					},
 				},
 			},
 		},
