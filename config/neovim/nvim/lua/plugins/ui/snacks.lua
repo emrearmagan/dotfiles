@@ -124,6 +124,7 @@ return {
 			prompt = "❯ ",
 
 			matcher = {
+				fuzzy = true,
 				smartcase = false,
 			},
 
@@ -144,8 +145,8 @@ return {
 					layout = {
 						box = "horizontal",
 						backdrop = false,
-						height = 0.65,
-						width = 0.60,
+						height = 0.75,
+						width = 0.70,
 						border = "rounded",
 						title = "{title} {live} {flags}",
 						title_pos = "center",
