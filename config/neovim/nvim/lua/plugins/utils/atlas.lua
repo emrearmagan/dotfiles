@@ -1,11 +1,17 @@
 return {
 	-- "emrearmagan/atlas.nvim",
 	name = "atlas.nvim",
-	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
+	-- dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
+	dir = "/Users/emrearmagan/development/nvim/atlas/gitea-forgejo",
 	event = "VeryLazy",
-	cmd = { "AtlasDiff", "AtlasPulls", "AtlasIssues" },
+	cmd = { "Atlas", "AtlasDiff" },
 	opts = {
-		picker = "snacks",
+		ui = {
+			global_statusline = true,
+			picker = "auto",
+			listed_buffer = false,
+		},
+
 		---@class AtlasPullsConfig
 		pulls = {
 			delete_notes = true, -- Delete local PR notes after approval or merge.
@@ -13,10 +19,19 @@ return {
 			default_delete_branch = true,
 
 			diff = {
-				-- open_cmd = "CodeDiff",
+				open_cmd = "AtlasDiff",
 				layout = "inline",
+				compact = true,
+				compact_context_lines = 3,
+				show_review_panel = false,
+				comment_display = "virtual_lines",
 				explorer = {
 					grouped = true, -- Group changed files by directory.
+					hidden = false,
+					show_commits = false,
+					width = 40,
+					initial_focus = "explorer",
+					ignore = { ".git/**", ".jj/**" },
 				},
 			},
 
@@ -31,6 +46,12 @@ return {
 					["atlas/atlas.test.gitea"] = "~/development/nvim/atlas/atlas.testing/atlas.test.gitea",
 					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.testing/atlas.test.bitbucket",
 					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
+				},
+				settings = {
+					["emrearmagan/atlas.nvim"] = {
+						readme = "README.md",
+						pr_template = ".github/pull_request_template.md",
+					},
 				},
 			},
 
@@ -124,33 +145,33 @@ return {
 
 			providers = {
 				---@type AtlasGiteaPullsConfig
-				gitea = {
-					base_url = "http://localhost:3001",
-					token = vim.env.GITEA_TOKEN,
-					views = {
-						{
-							name = "Gitea",
-							key = "1",
-							layout = "compact",
-							repo = "atlas/atlas.test.gitea",
-						},
-					},
-				},
-
-				-- Forgejo:
 				-- gitea = {
-				-- 	api_type = "forgejo",
-				-- 	base_url = "http://localhost:3000",
-				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	base_url = "http://localhost:3001",
+				-- 	token = vim.env.GITEA_TOKEN,
 				-- 	views = {
 				-- 		{
-				-- 			name = "Forgejo",
+				-- 			name = "Gitea",
 				-- 			key = "1",
 				-- 			layout = "compact",
-				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 			repo = "atlas/atlas.test.gitea",
 				-- 		},
 				-- 	},
 				-- },
+
+				-- Forgejo:
+				gitea = {
+					api_type = "forgejo",
+					base_url = "http://localhost:3000",
+					token = vim.env.FORGEJO_TOKEN,
+					views = {
+						{
+							name = "Forgejo",
+							key = "1",
+							layout = "compact",
+							repo = "atlas/atlas.test.forgejo",
+						},
+					},
+				},
 
 				---@type AtlasGitHubConfig
 				github = {
@@ -176,6 +197,8 @@ return {
 						},
 					},
 					bookmarks = {
+						key = "S",
+						label = "Search",
 						items = {
 							["Review requested"] = "is:pr is:open review-requested:@me sort:updated-desc",
 							["Recently merged"] = "is:pr is:merged author:@me sort:updated-desc",
@@ -197,6 +220,8 @@ return {
 						},
 					},
 					bookmarks = {
+						key = "S",
+						label = "Search",
 						items = {
 							["Reviewing"] = { scope = "all", extra_params = { reviewer_id = "Me" } },
 							["GitLab Org"] = { group = "gitlab-org" },
@@ -243,7 +268,8 @@ return {
 
 		---@class AtlasIssuesConfig
 		issues = {
-			fetch_parent_issues = true,
+			max_results = 100,
+			with_relationships = true,
 			custom_actions = {
 				{
 					id = "review_ticket",
@@ -316,34 +342,35 @@ return {
 
 			providers = {
 				---@type AtlasGiteaIssuesConfig
-				gitea = {
-					base_url = "http://localhost:3001",
-					token = vim.env.GITEA_TOKEN,
-					views = {
-						{
-							name = "Gitea",
-							key = "1",
-							layout = "compact",
-							repo = "atlas/atlas.test.gitea",
-						},
-					},
-				},
-				-- Forgejo:
 				-- gitea = {
-				-- 	api_type = "forgejo",
-				-- 	base_url = "http://localhost:3000",
-				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	base_url = "http://localhost:3001",
+				-- 	token = vim.env.GITEA_TOKEN,
 				-- 	views = {
 				-- 		{
-				-- 			name = "Forgejo",
+				-- 			name = "Gitea",
 				-- 			key = "1",
 				-- 			layout = "compact",
-				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 			repo = "atlas/atlas.test.gitea",
 				-- 		},
 				-- 	},
 				-- },
+				-- Forgejo:
+				gitea = {
+					api_type = "forgejo",
+					base_url = "http://localhost:3000",
+					token = vim.env.FORGEJO_TOKEN,
+					views = {
+						{
+							name = "Forgejo",
+							key = "1",
+							layout = "compact",
+							repo = "atlas/atlas.test.forgejo",
+						},
+					},
+				},
 
 				github = {
+					cache_ttl = 3000,
 					views = {
 						{
 							name = "Issues",
@@ -369,6 +396,8 @@ return {
 						},
 					},
 					bookmarks = {
+						key = "S",
+						label = "Search",
 						items = {
 							["Assigned to me"] = "is:issue is:open assignee:@me",
 							["Mentions"] = "is:issue is:open mentions:@me",
@@ -380,6 +409,7 @@ return {
 				gitlab = {
 					base_url = "https://gitlab.com",
 					token = vim.env.GITLAB_TOKEN,
+					cache_ttl = 300,
 					views = {
 						{ name = "Assigned", key = "1", scope = "assigned_to_me", state = "opened" },
 						{ name = "Created", key = "2", scope = "created_by_me", state = "opened" },
@@ -391,6 +421,8 @@ return {
 						},
 					},
 					bookmarks = {
+						key = "S",
+						label = "Search",
 						items = {
 							["Assigned open"] = { scope = "assigned_to_me", state = "opened" },
 							["Created closed"] = { scope = "created_by_me", state = "closed" },
@@ -407,11 +439,13 @@ return {
 					base_url = vim.env.JIRA_BASE_URL,
 					email = vim.env.JIRA_EMAIL,
 					token = vim.env.JIRA_TOKEN,
+					api_type = "cloud",
+					auth_method = "basic",
 					cache_ttl = 3000,
 
 					bookmarks = {
-						-- key = "J", -- default
-						-- label = "JQL", -- default
+						key = "J",
+						label = "JQL",
 						items = {
 							["Backlog"] = "project = KAN AND statusCategory != Done AND (sprint IS EMPTY OR sprint NOT IN openSprints()) ORDER BY Rank ASC",
 							["Next sprint"] = "project = KAN AND sprint in futureSprints() ORDER BY Rank ASC",
