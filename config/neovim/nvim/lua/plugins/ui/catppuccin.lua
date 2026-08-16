@@ -40,7 +40,9 @@ return {
 					Search = searchInactive,
 					IncSearch = searchActive,
 					EndOfBuffer = { fg = colors.flamingo },
-
+					NormalNC = {
+						bg = "#171722",
+					},
 					WinSeparator = {
 						fg = colors.surface0,
 						bg = "NONE",
@@ -77,6 +79,17 @@ return {
 					PmenuThumb = {
 						bg = colors.surface1,
 					},
+
+					-- Diff backgrounds
+					DiffAdd = { bg = "#2f3d34" },
+					DiffChange = { bg = "#303447" },
+					DiffDelete = { bg = "#3c2c31" },
+					-- DiffText = { bg = "#383d54" },
+
+					-- Git gutter signs
+					-- GitSignsAdd = { fg = "#6f9b7a" },
+					-- GitSignsChange = { fg = "#788aa8" },
+					-- GitSignsDelete = { fg = "#a36f76" },
 
 					-- Solid background for completion popup (overrides transparent_background)
 					-- Pmenu = { bg = colors.mantle, fg = colors.text },
