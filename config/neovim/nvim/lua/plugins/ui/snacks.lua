@@ -185,6 +185,8 @@ return {
 							backdrop = false,
 
 							row = 0.3,
+							height = 0.4,
+							min_height = 2,
 
 							width = 0.45,
 							min_width = 50,
