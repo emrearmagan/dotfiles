@@ -24,6 +24,14 @@ return {
 		opts = {
 			render_modes = { "n", "i", "c", "t" },
 			completions = { lsp = { enabled = true } },
+			overrides = {
+				--- seeems to crash on the first preview inside snacks picker, because the plugin has not been loaded yet. So we disable it for that filetype.
+				filetype = {
+					["markdown.snacks_picker_preview"] = {
+						enabled = false,
+					},
+				},
+			},
 			code = {
 				enabled = true,
 				border = "thin",
