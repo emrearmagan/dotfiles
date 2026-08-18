@@ -163,7 +163,7 @@ alias groot='cd "$(git rev-parse --show-toplevel || echo .)"'
 # Fuzzy-find a remote branch and check out/create the matching local branch.
 alias gco='b=$(git branch -r --format="%(refname:short)" | grep -v "HEAD" | fzf --height 40% --layout=reverse --prompt="remote branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80") && l="${b#*/}" && (git show-ref --verify --quiet "refs/heads/$l" && git checkout "$l" || git checkout -b "$l" "$b")'
 alias gcob='gco'
-alias gswitch='git checkout $(git branch --all --format="%(refname:short)" | sed "s#^remotes/##" | sort -u | fzf --height 40% --layout=reverse --prompt="branch> " --preview="git log --oneline --decorate --graph --color=always {} | head -80")'
+alias gswitch='git checkout $(git branch --format="%(refname:short)%09%(upstream:track)" | fzf --delimiter="\t" --with-nth=1,2 --height 40% --layout=reverse --prompt="local branch> " --preview="git log --oneline --decorate --graph --color=always {1} | head -80" | cut -f1)'
 
 # Maintenance
 # Fetch + prune, pull, then delete local branches whose upstream is gone.
@@ -177,5 +177,3 @@ alias submodule-reset='git submodule deinit -f . && git submodule update --init 
 alias scan='nmap -Pn -F -sV'
 
 alias dig='doggo'
-
-

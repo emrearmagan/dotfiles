@@ -1,7 +1,14 @@
 return {
 	dir = "/Users/emrearmagan/development/nvim/dockyard.nvim",
 	-- "emrearmagan/dockyard.nvim",
-	event = "VeryLazy",
+	cmd = {
+		"Dockyard",
+		"DockyardFloat",
+		"DockyardBuild",
+		"DockyardRun",
+		"DockyardFiles",
+		"DockyardLogs",
+	},
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"akinsho/toggleterm.nvim", -- optional

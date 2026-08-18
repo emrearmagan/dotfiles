@@ -1,10 +1,12 @@
 return {
 	-- "emrearmagan/atlas.nvim",
 	name = "atlas.nvim",
-	-- dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
-	dir = "/Users/emrearmagan/development/nvim/atlas/gitea-forgejo",
-	event = "VeryLazy",
+	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
+	-- dir = "/Users/emrearmagan/development/nvim/atlas/gitea-forgejo",
 	cmd = { "Atlas", "AtlasDiff" },
+	init = function()
+		vim.cmd("cabbrev atlas Atlas")
+	end,
 	opts = {
 		ui = {
 			global_statusline = true,
@@ -145,33 +147,33 @@ return {
 
 			providers = {
 				---@type AtlasGiteaPullsConfig
-				-- gitea = {
-				-- 	base_url = "http://localhost:3001",
-				-- 	token = vim.env.GITEA_TOKEN,
-				-- 	views = {
-				-- 		{
-				-- 			name = "Gitea",
-				-- 			key = "1",
-				-- 			layout = "compact",
-				-- 			repo = "atlas/atlas.test.gitea",
-				-- 		},
-				-- 	},
-				-- },
-
-				-- Forgejo:
 				gitea = {
-					api_type = "forgejo",
-					base_url = "http://localhost:3000",
-					token = vim.env.FORGEJO_TOKEN,
+					base_url = "http://localhost:3001",
+					token = vim.env.GITEA_TOKEN,
 					views = {
 						{
-							name = "Forgejo",
+							name = "Gitea",
 							key = "1",
 							layout = "compact",
-							repo = "atlas/atlas.test.forgejo",
+							repo = "atlas/atlas.test.gitea",
 						},
 					},
 				},
+
+				-- Forgejo:
+				-- gitea = {
+				-- 	api_type = "forgejo",
+				-- 	base_url = "http://localhost:3000",
+				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	views = {
+				-- 		{
+				-- 			name = "Forgejo",
+				-- 			key = "1",
+				-- 			layout = "compact",
+				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 		},
+				-- 	},
+				-- },
 
 				---@type AtlasGitHubConfig
 				github = {
@@ -241,7 +243,7 @@ return {
 							name = "Me",
 							key = "1",
 							layout = "compact",
-							repos = {
+							targets = {
 								{ workspace = "atlasxx", repo = "atlas.test.bitbucket" },
 							},
 
@@ -256,9 +258,27 @@ return {
 							name = "Team",
 							key = "2",
 							layout = "plain",
-							repos = {
-								{ workspace = "emrearmaganxxx", repo = "atlas" },
-								{ workspace = "emrearmaganxxx", repo = "new" },
+							targets = {
+								{ workspace = "atlasxx", project = "AT" },
+							},
+						},
+					},
+					bookmarks = {
+						key = "S",
+						label = "Search",
+						items = {
+							["Atlas"] = {
+								targets = {
+									{ workspace = "atlasxx", repo = "atlas.test.bitbucket" },
+								},
+							},
+							["Ready"] = {
+								targets = {
+									{ workspace = "atlasxx", project = "AT" },
+								},
+								filter = function(pr)
+									return not pr.draft
+								end,
 							},
 						},
 					},
@@ -342,32 +362,32 @@ return {
 
 			providers = {
 				---@type AtlasGiteaIssuesConfig
-				-- gitea = {
-				-- 	base_url = "http://localhost:3001",
-				-- 	token = vim.env.GITEA_TOKEN,
-				-- 	views = {
-				-- 		{
-				-- 			name = "Gitea",
-				-- 			key = "1",
-				-- 			layout = "compact",
-				-- 			repo = "atlas/atlas.test.gitea",
-				-- 		},
-				-- 	},
-				-- },
-				-- Forgejo:
 				gitea = {
-					api_type = "forgejo",
-					base_url = "http://localhost:3000",
-					token = vim.env.FORGEJO_TOKEN,
+					base_url = "http://localhost:3001",
+					token = vim.env.GITEA_TOKEN,
 					views = {
 						{
-							name = "Forgejo",
+							name = "Gitea",
 							key = "1",
 							layout = "compact",
-							repo = "atlas/atlas.test.forgejo",
+							repo = "atlas/atlas.test.gitea",
 						},
 					},
 				},
+				-- Forgejo:
+				-- gitea = {
+				-- 	api_type = "forgejo",
+				-- 	base_url = "http://localhost:3000",
+				-- 	token = vim.env.FORGEJO_TOKEN,
+				-- 	views = {
+				-- 		{
+				-- 			name = "Forgejo",
+				-- 			key = "1",
+				-- 			layout = "compact",
+				-- 			repo = "atlas/atlas.test.forgejo",
+				-- 		},
+				-- 	},
+				-- },
 
 				github = {
 					cache_ttl = 3000,
