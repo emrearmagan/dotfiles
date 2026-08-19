@@ -28,7 +28,7 @@ return {
 					view = {
 						next_hunk = "]h",
 						prev_hunk = "[h",
-						toggle_compact = "u",
+						toggle_compact = "gc",
 					},
 					explorer = {
 						select = "<cr>",

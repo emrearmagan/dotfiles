@@ -145,8 +145,8 @@ return {
 					layout = {
 						box = "horizontal",
 						backdrop = false,
-						height = 0.75,
-						width = 0.70,
+						height = 0.8,
+						width = 0.8,
 						border = "rounded",
 						title = "{title} {live} {flags}",
 						title_pos = "center",
@@ -171,7 +171,7 @@ return {
 						-- preview
 						{
 							win = "preview",
-							width = 0.55,
+							width = 0.45,
 							border = "left",
 						},
 					},
@@ -239,10 +239,11 @@ return {
 			},
 
 			formatters = {
-				file = {
-					filename_first = false,
-					truncate = "left",
-				},
+			file = {
+				filename_first = false,
+				truncate = "left",
+				min_width = 0,
+			},
 			},
 
 			win = {
