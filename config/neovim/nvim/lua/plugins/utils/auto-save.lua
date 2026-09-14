@@ -4,6 +4,10 @@ return {
 	cmd = "ASToggle", -- optional for lazy loading on command
 	event = { "InsertLeave", "TextChanged" }, -- optional for lazy loading on trigger events
 	opts = {
+		condition = function()
+			local lifecycle = package.loaded["codediff.ui.lifecycle"]
+			return not (lifecycle and lifecycle.get_session(vim.api.nvim_get_current_tabpage()))
+		end,
 		trigger_events = {
 			immediate_save = { "BufLeave", "FocusLost", "QuitPre", "VimSuspend" },
 			defer_save = {}, -- disable insert/text-triggered saves completely

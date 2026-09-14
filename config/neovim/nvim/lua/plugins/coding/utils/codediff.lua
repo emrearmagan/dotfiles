@@ -18,7 +18,7 @@ return {
 					line_stats = {
 						enabled = true,
 					},
-					-- focus_on_select = false,
+					auto_open_on_cursor = true,
 				},
 				view = {
 					merge_tool = {
@@ -33,6 +33,8 @@ return {
 						prev_hunk = "[h",
 						stage_hunk = "<leader>gs",
 						toggle_compact = "gc",
+						next_file = { "]f", "<Tab" },
+						prev_file = { "[f", "<S-Tab>" },
 					},
 				},
 			})
