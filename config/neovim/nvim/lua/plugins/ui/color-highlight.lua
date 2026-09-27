@@ -6,6 +6,7 @@ return {
 			render = "background", -- options: 'background', 'foreground', 'first_column'
 			enable_named_colors = true,
 			enable_tailwind = true,
+			exclude_buftypes = { "nofile" },
 		})
 	end,
 }

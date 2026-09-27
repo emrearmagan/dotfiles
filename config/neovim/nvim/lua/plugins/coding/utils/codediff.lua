@@ -1,6 +1,7 @@
 return {
 	{
 		"esmuellert/codediff.nvim",
+		dir = "/Users/emrearmagan/development/nvim/codediff.nvim",
 		cmd = "CodeDiff",
 		config = function()
 			require("codediff").setup({
@@ -9,6 +10,7 @@ return {
 				},
 				diff = {
 					layout = "inline",
+					-- layout = "side-by-side",
 					compact = true,
 					compact_context_lines = 2,
 				},
@@ -33,7 +35,7 @@ return {
 						prev_hunk = "[h",
 						stage_hunk = "<leader>gs",
 						toggle_compact = "gc",
-						next_file = { "]f", "<Tab" },
+						next_file = { "]f", "<Tab>" },
 						prev_file = { "[f", "<S-Tab>" },
 					},
 				},

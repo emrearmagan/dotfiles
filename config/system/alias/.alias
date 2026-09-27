@@ -24,6 +24,10 @@ alias l='eza --no-permissions --color=always --icons --no-user --bytes'
 alias la='eza --long --all --color=always --icons --no-user --bytes'
 alias lsa=la
 
+# Search files
+alias f="fzf | xargs -I {} nvim \"{}\""
+alias fd='cd "$(find . -type d -not -path "*/.git/*" | fzf --no-preview)"'
+
 # “lsd” → only directories
 alias lsd='eza -lh --only-dirs --color=always --icons --no-user'
 

@@ -97,6 +97,10 @@ return {
 		},
 		image = {
 			enabled = true,
+			doc = {
+				max_width = 60,
+				max_height = 20,
+			},
 			resolve = function(path, src)
 				local api = require("obsidian.api")
 				if api.path_is_note(path) then
