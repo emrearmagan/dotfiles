@@ -1,3 +1,4 @@
+tap "abue-ammar/tinycast"
 tap "homebrew/bundle"
 tap "gitguardian/tap"
 tap "FelixKratz/formulae"   # for sketchybar
@@ -125,7 +126,7 @@ cask "sublime-text"         # text editor
 cask "xcodes-app"           # xcode version manager
 cask "swiftformat-for-xcode" # xcode swift formatter
 
-cask "raycast"              # spotlight replacement
+cask "tinycast"             # spotlight replacement
 cask "google-chrome"        # web browser
 cask "shortcat"             # mouse-free navigation
 cask "kindavim"             # vim keybindings for mac apps

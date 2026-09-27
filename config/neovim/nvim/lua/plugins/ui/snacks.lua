@@ -255,7 +255,20 @@ return {
 			},
 
 			win = {
+				input = {
+					keys = {
+						["<C-l>"] = { "focus_preview", mode = { "n", "i" } },
+					},
+				},
+				list = {
+					keys = {
+						["<C-l>"] = "focus_preview",
+					},
+				},
 				preview = {
+					keys = {
+						["<C-h>"] = "focus_input",
+					},
 					wo = {
 						number = true,
 						relativenumber = false,

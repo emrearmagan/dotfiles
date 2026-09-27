@@ -131,10 +131,13 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 	end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
+local prose_filetypes = { markdown = true, text = true, gitcommit = true }
+vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
 	group = augroup("wrap_prose"),
-	pattern = { "markdown", "text", "gitcommit" },
-	callback = function()
+	callback = function(event)
+		if not prose_filetypes[vim.bo[event.buf].filetype] then
+			return
+		end
 		vim.opt_local.wrap = true
 		vim.opt_local.linebreak = true
 		vim.opt_local.breakindent = true
