@@ -418,9 +418,8 @@ wk.add({
 		desc = "Outgoing Calls (Snacks)",
 	},
 	{ "<leader>cs", "<cmd>Trouble symbols toggle focus=false win.id=dock<cr>", desc = "Document Symbols (Trouble)" },
-	{ "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
 	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
-	{ "<leader>cq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
+	-- { "<leader>cq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
 
 	-- Navigation
 	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },

@@ -6,6 +6,7 @@ local ui = require("ui")
 
 local config = {
 	enable_kitty_graphics = true,
+	unicode_version = 14,
 	notification_handling = "AlwaysShow",
 	use_ime = true,
 	audible_bell = "Disabled",

@@ -171,7 +171,7 @@ alias gswitch='git checkout $(git branch --format="%(refname:short)%09%(upstream
 
 # Maintenance
 # Fetch + prune, pull, then delete local branches whose upstream is gone.
-alias git-sync="git fetch --prune && git pull && git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -d"
+alias git-sync="git fetch --prune && git pull && git for-each-ref --format='%(refname:lstrip=2) %(upstream:track) %(worktreepath)' refs/heads | awk '\$2 == \"[gone]\" && NF == 2 {printf \"%s%c\", \$1, 0}' | xargs -0 -r git branch -d --"
 # Delete local branches already merged into HEAD (skips master/main/dev/current).
 alias git-purge='git branch --merged | egrep -v "(^\*|master|main|dev|integration)" | xargs git branch -d'
 # Hard-reset all submodules — wipes uncommitted submodule changes.

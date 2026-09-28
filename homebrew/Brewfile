@@ -1,9 +1,11 @@
-tap "abue-ammar/tinycast"
 tap "homebrew/bundle"
-tap "gitguardian/tap"
-tap "FelixKratz/formulae"   # for sketchybar
-tap "sst/tap"               # for opencode
-tap "nikitabobko/tap"       # for aerospace
+tap "abue-ammar/tinycast", trusted: true
+tap "buo/cask-upgrade", trusted: true
+tap "michaelroosz/ssh", trusted: true
+tap "FelixKratz/formulae", trusted: true    # for sketchybar
+tap "nikitabobko/tap", trusted: true # for aerospace
+tap "cesarferreira/tap", trusted: true
+tap "momenbasel/tap", trusted: true
 
 # ───────────────────────────────
 # CLI Utilities
