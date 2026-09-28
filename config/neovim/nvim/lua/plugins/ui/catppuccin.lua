@@ -90,7 +90,7 @@ return {
 						bg = colors.mantle,
 					},
 					FloatBorder = {
-						fg = colors.surface0,
+						fg = colors.overlay0,
 						bg = colors.mantle,
 					},
 
