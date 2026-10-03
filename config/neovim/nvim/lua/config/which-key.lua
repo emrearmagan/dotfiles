@@ -693,13 +693,13 @@ wk.add({
 		end,
 		desc = "Git Browse",
 	},
-	-- {
-	-- 	"<leader>gg",
-	-- 	function()
-	-- 		snacks.lazygit()
-	-- 	end,
-	-- 	desc = ":Lazygit",
-	-- },
+	{
+		"<leader>gG",
+		function()
+			snacks.lazygit()
+		end,
+		desc = ":Lazygit",
+	},
 	{
 		"<leader>gg",
 		function()
