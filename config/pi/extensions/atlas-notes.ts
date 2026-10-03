@@ -1,19 +1,6 @@
 import { spawn } from "node:child_process";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { Type } from "@sinclair/typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-
-const ATLAS_NOTES_BIN = join(
-  homedir(),
-  ".local",
-  "share",
-  "nvim",
-  "lazy",
-  "atlas.nvim",
-  "bin",
-  "atlas-notes",
-);
 
 type ToolResult = {
   content: Array<{ type: "text"; text: string }>;
@@ -38,7 +25,7 @@ function runAtlasNotes(
   signal?: AbortSignal,
 ): Promise<RunResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn(ATLAS_NOTES_BIN, args, {
+    const child = spawn("atlas-notes", args, {
       cwd: process.cwd(),
       env: process.env,
       signal,

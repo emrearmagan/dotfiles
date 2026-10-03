@@ -1,4 +1,10 @@
 dotfiles:
+  # Homebrew
+  - {
+      src: "{{ playbook_dir }}/../homebrew/Brewfile",
+      dest: "{{ ansible_env.HOME }}/Brewfile",
+    }
+
   # Zsh config
   - {
       src: "{{ playbook_dir }}/../config/zsh/.zshrc",

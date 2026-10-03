@@ -1,18 +1,31 @@
+if vim.env.ATLAS_DEV == "1" then
+	return dofile(vim.fn.expand("~/development/nvim/atlas/atlas-dev.lua"))
+end
+
 return {
-	-- "emrearmagan/atlas.nvim",
 	name = "atlas.nvim",
-	-- dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
-	cmd = { "Atlas", "AtlasDiff" },
-	init = function()
-		vim.cmd("cabbrev atlas Atlas")
-	end,
-	---@module "atlas"
+	dir = "/Users/emrearmagan/development/nvim/atlas/worktrees/atlas.nvim/refactor-shared-diff-viewer",
+
 	---@type AtlasConfig
 	opts = {
 		ui = {
 			statusline = true,
 			picker = "auto",
 			listed_buffer = false,
+		},
+		keymaps = {
+			pulls = {
+				custom = {
+					{
+						key = "gP",
+						desc = "Open pipelines",
+						callback = function(context, done)
+							local actions = require("atlas.pulls.actions")
+							actions.run("open_pipelines", context, done)
+						end,
+					},
+				},
+			},
 		},
 
 		---@type AtlasPullsConfig
@@ -23,19 +36,24 @@ return {
 			git_transport = "https",
 
 			diff = {
-				open_cmd = "AtlasDiff",
+				open_cmd = "auto",
 				layout = "inline",
 				compact = true,
-				compact_context_lines = 3,
 				show_review_panel = true,
-				comment_display = "virtual_text",
+				comment_display = "virtual_lines", -- "virtual_lines" or compact "virtual_text" hints.
+				lsp = {
+					-- enabled = true,
+					dir = nil,
+					link = {},
+				},
 				explorer = {
 					grouped = true, -- Group changed files by directory.
 					hidden = false,
-					show_commits = false,
+					show_commits = true,
 					width = 40,
-					initial_focus = "diff",
+					initial_focus = "explorer",
 					preview = true,
+					focus_on_select = false,
 					ignore = { ".git/**", ".jj/**" },
 				},
 			},
@@ -45,68 +63,6 @@ return {
 					["emrearmagan/*"] = "~/development/*",
 					["emrearmagan/*.nvim"] = "~/development/nvim/*.nvim",
 					["emrearmagan/atlas.nvim"] = "~/development/nvim/atlas/atlas.nvim",
-					["emrearmagan/atlas.test"] = "~/development/nvim/atlas/atlas.testing/atlas.test",
-					["emrearmagan/atlas.test.gitlab"] = "~/development/nvim/atlas/atlas.testing/atlas.test.gitlab",
-					["atlas/atlas.test.forgejo"] = "~/development/nvim/atlas/atlas.testing/atlas.test.forgejo",
-					["atlas/atlas.test.gitea"] = "~/development/nvim/atlas/atlas.testing/atlas.test.gitea",
-					["atlasxx/atlas.test.bitbucket"] = "~/development/nvim/atlas/atlas.testing/atlas.test.bitbucket",
-					["ATLAS/atlas"] = "/Users/emrearmagan/development/nvim/atlas.testing/bitbucket-server/atlas",
-				},
-				settings = {
-					["emrearmagan/atlas.nvim"] = {
-						readme = "README.md",
-						pr_template = ".github/pull_request_template.md",
-					},
-				},
-			},
-
-			---@type AtlasGiteaPullsConfig
-			gitea = {
-				draft_prefix = "WIP:",
-				views = {
-					{
-						name = "Me",
-						key = "1",
-						layout = "plain",
-						search = "author:@me sort:updated-desc",
-					},
-					{
-						name = "All Open",
-						key = "2",
-						layout = "plain",
-					},
-					{
-						name = "All",
-						key = "3",
-						layout = "plain",
-						search = "is:all",
-					},
-				},
-				bookmarks = {
-					key = "S",
-					label = "Search",
-					items = {
-						["Reviewing"] = { scope = "all", extra_params = { reviewer_id = "Me" } },
-						["Merged by me"] = { scope = "all", state = "merged", author_username = "me" },
-					},
-				},
-			},
-
-			---@type AtlasForgejoPullsConfig
-			forgejo = {
-				views = {
-					{
-						name = "Forgejo",
-						key = "1",
-						layout = "compact",
-						repo = "forgejo/forgejo",
-					},
-					{
-						name = "Forgejo",
-						key = "2",
-						layout = "plain",
-						repo = "forgejo/forgejo",
-					},
 				},
 			},
 
@@ -114,102 +70,68 @@ return {
 			github = {
 				views = {
 					{
-						name = "Review",
+						name = "My PRs",
 						key = "1",
 						layout = "compact",
-						search = "is:pr user:emrearmagan is:pr sort:updated-desc",
+						search = "is:pr is:open author:@me sort:updated-desc",
 					},
 					{
-						name = "My PRs",
+						name = "Review Requested",
 						key = "2",
 						layout = "compact",
-						search = "author:@me sort:updated-desc",
+						search = "is:pr is:open review-requested:@me sort:updated-desc",
 					},
 					{
-						name = "Neovim",
+						name = "My Repos",
 						key = "3",
-						layout = "plain",
-						search = "repo:neovim/neovim sort:updated-desc",
+						layout = "grouped",
+						search = "is:pr is:open user:emrearmagan sort:updated-desc",
 					},
 				},
 				bookmarks = {
 					key = "S",
 					label = "Search",
 					items = {
-						["Review requested"] = "is:pr is:open review-requested:@me sort:updated-desc",
-						["Recently merged"] = "is:pr is:merged author:@me sort:updated-desc",
-						["Drafts"] = "is:pr is:draft author:@me",
+						["Neovim"] = {
+							layout = "grouped",
+							search = "is:pr repo:neovim/neovim (is:open OR is:merged) sort:updated-desc",
+						},
+						["My merged PRs"] = "is:pr is:merged author:@me sort:updated-desc",
+						["My declined PRs"] = "is:pr is:closed -is:merged author:@me sort:updated-desc",
 					},
 				},
 			},
 
+			---@type AtlasGitLabPullsConfig
 			gitlab = {
 				views = {
-					{ name = "assigned", key = "1", scope = "assigned_to_me" },
-					{ name = "Created", key = "2", scope = "created_by_me" },
 					{
-						name = "GitLab",
-						key = "3",
-						group = "gitlab-org",
-					},
-					{ name = "Repo", key = "4", current_repo = true, scope = "assigned_to_me" },
-				},
-				bookmarks = {
-					key = "S",
-					label = "Search",
-					items = {
-						["Reviewing"] = { scope = "all", extra_params = { reviewer_id = "Me" } },
-						["GitLab Org"] = { group = "gitlab-org" },
-						["Merged by me"] = { scope = "all", state = "merged", author_username = "emrearmagan" },
-					},
-				},
-			},
-
-			bitbucket = {
-
-				---@type AtlasBitbucketViewConfig[]
-				views = {
-					{
-						name = "Me",
+						name = "My MRs",
 						key = "1",
 						layout = "compact",
-						targets = {
-							{ workspace = "atlasxx", repo = "atlas.test.bitbucket" },
-						},
-
-						---@param pr PullRequest
-						---@param ctx { user: PullsUser|nil }
-						filter = function(pr, ctx)
-							local user = ctx.user
-							return pr.author and user and pr.author.id == user.id
-						end,
+						scope = "created_by_me",
 					},
 					{
-						name = "Team",
+						name = "Review Requested",
 						key = "2",
-						layout = "grouped",
-						targets = {
-							{ workspace = "atlasxx", project = "AT" },
-						},
+						layout = "compact",
+						scope = "reviews_for_me",
+					},
+					{
+						name = "Current Repo",
+						key = "3",
+						layout = "compact",
+						current_repo = true,
+						scope = "all",
 					},
 				},
 				bookmarks = {
 					key = "S",
 					label = "Search",
 					items = {
-						["Atlas"] = {
-							targets = {
-								{ workspace = "atlasxx", repo = "atlas.test.bitbucket" },
-							},
-						},
-						["Ready"] = {
-							targets = {
-								{ workspace = "atlasxx", project = "AT" },
-							},
-							filter = function(pr)
-								return not pr.draft
-							end,
-						},
+						["Assigned"] = { scope = "assigned_to_me" },
+						["My merged MRs"] = { scope = "created_by_me", extra_params = { state = "merged" } },
+						["My closed MRs"] = { scope = "created_by_me", extra_params = { state = "closed" } },
 					},
 				},
 			},
@@ -285,21 +207,6 @@ return {
 						end)
 					end,
 				},
-				{
-					id = "test_async_output",
-					label = "Test Async Output",
-					run = function(_, ctx, done)
-						local output = ctx.output("Pull request output")
-						output:write("Started")
-						vim.defer_fn(function()
-							output:write("Still running...")
-						end, 500)
-						vim.defer_fn(function()
-							output:write("Finished")
-							done(true, "Async output finished")
-						end, 1000)
-					end,
-				},
 			},
 		},
 
@@ -308,68 +215,48 @@ return {
 			max_results = 100,
 			with_relationships = true,
 
-			---@type AtlasGiteaIssuesConfig
-			gitea = {
-				views = {
-					{
-						name = "Gitea",
-						key = "1",
-						layout = "compact",
-						repo = "atlas/atlas.test.gitea",
-					},
-				},
-			},
-
-			---@type AtlasForgejoIssuesConfig
-			forgejo = {
-				views = {
-					{
-						name = "Forgejo",
-						key = "1",
-						layout = "compact",
-						repo = "forgejo/forgejo",
-					},
-				},
-			},
-
+			---@type AtlasGitHubIssuesConfig
 			github = {
-
 				views = {
 					{
-						name = "Issues",
+						name = "Assigned",
 						key = "1",
 						layout = "compact",
-						search = "is:issue user:emrearmagan is:open sort:updated-desc",
+						search = "is:issue is:open assignee:@me sort:updated-desc",
 					},
 					{
-						name = "Issues (all)",
+						name = "Created",
 						key = "2",
-						layout = "plain",
-						search = "is:issue user:emrearmagan sort:updated-desc",
+						layout = "compact",
+						search = "is:issue is:open author:@me sort:updated-desc",
 					},
 					{
-						name = "Issues",
+						name = "My Repos",
 						key = "3",
-						search = "is:issue repo:neovim/neovim is:open sort:updated-desc",
+						layout = "compact",
+						search = "is:issue is:open user:emrearmagan sort:updated-desc",
 					},
 					{
-						name = "Tracked Issues",
+						name = "Current Repo",
 						key = "4",
-						search = "repo:neovim/neovim is:issue 32280 19624 sort:updated-desc",
+						layout = "compact",
+						current_repo = true,
+						search = "is:issue is:open sort:updated-desc",
 					},
 				},
 				bookmarks = {
 					key = "S",
 					label = "Search",
 					items = {
-						["Assigned to me"] = "is:issue is:open assignee:@me",
-						["Mentions"] = "is:issue is:open mentions:@me",
-						["Recently closed"] = "is:issue is:closed author:@me sort:updated-desc",
-						["Bugs (neovim)"] = "is:issue is:open repo:neovim/neovim label:bug sort:reactions-desc",
+						["Neovim"] = "is:issue is:open repo:neovim/neovim sort:updated-desc",
+						["Neovim bugs"] = "is:issue is:open repo:neovim/neovim label:bug sort:reactions-desc",
+						["Mentioned"] = "is:issue is:open mentions:@me sort:updated-desc",
+						["My closed issues"] = "is:issue is:closed author:@me sort:updated-desc",
 					},
 				},
 			},
 
+			---@type AtlasGitLabIssuesConfig
 			gitlab = {
 				views = {
 					{
@@ -377,166 +264,32 @@ return {
 						key = "1",
 						layout = "compact",
 						scope = "assigned_to_me",
-						state = "opened",
 					},
-					{ name = "Created", key = "2", scope = "created_by_me", state = "opened" },
 					{
-						name = "Reviewing",
+						name = "Created",
+						key = "2",
+						layout = "compact",
+						scope = "created_by_me",
+					},
+					{
+						name = "Current Repo",
 						key = "3",
+						layout = "compact",
+						current_repo = true,
 						scope = "all",
-						state = "opened",
 					},
 				},
 				bookmarks = {
 					key = "S",
 					label = "Search",
 					items = {
-						["Assigned open"] = { scope = "assigned_to_me", state = "opened" },
-						["Created closed"] = { scope = "created_by_me", state = "closed" },
-						["No labels"] = {
-							scope = "all",
-							state = "opened",
-							extra_params = { ["not[labels]"] = "*" },
-						},
+						["My closed issues"] = { scope = "created_by_me", state = "closed" },
 					},
-				},
-			},
-
-			---@type AtlasShortcutIssuesConfig
-			shortcut = {
-				views = {
-					{
-						name = "Open",
-						key = "1",
-						layout = "compact",
-						search = "!is:done !is:archived",
-					},
-					{
-						name = "Plain",
-						key = "2",
-						layout = "plain",
-						search = "!is:done !is:archived",
-					},
-				},
-				bookmarks = {
-					key = "S",
-					label = "Search",
-					items = {
-						["Open bugs"] = "type:bug !is:done !is:archived",
-						["Needs review"] = 'label:"needs-review" !is:done',
-					},
-				},
-			},
-
-			jira = {
-				bookmarks = {
-					key = "J",
-					label = "JQL",
-					items = {
-						["Backlog"] = "project = KAN AND statusCategory != Done AND (sprint IS EMPTY OR sprint NOT IN openSprints()) ORDER BY Rank ASC",
-						["Next sprint"] = "project = KAN AND sprint in futureSprints() ORDER BY Rank ASC",
-						["My open"] = "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC",
-						["Recently updated"] = "project = KAN ORDER BY updated DESC",
-					},
-				},
-
-				views = {
-					{
-						name = "Active Sprint",
-						key = "1",
-						jql = "project = KAN",
-					},
-					{
-						name = "My Tasks",
-						key = "2",
-						layout = "compact",
-						jql = "project = KAN AND assignee = currentUser()",
-					},
-					{
-						name = "To Do",
-						key = "3",
-						jql = 'project = KAN AND sprint in openSprints() AND statusCategory = "To Do" AND assignee is EMPTY ORDER BY priority ASC',
-					},
-				},
-			},
-
-			custom_actions = {
-				{
-					id = "review_ticket",
-					label = "Review Ticket",
-
-					---@param issue Issue
-					---@param ctx AtlasIssuesCustomActionContext
-					---@param done fun(ok: boolean|nil, message: string|nil)
-					run = function(issue, ctx, done)
-						local issue_key = tostring(issue.key or "")
-						if issue_key == "" then
-							done(false, "Missing issue key")
-							return
-						end
-
-						local summary = tostring(issue.title or "")
-						local issue_type = issue.type and tostring(issue.type.name or "") or ""
-						local status = tostring(issue.status or "")
-						local priority = tostring(issue.priority or "")
-						local session = "spec-review"
-						local window = issue_key:gsub("[^%w_-]", "-")
-						local prompt = table.concat({
-							"Use the spec-review agent to review this Jira ticket.",
-							"",
-							"1. Fetch the full Jira issue content via Jira MCP/tools if available.",
-							"2. Review it for engineering readiness: clarity, scope, blockers, acceptance criteria, risks, and missing descisions.",
-							"3. Do not inspect inspect implementation code. This is a ticket/spec review only.",
-							"",
-							"Issue key: " .. issue_key,
-							"Summary: " .. summary,
-							"Type: " .. issue_type,
-							"Status: " .. status,
-							"Priority: " .. priority,
-						}, "\n")
-
-						local output = ctx.output("ticket-review")
-						output:run({
-							"tmux-sessions",
-							"run-window",
-							session,
-							window,
-							"--",
-							"pi",
-							prompt,
-						}, function(code)
-							if code ~= 0 then
-								done(false, "ticket review failed to start (exit " .. tostring(code) .. ")")
-								return
-							end
-							done(true, "Ticket review started in tmux session " .. session)
-						end)
-					end,
-				},
-				{
-					id = "test_async_output",
-					label = "Test Async Output",
-					run = function(_, ctx, done)
-						local output = ctx.output("Issue output")
-						output:write("Started")
-						vim.defer_fn(function()
-							output:write("Still running...")
-						end, 500)
-						vim.defer_fn(function()
-							output:write("Finished")
-							done(true, "Async output finished")
-						end, 1000)
-					end,
 				},
 			},
 		},
 
 		providers = {
-			bitbucket = {
-				user = vim.env.BITBUCKET_USER,
-				token = vim.env.BITBUCKET_TOKEN,
-				cache_ttl = 3000,
-			},
 			github = {
 				cache_ttl = 3000,
 			},
@@ -544,74 +297,6 @@ return {
 				base_url = "https://gitlab.com",
 				token = vim.env.GITLAB_TOKEN,
 				cache_ttl = 300,
-			},
-			gitea = {
-				-- base_url = "http://localhost:3001",
-				-- token = vim.env.GITEA_TOKEN_LOCAL,
-				base_url = "https://gitea.com",
-				token = vim.env.GITEA_TOKEN,
-				cache_ttl = 300,
-			},
-			forgejo = {
-				-- base_url = "http://localhost:3000",
-				-- token = vim.env.FORGEJO_TOKEN,
-				base_url = "https://codeberg.org",
-				token = vim.env.CODEBERG_TOKEN,
-			},
-			---@type AtlasShortcutProviderConfig
-			shortcut = {
-				token = vim.env.SHORTCUT_TOKEN,
-				cache_ttl = 300,
-			},
-			jira = {
-				base_url = vim.env.JIRA_BASE_URL,
-				email = vim.env.JIRA_EMAIL,
-				token = vim.env.JIRA_TOKEN,
-				api_type = "cloud",
-				auth_method = "basic",
-				cache_ttl = 3000,
-
-				project_config = {
-					story_points_field = "customfield_100016",
-					["KAN"] = {
-						customfield_10003 = {
-							name = "Approvers",
-
-							---@param value any
-							---@return string|nil
-							format = function(value)
-								if type(value) ~= "table" or #value == 0 then
-									return nil
-								end
-
-								local names = {}
-								for _, user in ipairs(value) do
-									local name = type(user) == "table" and user.displayName or nil
-									if type(name) == "string" and name ~= "" then
-										table.insert(names, name)
-									end
-								end
-								if #names == 0 then
-									return "NONE"
-								end
-								return table.concat(names, ", ")
-							end,
-							hl_group = "AtlasTextMuted",
-							display = "table",
-						},
-						customfield_10017 = {
-							name = "Other",
-
-							---@param value any
-							---@return string|nil
-							format = function(value)
-								return value
-							end,
-							hl_group = "AtlasTextMuted",
-							display = "chip",
-						},
-					},
-				},
 			},
 		},
 	},

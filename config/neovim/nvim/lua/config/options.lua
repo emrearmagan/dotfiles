@@ -49,12 +49,12 @@ vim.filetype.add({
 	filename = {
 		Brewfile = "ruby",
 		[".http"] = "http",
-		[".rest"] = "rest",
+		[".rest"] = "http",
 	},
 	extension = {
 		yml = "yaml",
 		http = "http",
-		rest = "rest",
+		rest = "http",
 	},
 	pattern = {
 		[".*%.yml"] = "yaml",
