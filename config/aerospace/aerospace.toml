@@ -70,7 +70,8 @@ gaps.inner.horizontal = 15
 gaps.inner.vertical =   10
 gaps.outer.left =       10
 gaps.outer.right =      10
-gaps.outer.bottom =     10
+# The Odyssey needs four extra points of height to align WezTerm's grid with its scaled pixels.
+gaps.outer.bottom =     [{ monitor."Odyssey G70B" = 6 }, 10]
 gaps.outer.top = [{ monitor."Built-in Retina Display" = 25 }, 40]
 
 ########################################

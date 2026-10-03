@@ -284,8 +284,20 @@ wk.add({
 	},
 
 	{ "<leader>fo", ":!open %:h<CR>", desc = "Open in Finder" },
-	{ "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document Symbols" },
-	{ "<leader>fS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", desc = "Workspace Symbols" },
+	{
+		"<leader>fs",
+		function()
+			snacks.picker.lsp_symbols()
+		end,
+		desc = "Document Symbols (Snacks)",
+	},
+	{
+		"<leader>fS",
+		function()
+			snacks.picker.lsp_workspace_symbols()
+		end,
+		desc = "Workspace Symbols (Snacks)",
+	},
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                 Quick / File Actions               │
@@ -457,15 +469,6 @@ wk.add({
 		end,
 		desc = "Go to Implementation (Snacks)",
 	},
-	{
-		"gs",
-		function()
-			require("snacks.picker").lsp_symbols()
-		end,
-		desc = "Outline (Snacks Symbols)",
-		mode = "n",
-	},
-
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Code Tests (neotest)           │
 	-- ╰────────────────────────────────────────────────────╯
@@ -570,31 +573,6 @@ wk.add({
 		"<cmd>OverseerRestartLast<CR>",
 		desc = "Restart last task (Overseer)",
 		mode = "n",
-	},
-
-	-- ───── HTTP Client (rest.nvim) ─────
-	{ "<leader>rh", icon = "", group = "HTTP" },
-
-	{
-		"<leader>rhr",
-		function()
-			require("kulala").run()
-		end,
-		desc = "Run HTTP request",
-	},
-	{
-		"<leader>rhR",
-		function()
-			require("kulala").replay()
-		end,
-		desc = "Rerun last HTTP request",
-	},
-	{
-		"<leader>rhe",
-		function()
-			require("kulala").set_selected_env()
-		end,
-		desc = "Select .env for rest.nvim",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -715,12 +693,19 @@ wk.add({
 		end,
 		desc = "Git Browse",
 	},
+	-- {
+	-- 	"<leader>gg",
+	-- 	function()
+	-- 		snacks.lazygit()
+	-- 	end,
+	-- 	desc = ":Lazygit",
+	-- },
 	{
 		"<leader>gg",
 		function()
-			snacks.lazygit()
+			require("neogit").open()
 		end,
-		desc = ":Lazygit",
+		desc = ":Neogit",
 	},
 	{
 		"<leader>gl",

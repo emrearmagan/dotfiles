@@ -58,10 +58,10 @@ return {
 	window_padding = {
 		left = 0,
 		right = 0,
-		top = 5,
+		top = 0,
 		bottom = 0,
 	},
-	use_resize_increments = true,
+	use_resize_increments = false, -- Let AeroSpace set the exact tiled window size.
 
 	-- Tab bar
 	tab_max_width = 18,

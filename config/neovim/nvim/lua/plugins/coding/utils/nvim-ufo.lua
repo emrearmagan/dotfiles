@@ -52,6 +52,15 @@ return {
 			fold_virt_text_handler = fold_virt_text,
 		})
 
+		-- Atlas manages its own diff folds.
+		vim.api.nvim_create_autocmd("BufWinEnter", {
+			callback = function(event)
+				if vim.b[event.buf].atlas_diff then
+					require("ufo").detach(event.buf)
+				end
+			end,
+		})
+
 		-- remove some highlights for folding
 		local function clear_hl()
 			vim.api.nvim_set_hl(0, "Folded", { bg = "NONE", link = "Comment" })

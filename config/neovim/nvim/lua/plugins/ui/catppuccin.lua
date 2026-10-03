@@ -48,6 +48,7 @@ return {
 
 				return {
 					CursorLineNr = { fg = colors.flamingo },
+					SnacksPickerSelected = { bg = "NONE" },
 
 					-- Keep Catppuccin's syntax palette, strengthening only three accents.
 					Function = { fg = syntaxAccent.func, bold = true },
