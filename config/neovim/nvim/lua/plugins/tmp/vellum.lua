@@ -17,6 +17,7 @@ return {
 				end
 				if
 					bo.buftype ~= ""
+					or vim.api.nvim_win_get_config(0).relative ~= ""
 					or not bo.modifiable
 					or bo.readonly
 					or vim.w.codediff_restore ~= nil

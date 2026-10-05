@@ -9,9 +9,9 @@ return {
 				},
 				diff = {
 					layout = "inline",
-					-- layout = "side-by-side",
 					compact = true,
 					compact_context_lines = 2,
+					highlight_added_deleted_files = true,
 				},
 				explorer = {
 					view_mode = "tree",

@@ -4,7 +4,7 @@ end
 
 return {
 	name = "atlas.nvim",
-	dir = "/Users/emrearmagan/development/nvim/atlas/worktrees/atlas.nvim/refactor-shared-diff-viewer",
+	dir = "/Users/emrearmagan/development/nvim/atlas/atlas.nvim",
 
 	---@type AtlasConfig
 	opts = {
@@ -39,7 +39,9 @@ return {
 				open_cmd = "auto",
 				layout = "inline",
 				compact = true,
-				show_review_panel = true,
+				review_panel = {
+					hidden = false,
+				},
 				comment_display = "virtual_lines", -- "virtual_lines" or compact "virtual_text" hints.
 				lsp = {
 					-- enabled = true,
