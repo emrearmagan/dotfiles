@@ -1,6 +1,7 @@
 return {
 	{
 		"esmuellert/codediff.nvim",
+		dir = "/Users/emrearmagan/development/nvim/codediff.nvim",
 		cmd = "CodeDiff",
 		config = function()
 			require("codediff").setup({

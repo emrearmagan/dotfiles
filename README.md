@@ -5,65 +5,36 @@
 ⚠ **Use at your own risk!**
 
 <img src="./examples/screenshot.png" style="border-radius: 8px;" alt="example" />
-&nbsp;
 
-## Installation
+## Setup
 
-### Ansible Setup (Recommended)
+For macOS. Install [Homebrew](https://brew.sh) first if you want packages or fonts.
 
-This repository includes an Ansible playbook for automated setup. **This is the recommended way to install and manage your dotfiles.**
-
-
-#### Running the Playbook
-
-To apply the dotfiles to your system:
-
-```bash
-ansible-playbook ansible/playbook.yml --ask-become-pass
-```
-
-#### Testing with `ansible/test.sh`
-
-The script `ansible/test.sh` allows you to test your Ansible playbook within a Docker container. This is useful for verifying your playbook works as expected before running it on your actual system.
-
----
-
-### Install Script (Deprecated)
-#### **1. Clone the Repository**
 ```sh
 git clone https://github.com/emrearmagan/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
+
+./setup               # Show usage and tags
+./setup --tag dotfiles
+./setup --tag brew
+./setup --tag fonts
+./setup --tag xcode    # Optional Xcode development tools
 ```
 
-### **2. Run the Setup Script**
+`brew` uses [`homebrew/Brewfile`](homebrew/Brewfile). `xcode` installs Neovim’s Xcode tools; install and select Xcode separately.
+
+Existing files are backed up in `~/.dotfiles_backup/`. Correct links are skipped.
+
+## Adding things
+
+Add a config in [`setup.d/dotfiles.sh`](setup.d/dotfiles.sh):
+
 ```sh
-sh setup.sh
-```
-This script will:
-- Create **symlinks** for configuration files in your home directory.
-- Set up **iTerm2 preferences** (if installed).
-- Install **Homebrew packages** from the `Brewfile`.
-
-You will also want a [Nerd Font](https://www.nerdfonts.com/).
-
----
-
-
-## **Folder Structure**
-```
-dotfiles/
-│── bat/          # Configuration for bat (better cat)
-│── git/          # Git config and global ignore
-│── homebrew/     # Homebrew setup and Brewfile
-│── iterm/        # iTerm2 preferences
-│── neovim/       # Neovim configuration
-│── system/       # System-wide aliases and functions
-│── tmux/         # Tmux configuration
-│── zsh/          # Zsh config files (.zshrc, .zprofile)
-│── setup.sh      # Setup script to symlink files and install dependencies
+link "config/example" ".config/example"
 ```
 
----
+Paths are relative to the checkout and your home. For a new tag, add `setup.d/example.sh`, then run `./setup --tag example`.
 
-## **License**
+## License
+
 MIT License – Use freely, but **at your own risk**.

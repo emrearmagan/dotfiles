@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# Run a setup script from setup.d/.
+#
+# Usage:
+#   ./setup
+#   ./setup --tag <name>
+#
+# Examples:
+#   ./setup --tag dotfiles
+#   ./setup --tag brew
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$REPO_ROOT/config/system/scripts/utils/colors.sh"
+
+fail() {
+	printf '%s\n' "$(colorize red "$1")" >&2
+	exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+	printf 'Usage: ./setup --tag <name>\n\nTags:'
+	for file in "$REPO_ROOT"/setup.d/*.sh; do
+		name="${file##*/}"
+		printf ' %s' "${name%.sh}"
+	done
+	printf '\n'
+	exit 0
+fi
+
+[[ $# -eq 2 && "$1" == --tag ]] || fail "Usage: ./setup --tag <name>"
+TAG="$2"
+[[ -n "$TAG" && "$TAG" != *[!a-z0-9_-]* && -f "$REPO_ROOT/setup.d/$TAG.sh" ]] || fail "Unknown tag: $TAG"
+BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)-$$"
+
+link() {
+	local source="$REPO_ROOT/$1" target="$HOME/$2" backup="$BACKUP_DIR/$2"
+	[[ -e "$source" ]] || fail "Missing source: $source"
+	if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
+		printf '[ %s ] %s (already linked)\n' "$(colorize green '✔')" "$2"
+		return 0
+	fi
+	if [[ -e "$target" || -L "$target" ]]; then
+		[[ ! -e "$backup" && ! -L "$backup" ]] || fail "Duplicate link: $2"
+		printf 'Backing up %s to %s\n' "$target" "$backup"
+		mkdir -p "$(dirname "$backup")"
+		mv "$target" "$backup"
+	fi
+	mkdir -p "$(dirname "$target")"
+	ln -s "$source" "$target"
+	printf '[ %s ] %s -> %s\n' "$(colorize green '✔')" "$2" "$1"
+}
+
+printf '%s\n' "$(colorize mauve "$TAG")"
+source "$REPO_ROOT/setup.d/$TAG.sh"
+printf '[ %s ] %s\n' "$(colorize green '✔')" "$TAG"

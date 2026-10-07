@@ -65,8 +65,6 @@ brew "ipinfo-cli"           # ip info cli
 # ───────────────────────────────
 # Dev & Build Tools
 # ───────────────────────────────
-brew "ansible"              # automation
-brew "ansible-lint"         # ansible linter
 brew "delve"                # go debugger (nvim DAP)
 brew "git"                  # version control
 brew "worktrunk"            # git worktree tool
