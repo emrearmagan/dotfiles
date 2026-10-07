@@ -23,7 +23,7 @@ for sid in $(aerospace list-workspaces --all); do
 		icon.font="$FONT:Semibold:$FONT_SIZE" \
 		icon.padding_left=6 \
 		label.padding_right=10 \
-		label.font="sketchybar-app-font:Regular:$ICON_SIZE" \
+		label.font="sketchybar-app-font-bg:Regular:$ICON_SIZE" \
 		label.align=center \
 		label.y_offset=-1 \
 		click_script="aerospace workspace $sid" \

@@ -198,7 +198,7 @@ function icon_map() {
 		icon_result=":coconut_battery:"
 		;;
 	"Code" | "Code - Insiders")
-		icon_result=":code:"
+		icon_result=":vscode:"
 		;;
 	"Cold Turkey Blocker")
 		icon_result=":cold_turkey_blocker:"
@@ -399,7 +399,7 @@ function icon_map() {
 		icon_result=":google_chat:"
 		;;
 	"Chromium" | "Google Chrome" | "Google Chrome Canary")
-		icon_result=":google_chrome:"
+		icon_result=":chrome:"
 		;;
 	"Grammarly Editor")
 		icon_result=":grammarly:"
@@ -714,7 +714,7 @@ function icon_map() {
 		icon_result=":open_video_downloader:"
 		;;
 	"ChatGPT")
-		icon_result=":openai:"
+		icon_result=":chatgpt:"
 		;;
 	"OpenAI Translator")
 		icon_result=":openai_translator:"

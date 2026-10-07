@@ -31,14 +31,14 @@ update_workspace() {
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="$icons" \
-			label.font="sketchybar-app-font:Regular:$ICON_SIZE" \
+			label.font="sketchybar-app-font-bg:Regular:$ICON_SIZE" \
 			icon.drawing=on
 	elif [ "$ws" = "$focused_ws" ]; then
 		# Focused but empty: keep visible and show background
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="" \
-			label.font="sketchybar-app-font:Regular:$ICON_SIZE" \
+			label.font="sketchybar-app-font-bg:Regular:$ICON_SIZE" \
 			icon.drawing=on \
 			background.drawing=on
 	else
