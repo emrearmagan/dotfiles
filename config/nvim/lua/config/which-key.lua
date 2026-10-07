@@ -6,6 +6,8 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Common                        │
 	-- ╰────────────────────────────────────────────────────╯
+	{ "j", "v:count == 0 ? 'gj' : 'j'", desc = "Down", mode = { "n", "x" }, expr = true, silent = true },
+	{ "k", "v:count == 0 ? 'gk' : 'k'", desc = "Up", mode = { "n", "x" }, expr = true, silent = true },
 	{ "J", "mzJ`z", desc = "Join lines (cursor stays)", mode = "n" },
 	{ "Y", "y$", desc = "Yank to end of line", mode = "n" },
 	{ "p", "p=`]", desc = "Paste and reindent", mode = "n" },

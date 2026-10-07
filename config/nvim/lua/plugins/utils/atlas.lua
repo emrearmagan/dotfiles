@@ -9,7 +9,7 @@ return {
 	---@type AtlasConfig
 	opts = {
 		ui = {
-			statusline = true,
+			statusline = { atlas = true, diff = true },
 			picker = "auto",
 			listed_buffer = false,
 		},

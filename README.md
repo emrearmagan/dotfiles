@@ -19,10 +19,13 @@ cd ~/.dotfiles
 ./setup --tag dotfiles
 ./setup --tag brew
 ./setup --tag fonts
+./setup --tag macos
 ./setup --tag xcode    # Optional Xcode development tools
 ```
 
 `brew` uses [`homebrew/Brewfile`](homebrew/Brewfile). `xcode` installs Neovim’s Xcode tools; install and select Xcode separately.
+
+`macos` enables key repeat in WezTerm. Fully quit and reopen WezTerm afterward.
 
 Existing files are backed up in `~/.dotfiles_backup/`. Correct links are skipped.
 
