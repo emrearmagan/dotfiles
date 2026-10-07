@@ -128,11 +128,15 @@ cask "xcodes-app"           # xcode version manager
 cask "swiftformat-for-xcode" # xcode swift formatter
 
 cask "tinycast"             # spotlight replacement
+cask "cleanshot"            # screenshots and screen recording
 cask "google-chrome"        # web browser
+cask "readdle-spark"        # email client
 cask "shortcat"             # mouse-free navigation
 cask "kindavim"             # vim keybindings for mac apps
+cask "vorssaint"            # menu bar utilities
 cask "aerospace"            # tiling window manager
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
 cask "claude-code"          # ai assistant
+cask "chatgpt"              # ai assistant desktop app
 cask "momenbasel/tap/puremac"
