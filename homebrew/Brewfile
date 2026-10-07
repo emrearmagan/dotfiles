@@ -118,6 +118,7 @@ brew "mole"                    # mac cleaner
 # ───────────────────────────────
 cask "iterm2"               # terminal emulator
 cask "wezterm@nightly"      # gpu terminal
+cask "kitty"                # gpu terminal
 cask "docker-desktop"       # container platform
 cask "mitmproxy"            # http proxy
 cask "fork"                 # git gui
