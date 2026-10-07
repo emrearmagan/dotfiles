@@ -15,6 +15,7 @@ git clone https://github.com/emrearmagan/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 ./setup               # Show usage and tags
+./setup --all         # Run every tag, including xcode
 ./setup --tag dotfiles
 ./setup --tag brew
 ./setup --tag fonts

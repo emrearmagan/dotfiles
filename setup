@@ -5,10 +5,12 @@
 # Usage:
 #   ./setup
 #   ./setup --tag <name>
+#   ./setup --all
 #
 # Examples:
 #   ./setup --tag dotfiles
 #   ./setup --tag brew
+#   ./setup --all
 
 set -euo pipefail
 
@@ -21,7 +23,7 @@ fail() {
 }
 
 if [[ $# -eq 0 ]]; then
-	printf 'Usage: ./setup --tag <name>\n\nTags:'
+	printf 'Usage:\n  ./setup --tag <name>\n  ./setup --all\n\nTags:'
 	for file in "$REPO_ROOT"/setup.d/*.sh; do
 		name="${file##*/}"
 		printf ' %s' "${name%.sh}"
@@ -30,9 +32,14 @@ if [[ $# -eq 0 ]]; then
 	exit 0
 fi
 
-[[ $# -eq 2 && "$1" == --tag ]] || fail "Usage: ./setup --tag <name>"
-TAG="$2"
-[[ -n "$TAG" && "$TAG" != *[!a-z0-9_-]* && -f "$REPO_ROOT/setup.d/$TAG.sh" ]] || fail "Unknown tag: $TAG"
+if [[ $# -eq 1 && "$1" == --all ]]; then
+	TASKS=("$REPO_ROOT"/setup.d/*.sh)
+else
+	[[ $# -eq 2 && "$1" == --tag ]] || fail "Usage: ./setup --tag <name> | --all"
+	TAG="$2"
+	[[ -n "$TAG" && "$TAG" != *[!a-z0-9_-]* && -f "$REPO_ROOT/setup.d/$TAG.sh" ]] || fail "Unknown tag: $TAG"
+	TASKS=("$REPO_ROOT/setup.d/$TAG.sh")
+fi
 BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d-%H%M%S)-$$"
 
 link() {
@@ -53,6 +60,10 @@ link() {
 	printf '[ %s ] %s -> %s\n' "$(colorize green '✔')" "$2" "$1"
 }
 
-printf '%s\n' "$(colorize mauve "$TAG")"
-source "$REPO_ROOT/setup.d/$TAG.sh"
-printf '[ %s ] %s\n' "$(colorize green '✔')" "$TAG"
+for task in "${TASKS[@]}"; do
+	TAG="${task##*/}"
+	TAG="${TAG%.sh}"
+	printf '%s\n' "$(colorize mauve "$TAG")"
+	source "$task"
+	printf '[ %s ] %s\n' "$(colorize green '✔')" "$TAG"
+done
