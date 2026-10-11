@@ -719,25 +719,7 @@ wk.add({
 	{
 		"<leader>gS",
 		function()
-			--- Tab is by default mapped to stage/unstage in git_status picker, but we want it to also move selection so we add that here
-			snacks.picker.git_status({
-				win = {
-					input = {
-						keys = {
-							["<Tab>"] = { "select_and_next", mode = { "n", "i" } },
-							["<S-Tab>"] = { "select_and_prev", mode = { "n", "i" } },
-							["<C-s>"] = { "git_stage", mode = { "n", "i" } },
-						},
-					},
-					list = {
-						keys = {
-							["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
-							["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
-							["<C-s>"] = "git_stage",
-						},
-					},
-				},
-			})
+			snacks.picker.git_status()
 		end,
 		desc = "Git Status",
 	},

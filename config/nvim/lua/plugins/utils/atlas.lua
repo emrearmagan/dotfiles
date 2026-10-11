@@ -32,7 +32,7 @@ return {
 		pulls = {
 			delete_notes = true, -- Delete local PR notes after approval or merge.
 			default_merge_method = "merge", -- "merge" or "squash".
-			default_delete_branch = true,
+			default_delete_source_branch = true,
 			git_transport = "https",
 
 			diff = {
@@ -44,14 +44,14 @@ return {
 				},
 				comment_display = "virtual_lines", -- "virtual_lines" or compact "virtual_text" hints.
 				lsp = {
-					-- enabled = true,
+					enabled = true,
 					dir = nil,
 					link = {},
 				},
 				explorer = {
 					grouped = true, -- Group changed files by directory.
 					hidden = false,
-					show_commits = true,
+					show_commits = false,
 					width = 40,
 					initial_focus = "explorer",
 					preview = true,
@@ -118,13 +118,7 @@ return {
 						key = "2",
 						layout = "compact",
 						scope = "reviews_for_me",
-					},
-					{
-						name = "Current Repo",
-						key = "3",
-						layout = "compact",
-						current_repo = true,
-						scope = "all",
+						review_states = { "UNREVIEWED", "REVIEW_STARTED" },
 					},
 				},
 				bookmarks = {
@@ -132,8 +126,14 @@ return {
 					label = "Search",
 					items = {
 						["Assigned"] = { scope = "assigned_to_me" },
-						["My merged MRs"] = { scope = "created_by_me", extra_params = { state = "merged" } },
-						["My closed MRs"] = { scope = "created_by_me", extra_params = { state = "closed" } },
+						["Waiting for review"] = {
+							scope = "reviews_for_me",
+							review_states = { "UNREVIEWED", "REVIEW_STARTED" },
+						},
+						["Reviewed"] = {
+							scope = "reviews_for_me",
+							review_states = { "REVIEWED", "REQUESTED_CHANGES", "APPROVED" },
+						},
 					},
 				},
 			},
@@ -154,20 +154,33 @@ return {
 
 						local branch = tostring(ctx.pr.source.branch or "")
 						local destination = ctx.repo_path .. ".worktrees"
-
-						local output = ctx.output("worktrees")
-						output:run({
+						local command = {
 							"worktrees",
 							branch,
 							destination,
 							ctx.repo_path,
 							"--split=h",
 							"--session=worktrees",
-						}, function(code)
-							if code ~= 0 then
-								done(false, "worktrees failed (exit " .. tostring(code) .. ")")
+						}
+
+						local function write(_, data)
+							if data then
+								ctx.write(data)
+							end
+						end
+
+						ctx.write("worktrees\n")
+
+						vim.system(command, {
+							cwd = ctx.repo_path,
+							stdout = write,
+							stderr = write,
+						}, function(result)
+							if result.code ~= 0 then
+								done(false, "worktrees failed (exit " .. result.code .. ")")
 								return
 							end
+
 							done(true, "Worktree ready for " .. branch)
 						end)
 					end,
@@ -199,12 +212,24 @@ return {
 							"--base=" .. base,
 						}
 
-						local output = ctx.output("worktrees-review")
-						output:run(command, function(code)
-							if code ~= 0 then
-								done(false, "worktrees-review failed (exit " .. tostring(code) .. ")")
+						local function write(_, data)
+							if data then
+								ctx.write(data)
+							end
+						end
+
+						ctx.write("worktrees-review\n")
+
+						vim.system(command, {
+							cwd = ctx.repo_path,
+							stdout = write,
+							stderr = write,
+						}, function(result)
+							if result.code ~= 0 then
+								done(false, "worktrees-review failed (exit " .. result.code .. ")")
 								return
 							end
+
 							done(true, "Code review started for " .. branch)
 						end)
 					end,
@@ -238,13 +263,6 @@ return {
 						layout = "compact",
 						search = "is:issue is:open user:emrearmagan sort:updated-desc",
 					},
-					{
-						name = "Current Repo",
-						key = "4",
-						layout = "compact",
-						current_repo = true,
-						search = "is:issue is:open sort:updated-desc",
-					},
 				},
 				bookmarks = {
 					key = "S",
@@ -253,7 +271,6 @@ return {
 						["Neovim"] = "is:issue is:open repo:neovim/neovim sort:updated-desc",
 						["Neovim bugs"] = "is:issue is:open repo:neovim/neovim label:bug sort:reactions-desc",
 						["Mentioned"] = "is:issue is:open mentions:@me sort:updated-desc",
-						["My closed issues"] = "is:issue is:closed author:@me sort:updated-desc",
 					},
 				},
 			},
@@ -272,13 +289,6 @@ return {
 						key = "2",
 						layout = "compact",
 						scope = "created_by_me",
-					},
-					{
-						name = "Current Repo",
-						key = "3",
-						layout = "compact",
-						current_repo = true,
-						scope = "all",
 					},
 				},
 				bookmarks = {

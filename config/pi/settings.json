@@ -9,7 +9,7 @@
     "medium": 10240,
     "high": 32768
   },
-  "lastChangelogVersion": "0.99.1",
+  "lastChangelogVersion": "1.1.0",
   "observational-memory": {
     "observeAfterTokens": 30000,
     "reflectAfterTokens": 60000,
@@ -31,7 +31,6 @@
   "editorPaddingX": 1,
   "packages": [
     "npm:pi-web-access",
-    "npm:pi-mcp-adapter",
     "npm:@tintinweb/pi-tasks",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-observational-memory",
@@ -42,5 +41,6 @@
     "npm:@narumitw/pi-usage"
   ],
   "theme": "catppuccin-mocha-pi",
-  "permissionLevel": "low"
+  "permissionLevel": "low",
+  "deviceId": "30c7aa4d-789b-4d05-9f5e-5ceb1fe301b2"
 }

@@ -205,6 +205,22 @@ return {
 				},
 
 				git_status = {
+					win = {
+						input = {
+							keys = {
+								["<Tab>"] = { "select_and_next", mode = { "n", "i" } },
+								["<S-Tab>"] = { "select_and_prev", mode = { "n", "i" } },
+								["<C-s>"] = { "git_stage", mode = { "n", "i" } },
+							},
+						},
+						list = {
+							keys = {
+								["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
+								["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
+								["<C-s>"] = "git_stage",
+							},
+						},
+					},
 					preview = function(ctx)
 						Snacks.picker.preview.cmd({
 							"git",
@@ -427,7 +443,7 @@ return {
 						icon = " ",
 						key = "s",
 						desc = "Git Status",
-						action = "<leader>gS",
+						action = ":lua Snacks.dashboard.pick('git_status')",
 					},
 					{
 						icon = " ",

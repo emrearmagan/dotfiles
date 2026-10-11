@@ -122,8 +122,8 @@ alias gca='git commit -a'
 alias gcam='git commit -a -m'
 
 # Diff / log
-alias gd='git diff'
-alias gdiff='git diff'
+alias gd='git cdiff'
+alias gdiff='git cdiff'
 alias gds='git diff --staged'
 alias gstaged='git diff --staged'
 alias gdc='nvim -c CodeDiff'

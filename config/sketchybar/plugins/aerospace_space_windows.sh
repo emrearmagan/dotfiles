@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 source "$HOME/.config/sketchybar/icons.sh" # for $ICON_SIZE
+source "$CONFIG_DIR/plugins/icon_map_bg.sh"
 
 # Update label of space.<workspace_id> with app icons from Aerospace
 # - If a workspace id is provided as $1 or via WORKSPACE env, update only that one
@@ -7,21 +8,30 @@ source "$HOME/.config/sketchybar/icons.sh" # for $ICON_SIZE
 
 icon_for_apps() {
 	apps_list="$1"
-	icon_strip=""
+	icons=""
+	normal_icons=""
+	font="sketchybar-app-font-bg"
 	if [ -n "$apps_list" ]; then
 		while IFS= read -r app; do
-			[ -n "$app" ] && icon_strip="$icon_strip $($CONFIG_DIR/plugins/icon_map_fn.sh "$app")"
+			[ -n "$app" ] || continue
+			__icon_map "$app"
+			icons="$icons $icon_result"
+			[ "$icon_result" != ":default:" ] || font="sketchybar-app-font"
+			normal_icons="$normal_icons $("$CONFIG_DIR/plugins/icon_map_fn.sh" "$app")"
 		done <<EOF
 $apps_list
 EOF
 	fi
-	printf "%s" "$icon_strip"
+	# A workspace label uses one font, so its whole strip must use the matching map.
+	if [ "$font" = "sketchybar-app-font" ]; then
+		icons="$normal_icons"
+	fi
 }
 
 update_workspace() {
 	ws="$1"
 	apps=$(aerospace list-windows --workspace "$ws" --json 2>/dev/null | jq -r '.[].["app-name"]' | sort -u)
-	icons=$(icon_for_apps "$apps")
+	icon_for_apps "$apps"
 	# Keep focused workspace visible even if empty
 	focused_ws="${FOCUSED_WORKSPACE:-}"
 	if [ -z "$focused_ws" ]; then
@@ -31,14 +41,14 @@ update_workspace() {
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="$icons" \
-			label.font="sketchybar-app-font-bg:Regular:$ICON_SIZE" \
+			label.font="$font:Regular:$ICON_SIZE" \
 			icon.drawing=on
 	elif [ "$ws" = "$focused_ws" ]; then
 		# Focused but empty: keep visible and show background
 		sketchybar --set "space.$ws" \
 			drawing=on \
 			label="" \
-			label.font="sketchybar-app-font-bg:Regular:$ICON_SIZE" \
+			label.font="$font:Regular:$ICON_SIZE" \
 			icon.drawing=on \
 			background.drawing=on
 	else
