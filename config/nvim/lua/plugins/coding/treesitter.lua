@@ -19,6 +19,7 @@ return {
 
 				"comment",
 				"css",
+				"diff",
 				"dockerfile",
 				"git_config",
 				"gitcommit",
@@ -43,37 +44,47 @@ return {
 				ts.install(parser)
 			end
 
-			-- Not every tree-sitter parser is the same as the file type detected
-			-- So the patterns need to be registered more cleverly
-			local patterns = {}
-			for _, parser in ipairs(parsers) do
-				local parser_patterns = vim.treesitter.language.get_filetypes(parser)
-				for _, pp in pairs(parser_patterns) do
-					table.insert(patterns, pp)
-				end
-			end
-
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = patterns,
+				pattern = "*",
 				callback = function(ev)
 					local buf = ev.buf
 
-					-- Skip special buffers (dashboard, telescope, snacks, etc.)
+					-- Skip special buffers (dashboard, snacks, etc.)
 					if vim.bo[buf].buftype ~= "" then
 						return
 					end
 
 					local ft = ev.match
 					local lang = vim.treesitter.language.get_lang(ft) or ft
-
-					local ok = pcall(vim.treesitter.start, buf, lang)
-					if not ok then
+					local parser = require("nvim-treesitter.parsers")[lang]
+					if not parser or parser.tier == 4 then
 						return
 					end
 
-					vim.wo.foldmethod = "expr"
-					vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+					-- Installation is asynchronous and a no-op for installed parsers.
+					ts.install(lang):await(vim.schedule_wrap(function(err, installed)
+						if err then
+							vim.notify(tostring(err), vim.log.levels.ERROR)
+							return
+						end
+						if
+							not installed
+							or not vim.api.nvim_buf_is_loaded(buf)
+							or vim.bo[buf].buftype ~= ""
+							or vim.bo[buf].filetype ~= ft
+						then
+							return
+						end
+
+						if not pcall(vim.treesitter.start, buf, lang) then
+							return
+						end
+						vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+						for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+							vim.wo[win].foldmethod = "expr"
+							vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+						end
+					end))
 				end,
 			})
 		end,

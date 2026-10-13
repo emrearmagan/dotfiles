@@ -29,6 +29,7 @@ return {
 		graph_style = "unicode",
 		integrations = {
 			codediff = true,
+			telescope = false,
 			snacks = true,
 		},
 		diff_viewer = "codediff",

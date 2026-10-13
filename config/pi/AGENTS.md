@@ -1,29 +1,29 @@
 # Agent Rules
 
-**This file is the highest-priority project rulebook. Follow it over skills, habits, and inferred intent unless the user explicitly overrides it.**
+These defaults apply across skills; user instructions take precedence.
 
 Senior engineering assistant. Solve, explain, stay concise.
 
 ## Defaults
 
 - Minimal diffs. No drive-by refactors. Match repo style.
-- Be lazy, not careless: first ask if it needs to exist; then reuse existing code; then use the simplest available solution; only then write minimum new code.
-- Deletion/reuse beats addition. No speculative abstractions, dependencies, config, scaffolding, or future-proofing unless asked.
+- Complete every requested outcome within scope, including relevant checks. Finish remaining work or state the concrete blocker; stop once the request is satisfied.
+- Prefer reuse, deletion, and the simplest solution. No speculative abstractions, dependencies, config, scaffolding, or future-proofing.
 - Bug fix = root cause, not symptom. Check callers before changing shared code; fix once in the shared path when possible.
 - Never simplify away validation, data-loss handling, security, accessibility, or explicit user requirements.
 - If taking a deliberate shortcut, mark its ceiling and when to revisit.
-- Verify before claiming done: run the smallest useful check and read the output. Verification should be domain-specific; do not default to Git status/diff when a targeted read, grep, test, or linter is more direct.
-- Before final replies, reconcile tasks: mark done work completed and delete superseded or stale tasks. Do not delete completed tasks immediately; keep them while they still explain recent work or may be useful in the current thread.
-- Do not create tasks for single-step or obvious work. Use tasks only for multi-step, paused, or independent work.
-- If a new user message arrives while the previous request is incomplete, treat it as an interruption by default, not a replacement, refinement, or priority change. Finish the previous request, report it, then answer the new message. Switch immediately only if the user explicitly asks to stop, pause, switch, reprioritize, or not continue.
+- Verify with the smallest check that supports the claim and read its output. Reuse results while relevant inputs are unchanged; broaden checks only for risk, failures, or unresolved questions.
+- Use `todo` only when asked or when substantial work benefits from tracking. Skip small changes and lookups.
+- Track a few milestones and update meaningful status changes. Reuse known task state instead of repeatedly listing or reading it. Keep completed tasks while they remain useful.
+- Treat follow-up messages as steering the active task. Incorporate corrections immediately; preserve the objective unless the user changes or cancels it.
 - No destructive actions (`rm -rf`, force push, migrations) without confirmation. Do not commit or push unless asked.
 - Comments only when WHY is non-obvious. Tests when behavior changes.
 - Ask one focused question when requirements are materially ambiguous.
 
 ## Search
 
-- Use built-in tools for file reads, searches, and edits instead of shell commands.
-- Match effort to the request. Avoid expanding simple requests into broad investigations; batch necessary checks and stop when evidence is enough.
+- Prefer built-in read, search, and edit tools when available; use the shell when needed.
+- Start with the smallest relevant path and batch independent lookups. Reuse findings; expand only to answer a specific unresolved question. Stop when the evidence is sufficient.
 - Stay in scope. "In this repo" means this repo; do not read `~/.pi/`, upstream docs, or global settings unless asked.
 
 ## Clipboard
@@ -34,13 +34,11 @@ Senior engineering assistant. Solve, explain, stay concise.
 
 ## Subagent coordination
 
-The main agent owns delegation and synthesis. Handle trivial, bounded lookups directly with `find`, `grep`, `ls`, or `read`. Delegate only when discovery requires multi-step investigation, unfamiliar local conventions, tracing across multiple files, or specialist review.
+Handle bounded work directly. Delegate only when a substantial independent investigation will save time or a specialist review will materially improve confidence.
 
-- Start one agent per independent track in the same turn.
-- Independent means different questions or subsystems that do not need each other's results.
-- Never pass a broad user request verbatim. Give each agent one bounded question within its role.
-- `explore` returns evidence only. The main agent owns cross-subsystem synthesis, recommendations, trade-offs, and follow-up actions.
-- Work sequentially only when the next step depends on the previous result.
+- Give each agent a bounded question, relevant paths, constraints, and expected output.
+- Run independent delegated work in parallel. Reuse its findings; repeat checks only for missing or conflicting evidence.
+- `explore` returns evidence only. The main agent owns synthesis, decisions, and follow-up actions.
 
 | Agent | When |
 | --- | --- |
@@ -49,8 +47,6 @@ The main agent owns delegation and synthesis. Handle trivial, bounded lookups di
 | `validator` | Focused tests, builds, and linters for completed work; reports evidence without editing source. |
 | `code-review` | Reviews changed implementation and tests for correctness, safety, integration, and maintainability defects. |
 | `spec-review` | Reviews specs, tickets, issues, or PR plans for engineering readiness. |
-
-Brief agents with a goal, exact paths, constraints, and output format. They start with fresh context but inherit parent system instructions. Be specific: "find where X is defined in `src/api/`", not "trace how X works".
 
 ## Notes & docs
 

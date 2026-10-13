@@ -1,36 +1,35 @@
-# Verification Reference
+# Verification
 
-Detailed claim→evidence requirements and rationalization catchers for the worker skill.
+Choose checks that show whether the requested behavior works. Use the project's existing commands and test setup where possible.
 
-## Claim → Evidence Required
+## Choose checks
 
-| Claim             | Required evidence                 | Not enough                  |
-| ----------------- | --------------------------------- | --------------------------- |
-| Tests pass        | Test command output: 0 failures   | "Should pass", earlier run  |
-| Build succeeds    | Build command exit 0              | Linter passed               |
-| Bug fixed         | Original repro now passes         | Code changed, "looks right" |
-| Linter clean      | Linter output: 0 errors           | Partial check               |
-| Requirements met  | Line-by-line checklist vs plan    | Tests pass                  |
-| Subagent finished | `git diff` shows expected changes | Agent reports success       |
+Start with a focused check, then cover anything important it leaves out.
 
-## Red Flags — STOP
+| Change | Useful check |
+| --- | --- |
+| Behavior | Test the expected result through an interface users or callers use, including important error and edge cases. |
+| Bug fix | When practical, confirm the regression test fails because of the original bug, then passes with the fix. |
+| Shared interface | Check affected callers as well as the component itself. |
+| UI | Try the interaction and inspect the result where automated tests don't cover it. |
+| Docs or configuration | Parse, load, check links, or inspect rendered output as appropriate. |
 
-If you catch yourself doing any of these, you are about to claim without evidence:
+- Test the requested behavior and the promises the code makes to its callers.
+- Avoid tests that copy the production algorithm, depend on private call order, or merely match wording.
+- Run broader checks when local instructions require them or the change could affect more of the project.
 
-- Using "should", "probably", "seems to", "looks like".
-- "Great!", "Perfect!", "Done!" before running anything.
-- About to commit/PR without running tests.
-- Trusting a subagent's "success" report without inspecting the diff.
-- Partial verification ("linter passed so build works").
-- "Just this once" / "I'm tired" / "I'm confident".
+## Read results
 
-## Rationalizations
+- Confirm the command finished, what it tested, and whether anything was skipped. A successful exit alone doesn't prove the behavior works.
+- Make sure the check exercised the changed code and didn't silently select fewer tests than intended.
+- Understand a failure before editing code to make it pass. Use `systematic-debugging` when the cause is unclear.
+- If a check can't run, record the exact reason. Use another check if it answers part of the question, and say what it leaves untested.
+- Distinguish failures caused by your change from existing failures and checks you couldn't run.
+- Don't weaken tests or remove required validation to get a passing result.
 
-| Excuse                    | Reality                        |
-| ------------------------- | ------------------------------ |
-| "Should work now"         | Run the verification.          |
-| "I'm confident"           | Confidence ≠ evidence.         |
-| "Just this once"          | No exceptions.                 |
-| "Linter passed"           | Linter ≠ compiler ≠ tests.     |
-| "Agent said success"      | Verify the diff independently. |
-| "Partial check is enough" | Partial proves nothing.        |
+## Reuse results
+
+- Keep a result while the code, configuration, dependencies, test data, and environment it depends on are unchanged.
+- After editing, rerun the checks the edit could affect. Keep unrelated passing results.
+- For another agent's checks, review what ran, what it covered, the result, and any caveats. Repeat only what's missing, questionable, or affected by later changes.
+- Before finishing, check that the results cover the whole request and review your diff. Fill remaining gaps and report what passed, failed, couldn't run, or remains untested.

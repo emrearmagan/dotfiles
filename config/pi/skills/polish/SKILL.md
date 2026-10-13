@@ -1,11 +1,11 @@
 ---
 name: polish
-description: 'Simplify recently changed files — remove dead code, clearer names, less nesting — without behavior change. Triggers: "/polish", "clean up", "simplify", "tidy".'
+description: 'Simplify the requested code or current work — remove dead code, clearer names, less nesting — without behavior change. Triggers: "/polish", "clean up", "simplify", "tidy".'
 ---
 
 # Polish
 
-Review the recently changed files (uncommitted + recent commits on the current branch) and apply simplification improvements.
+Apply useful simplifications within the requested scope or the current work established in the conversation.
 
 ## Principles
 
@@ -31,7 +31,7 @@ When in doubt: keep the comment. Removing a comment is only safe when its text i
 
 ## Scope
 
-Only review and modify files in the selected change scope. If the user did not specify a scope, clarify it first with the `ask_user_question` tool instead of inferring silently.
+Use the user's explicit scope or the current work established in the conversation. Ask only when the scope is materially ambiguous. Do not automatically include recent commits or unrelated changes.
 
 Supported scopes:
 
@@ -43,22 +43,10 @@ Do NOT touch files outside the selected scope.
 
 ## Process
 
-0. **Clarify scope when unspecified** — If the user did not explicitly say what to polish, use `ask_user_question` to ask whether to polish:
-    - Current uncommitted changes
-    - Current branch changes
-    - Last N commits
-
-   If they choose last N commits and did not provide N, ask for N before scouting.
-1. **Scout (parallel)** — Determine the changed-files set from the selected scope, then:
-    - Group files by directory or related module; aim for 3–6 files per group.
-   - Dispatch at most 2 `explore` agents in parallel by default. Use 3 only for clearly independent modules; for larger changes, ask the user to narrow scope.
-    - Have each scout report concrete improvements: dead code, unclear names, redundant logic, boilerplate comments, and inconsistent patterns.
-   - For 1-3 changed files, read them directly instead of dispatching `explore`.
-2. **Plan** — From the explore's report, produce a per-file change plan: a short bullet list of intended edits for each file.
-3. **Confirm** — Present the plan to the user and wait for approval before editing. If the user vetoes specific items or files, drop them from the plan.
-4. **Apply & verify, one file at a time** — For each file: apply its edits, then immediately run available checks for that file (formatter, linter, typecheck, and any tests covering it). If a check fails, fix or revert before moving to the next file.
-5. **Final pass** — Run the full test suite once all files are done.
-6. **Summarize** — Report what changed and why, file by file.
+1. **Inspect the scope.** Read the relevant files or diff directly. Stop exploring when the intended simplifications and behavior are clear.
+2. **Apply related edits together.** Keep only changes that improve clarity without changing behavior or public APIs.
+3. **Verify affected code.** Run the smallest useful checks after the batch. Broaden checks only when the scope, risk, or a failure warrants it.
+4. **Summarize** meaningful changes and verification results.
 
 ## Out of scope
 

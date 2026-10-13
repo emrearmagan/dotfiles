@@ -43,6 +43,10 @@ return {
 		lazy = true,
 		config = function()
 			require("xcodebuild").setup({
+				integrations = {
+					telescope_nvim = { enabled = false },
+					snacks_nvim = { enabled = true },
+				},
 				-- Disable the default progress bar (we use fidget instead)
 				show_build_progress_bar = false,
 				commands = {

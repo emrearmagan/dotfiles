@@ -25,7 +25,7 @@ return {
 						or vim.api.nvim_buf_get_name(event.buf):find("/.codex/editor/", 1, true) -- for some reason its filetype is markdown
 					then
 						vellum.close()
-					elseif event.event ~= "BufEnter" then
+					elseif event.event ~= "BufEnter" and vim.o.columns >= 120 and vim.o.lines >= 30 then
 						vellum.open()
 					end
 				end)
@@ -131,15 +131,17 @@ return {
 				hyperlink = "󰌹 ",
 			},
 			callout = {
-				note = { rendered = "Note", quote_icon = "▎" },
-				tip = { rendered = "Tip", quote_icon = "▎" },
-				important = { rendered = "Important", quote_icon = "▎" },
-				warning = { rendered = "Warning", quote_icon = "▎" },
-				caution = { rendered = "Caution", quote_icon = "▎" },
+				-- Keep a trailing space so iconless labels cover the whole marker.
+				note = { rendered = "Note ", quote_icon = "▎" },
+				tip = { rendered = "Tip ", quote_icon = "▎" },
+				important = { rendered = "Important ", quote_icon = "▎" },
+				warning = { rendered = "Warning ", quote_icon = "▎" },
+				caution = { rendered = "Caution ", quote_icon = "▎", highlight = "RenderMarkdownError" },
 			},
 			anti_conceal = {
 				enabled = true,
-				disabled_modes = { "n", "c", "t" },
+				-- Clear overlays when the cursor reveals the underlying Markdown.
+				disabled_modes = false,
 				above = 1,
 				below = 1,
 			},

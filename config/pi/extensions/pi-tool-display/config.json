@@ -1,4 +1,5 @@
 {
+  "enabled": true,
   "registerToolOverrides": {
     "read": true,
     "grep": true,
@@ -8,14 +9,15 @@
     "edit": true,
     "write": true
   },
+  "customToolOverrides": {},
   "enableNativeUserMessageBox": false,
-  "readOutputMode": "summary",
+  "readOutputMode": "preview",
   "searchOutputMode": "count",
   "mcpOutputMode": "preview",
-  "previewLines": 8,
+  "previewLines": 4,
   "expandedPreviewMaxLines": 4000,
-  "bashOutputMode": "opencode",
-  "bashCollapsedLines": 10,
+  "bashOutputMode": "preview",
+  "bashCollapsedLines": 5,
   "diffViewMode": "auto",
   "diffIndicatorMode": "bars",
   "diffSplitMinWidth": 120,

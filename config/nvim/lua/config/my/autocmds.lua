@@ -79,29 +79,32 @@ vim.api.nvim_create_autocmd("FileType", {
 	group = augroup("qf_remove_entry"),
 	pattern = "qf",
 	callback = function(event)
-		local opts = { buffer = event.buf, silent = true, desc = "Remove qf entry" }
+		local opts = { buffer = event.buf, silent = true, desc = "Remove list entry" }
 
-		vim.fn.matchadd("Comment", [[\s\zs\%(\.\./\|\./\|\~\/\|/\).\{-}\ze\s*│]])
+		local path_pattern = [[\s\zs\%(\.\./\|\./\|\~\/\|/\).\{-}\ze\s*│]]
+		local has_match = vim.iter(vim.fn.getmatches()):any(function(match)
+			return match.group == "Comment" and match.pattern == path_pattern
+		end)
+		if not has_match then
+			vim.fn.matchadd("Comment", path_pattern)
+		end
 
 		local function remove_entries(rows)
-			local qf = vim.fn.getqflist({ title = 0, items = 0 })
-			local is_haunt = qf.title == "Haunt" or qf.title == "Haunt (buffer)"
-			local haunt = is_haunt and require("haunt.api") or nil
-
-			for _, row in ipairs(rows) do
-				local item = qf.items[row]
-				if item and haunt and item.user_data then
-					haunt.delete_by_id(item.user_data)
-				end
-			end
+			local location = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].loclist == 1
+			local what = { id = 0, items = 0 }
+			local list = location and vim.fn.getloclist(0, what) or vim.fn.getqflist(what)
 
 			for i = #rows, 1, -1 do
-				table.remove(qf.items, rows[i])
+				if list.items[rows[i]] then
+					table.remove(list.items, rows[i])
+				end
 			end
-			vim.fn.setqflist({}, "r", {
-				title = qf.title,
-				items = qf.items,
-			})
+			local update = { id = list.id, items = list.items }
+			if location then
+				vim.fn.setloclist(0, {}, "r", update)
+			else
+				vim.fn.setqflist({}, "r", update)
+			end
 		end
 
 		vim.keymap.set("n", "dd", function()

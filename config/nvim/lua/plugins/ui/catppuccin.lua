@@ -12,7 +12,6 @@ return {
 			integrations = {
 				notify = true, -- pull in Notify* highlight groups
 				gitsigns = true,
-				telescope = true,
 				mini = {
 					enabled = true,
 				},

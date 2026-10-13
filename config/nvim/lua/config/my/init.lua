@@ -1,3 +1,4 @@
+require("config.my.quickfix-signs")
 require("config.my.autocmds")
 require("config.my.mode-line-number")
 require("config.my.buffer-list")

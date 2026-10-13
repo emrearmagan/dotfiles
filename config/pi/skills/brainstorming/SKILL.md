@@ -1,23 +1,18 @@
 ---
 name: brainstorming
-description: 'Design/spec a new feature, component, or behavior change before any code. Triggers: "how should we…", "what''s the best way", "let''s build/add/create", "design", "plan", "spec". Outputs an approved spec → hands off to worker.'
+description: 'Explore a design when the user asks to brainstorm, design, or plan, or when materially unclear requirements prevent implementation. Skip for clear implementation requests.'
 ---
 
 # Brainstorming
 
-Turn a fuzzy idea into an approved spec through dialogue. **Do not write code or load `worker` until the user approves a written spec.** Short specs fine — one must exist.
+Resolve the decisions needed for a useful design. Do not turn clear implementation requests into a design workflow.
 
 ## Flow
 
-1. **Scout in parallel.** Identify gaps (code, docs, APIs, constraints). Dispatch independent `explore` agents in one turn. Skip when the question is self-contained or a direct `read`/`grep` answers it.
-2. **Ask** what scouting couldn't answer — one focused question at a time. Use `ask_user_question` when choices are concrete.
-3. **Decompose** if the request spans subsystems → separate specs.
-4. **Run the lazy pass**: does this need to exist, already exist here, or fit stdlib/native/installed tools? Prefer the smallest viable spec.
-5. **Propose 2–3 approaches** with tradeoffs and your pick.
-6. **Present the design** clearly. Include what is explicitly not being built and when to add it later.
-7. **Write the spec** at a path the user agrees on.
-8. **Self-review** for placeholders, contradictions, scope drift. Fix inline.
-9. **Wait for explicit approval**, then hand off to `worker`.
+1. **Identify the gap.** Use the context already available. Read or search only to answer unresolved questions relevant to the design.
+2. **Resolve material choices.** Ask when a missing requirement would change the result. Compare alternatives only when there are real tradeoffs, and recommend one.
+3. **Present the smallest useful design inline.** Reuse existing code and conventions. Write a separate spec only when requested or when the work needs a durable reference.
+4. **Continue within the request.** If implementation was requested, proceed once substantive decisions are resolved. Otherwise return the design. A written spec or separate approval is not a prerequisite by itself.
 
 ## Principles
 

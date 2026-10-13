@@ -185,6 +185,11 @@ return {
 			vim.lsp.config("cssls", {
 				filetypes = { "css", "scss", "less" },
 			})
+
+			-- Marksman advertises an invalid file-operation glob without a workspace.
+			vim.lsp.config("marksman", {
+				workspace_required = true,
+			})
 		end,
 	},
 

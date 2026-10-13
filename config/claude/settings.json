@@ -7,6 +7,7 @@
       "mcp__pencil"
     ]
   },
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -19,15 +20,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/emre.armagan/.claude/hooks/rtk-rewrite.sh"
-          }
-        ]
-      },
       {
         "hooks": [
           {
@@ -78,7 +70,15 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
   "tui": "fullscreen",
-  "skipAutoPermissionPrompt": true,
-  "model": "opus[1m]"
+  "theme": "dark",
+  "skipAutoPermissionPrompt": true
 }

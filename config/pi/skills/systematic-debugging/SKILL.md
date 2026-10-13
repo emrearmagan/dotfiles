@@ -1,88 +1,73 @@
 ---
 name: systematic-debugging
-description: 'Root-cause a bug before fixing — reproduce, evidence, single hypothesis, minimal test. Use for any bug, test failure, build break, or unexpected behavior — especially when a "quick fix" feels obvious.'
+description: Find the cause of an unclear bug, failing test or build, intermittent failure, or performance regression. Use when diagnosis is requested or a previous fix failed. Handle an already understood local defect directly.
 ---
 
 # Systematic Debugging
 
-## The Iron Law
+Find the cause before changing behavior. Reuse existing evidence and stop investigating once it supports a fix. Follow `AGENTS.md` for shared rules.
 
-```
-NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
-```
+## 1. Reproduce the problem
 
-Random fixes waste time and create new bugs. Symptom fixes are failure. If you haven't completed Phase 1, you cannot propose fixes.
+1. **Read the error.** Include the stack trace and relevant code. A timeout says something took too long; it does not tell you why.
+2. **Confirm the symptom.** Note the expected result, actual result, triggering input, and relevant version or settings.
+3. **Run the smallest useful check.** Prefer an existing failing test, command, request, or exact manual steps. Confirm it catches the reported bug, not a setup error.
+4. **Simplify when needed.** Remove extra inputs or setup one at a time while the failure remains. Keep the original case for checking the fix.
+5. **Check recent changes if this is a regression.** Look at relevant code, dependency, or configuration changes.
 
-## When to Use
+If you cannot reproduce it:
 
-Any technical issue: test failures, production bugs, unexpected behavior, performance problems, build failures, integration issues.
+- Inspect the available code and logs; keep explanations tentative.
+- Say what evidence is missing and request only what would help distinguish the causes.
+- Do not keep rebuilding an unavailable environment or claim a fix was verified there.
 
-**Especially when:**
+## 2. Trace the cause
 
-- Under time pressure (emergencies make guessing tempting — systematic is faster than thrashing).
-- "Just one quick fix" seems obvious.
-- A previous fix didn't work, or you've already tried multiple.
-- You don't fully understand the issue.
+- **Start at the failure.** Inspect the failing operation, its inputs, and the callers supplying them.
+- **Follow bad values backward.** Find the assignment, conversion, or state change that first made the value wrong.
+- **Check boundaries.** Across services or processes, compare what was sent, what arrived, and the settings actually in effect.
+- **Compare a working case.** Look for differences in inputs, state, order, dependencies, and configuration. Read the reference sections needed to explain them.
+- **Keep searches focused.** Each extra search should answer a specific unresolved question.
 
-## Phase 1: Root Cause Investigation
+Example: dates appear one day early. Check storage → API response → timezone conversion. Correct the conversion that changes the date; adding a day to the display would hide the cause.
 
-1. **Read errors carefully.** Don't skip stack traces. Line numbers, file paths, error codes often contain the exact answer.
-2. **Reproduce consistently.** Build the tightest red/green feedback loop you can: focused test, one command, small script, or exact manual steps. If not reproducible → gather more data, don't guess.
-3. **Check recent changes.** Git diff, deploys, dep updates, config changes.
-4. **In multi-component systems, instrument every boundary** _before_ proposing fixes:
-   - Log what data enters each component, what exits.
-   - Verify env/config propagation across layers.
-   - Run once to see _where_ it breaks, then investigate that layer.
-5. **Trace data backward.** When the error is deep in the stack: where does the bad value originate? What called this with it? Keep tracing up. Fix at the source, not the symptom.
-6. **Minimize the repro** before hypothesizing. Remove inputs, steps, config, and callers until only load-bearing pieces remain.
+## 3. Test one explanation
 
-## Phase 2: Pattern Analysis
+1. **State the hypothesis.** What do you think causes the failure, and which observation supports it?
+2. **Predict a result.** What would confirm the explanation or rule it out? If several causes fit, choose a check that separates them.
+3. **Change one variable.** Use a focused test, debugger, or targeted logs. Record the result before choosing the next step.
+4. **Use failed experiments.** Note what they ruled out. Remove your unsuccessful experimental edits before trying a different correction; preserve unrelated work.
+5. **Reassess repeated failures.** If fixes keep failing or move the problem elsewhere, revisit the assumptions and shared behavior. Do not stack patches.
 
-- **Find a working example** of similar code in the same codebase.
-- **Read references completely** — don't skim. Partial understanding guarantees bugs.
-- **List every difference** between working and broken, however small. Don't assume "that can't matter."
-- **Understand dependencies** — settings, env, assumptions the code makes.
+Keep temporary logs easy to find and remove. Show only the relevant output, with credentials and private data removed.
 
-## Phase 3: Hypothesis & Testing
+### Flaky or slow behavior
 
-- **State one hypothesis clearly:** "I think X is the root cause because Y." Write it down.
-- **Test minimally:** smallest possible probe, one variable at a time.
-- **If it didn't work, form a NEW hypothesis.** Do not stack fixes.
-- **If you don't know, say so.** Don't pretend. Research, ask, gather more data.
+- **Intermittent failures:** record conditions, event order, shared state, and failure counts across bounded repeated runs. One pass is not enough.
+- **Timing problems:** wait for the required condition with a timeout. Use controlled time when testing delays themselves; do not hide a race by increasing a sleep.
+- **Performance:** measure the same workload before and after. Use a profile, timing breakdown, or query plan to locate the cost before changing code.
 
-## Output
+If the fix would go beyond the request, explain why and settle that change in scope before proceeding.
 
-Stop at diagnosis unless the user explicitly asked for a fix.
+## 4. Fix and verify
 
-Report:
+For a diagnosis request, report the findings here. If the user requested a fix, continue without asking again.
 
-- reproduction / feedback loop used
-- evidence gathered
-- root cause, or best current hypothesis
-- recommended next step
+1. **Choose the regression check.** Test at a boundary that exposes the real bug. Use expected results from the requirement or a known example, not a copy of the implementation's calculation.
+2. **Observe the failure when practical.** A regression test must fail because of the bug, not an import error or broken fixture.
+3. **Fix the cause.** Change the code responsible, check relevant callers, and preserve required validation and error handling. Leave unrelated cleanup alone.
+4. **Repeat the original case.** Also run the regression test if it checks a different path. Check affected neighboring behavior and run required project checks.
+5. **Expand checks when justified.** Broader changes, failures, and unresolved risks may need broader coverage. State the limits of any manual or partial check.
+6. **Clean up.** Remove your temporary diagnostics and artifacts; keep useful regression tests. Rerun checks affected by cleanup or later edits, and reuse results that still apply.
 
-If the user asks to implement the fix, use `/skill:worker`.
+Use `worker` for substantial implementation. Carry forward the diagnosis and existing results so discovery is not repeated.
 
-## Red Flags — STOP and Restart Phase 1
+## Report
 
-If you catch yourself thinking any of these, you are guessing:
+- **Cause:** what went wrong, or the best current hypothesis.
+- **Evidence:** reproduction, key observations, and what ruled out other explanations.
+- **Fix:** what changed, if requested.
+- **Checks:** commands or manual steps and their results.
+- **Remaining work:** uncertainty or a concrete blocker, if any.
 
-- "Quick fix for now, investigate later."
-- "Just try changing X and see if it works."
-- "Add multiple changes, run tests."
-- "Skip the test, I'll manually verify."
-- "It's probably X, let me fix that."
-- "Pattern says X but I'll adapt it differently."
-- "Here are the main problems: [lists fixes without investigation]."
-- "One more fix attempt" (when you've already tried 2+).
-
-## "Why" Five Times Example
-
-> Problem: App crashes on checkout.
-> Why 1: Null pointer on `user.email`.
-> Why 2: User was created without email validation.
-> Why 3: OAuth signup doesn't require email.
-> Why 4: We assumed all OAuth providers return email.
-> Why 5: We never tested with GitHub accounts that hide email.
->
-> **Root cause:** missing email handling for OAuth providers — fix at OAuth signup, not at checkout.
+Stop when the requested outcome is supported by the evidence.

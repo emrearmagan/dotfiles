@@ -9,7 +9,6 @@ wk.add({
 	{ "j", "v:count == 0 ? 'gj' : 'j'", desc = "Down", mode = { "n", "x" }, expr = true, silent = true },
 	{ "k", "v:count == 0 ? 'gk' : 'k'", desc = "Up", mode = { "n", "x" }, expr = true, silent = true },
 	{ "J", "mzJ`z", desc = "Join lines (cursor stays)", mode = "n" },
-	{ "Y", "y$", desc = "Yank to end of line", mode = "n" },
 	{ "p", "p=`]", desc = "Paste and reindent", mode = "n" },
 	{ "P", "P=`]", desc = "Paste before and reindent", mode = "n" },
 	{ "jk", "<ESC>", desc = "Exit insert mode", mode = "i" },
@@ -58,13 +57,6 @@ wk.add({
 		desc = "Go to Implementation (Snacks)",
 	},
 	{
-		"grn",
-		function()
-			vim.lsp.buf.rename()
-		end,
-		desc = "Rename Symbol",
-	},
-	{
 		"grr",
 		function()
 			require("snacks.picker").lsp_references()
@@ -99,20 +91,6 @@ wk.add({
 			require("snacks.picker").lsp_declarations()
 		end,
 		desc = "Go to Declaration (Snacks)",
-	},
-	{
-		"gi",
-		function()
-			require("snacks.picker").lsp_implementations()
-		end,
-		desc = "Go to Implementation (Snacks)",
-	},
-	{
-		"gy",
-		function()
-			require("snacks.picker").lsp_type_definitions()
-		end,
-		desc = "Go to Type Definition (Snacks)",
 	},
 
 	-- Hover & Signature
@@ -161,12 +139,6 @@ wk.add({
 		end,
 		desc = "Next Reference",
 	},
-
-	-- Quickfix / Location List Navigation
-	{ "[q", ":cprev<CR>", desc = "Previous quickfix" },
-	{ "]q", ":cnext<CR>", desc = "Next quickfix" },
-	{ "[l", ":lprevious<CR>", desc = "Previous location" },
-	{ "]l", ":lnext<CR>", desc = "Next location" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │               Tabs / Splits / Buffers              │
@@ -235,13 +207,6 @@ wk.add({
 		desc = "Find files",
 	},
 	{
-		"<leader>fb",
-		function()
-			require("config.my.buffer-list").toggle()
-		end,
-		desc = "Buffers",
-	},
-	{
 		"<leader>fg",
 		function()
 			snacks.picker.grep({ hidden = true, no_ignore = false })
@@ -269,12 +234,6 @@ wk.add({
 			snacks.picker.help()
 		end,
 		desc = "Search help",
-	},
-
-	{
-		"<leader>ft",
-		"<cmd>MyTodoList<CR>",
-		desc = "Find todos",
 	},
 
 	{
@@ -306,6 +265,29 @@ wk.add({
 	-- ╰────────────────────────────────────────────────────╯
 	{ "<leader>q", group = "Quick / File" },
 	{
+		"<leader>qt",
+		"<cmd>MyTodoList<CR>",
+		desc = "Find todos",
+	},
+	{
+		"<leader>qb",
+		function()
+			require("config.my.buffer-list").toggle()
+		end,
+		desc = "Buffers",
+	},
+	{
+		"<leader>qd",
+		function()
+			vim.fn.setloclist(0, {}, "r", {
+				title = "Diagnostics",
+				items = vim.diagnostic.toqflist(vim.diagnostic.get()),
+			})
+			vim.cmd("lopen")
+		end,
+		desc = "Workspace Diagnostics (Location List)",
+	},
+	{
 		"<leader>qq",
 		function()
 			local open = vim.iter(vim.api.nvim_list_wins()):any(function(w)
@@ -321,7 +303,6 @@ wk.add({
 		end,
 		desc = "Quickfix",
 	},
-	{ "<leader>qQ", "<cmd>HauntQf<CR>", desc = "Haunt notes" },
 
 	{
 		"<leader>qa",
@@ -346,11 +327,6 @@ wk.add({
 			vim.notify("Added to quickfix")
 		end,
 		desc = "Quickfix: Add current line",
-	},
-	{
-		"<leader>q+",
-		"<cmd>HauntAnnotate<cr>",
-		desc = "Haunt: Add or edit note",
 	},
 	{ "<leader>qS", ":wa<CR>", desc = "Save all files", mode = "n" },
 	{
@@ -384,16 +360,6 @@ wk.add({
 	{ "<leader>c", group = "Code / LSP" },
 
 	-- Core LSP Actions
-	-- { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" } },
-	{
-		"<leader>ca",
-		function()
-			require("actions-preview").code_actions()
-		end,
-		desc = "Code Action",
-		mode = { "n", "v" },
-	},
-	{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename Symbol" },
 	{
 		"<leader>cf",
 		function()
@@ -405,14 +371,14 @@ wk.add({
 
 	-- Diagnostics
 	{
-		"<leader>cD",
+		"<leader>cd",
 		function()
 			require("snacks.picker").diagnostics_buffer()
 		end,
 		desc = "Buffer Diagnostics (Snacks)",
 	},
 	{
-		"<leader>cd",
+		"<leader>cD",
 		function()
 			require("snacks.picker").diagnostics()
 		end,
@@ -445,32 +411,6 @@ wk.add({
 	{ "<leader>cl", "<cmd>Trouble lsp_bottom toggle<cr>", desc = "LSP References (Trouble)" },
 	-- { "<leader>cq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
 
-	-- Navigation
-	-- { "gD", "<cmd>FzfLua lsp_declarations<cr>", desc = "Go to Declaration" },
-	-- { "gd", "<cmd>FzfLua lsp_definitions<cr>", desc = "Go to Definition" },
-	-- { "gi", "<cmd>FzfLua lsp_implementations<cr>", desc = "Go to Implementation" },
-	-- { "gr", "<cmd>Telescope lsp_references<cr>", desc = "Find References" },
-	{
-		"gd",
-		function()
-			require("snacks.picker").lsp_definitions()
-		end,
-		desc = "Go to Definition (Snacks)",
-	},
-	{
-		"gD",
-		function()
-			require("snacks.picker").lsp_declarations()
-		end,
-		desc = "Go to Declaration (Snacks)",
-	},
-	{
-		"gi",
-		function()
-			require("snacks.picker").lsp_implementations()
-		end,
-		desc = "Go to Implementation (Snacks)",
-	},
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Code Tests (neotest)           │
 	-- ╰────────────────────────────────────────────────────╯
@@ -738,6 +678,14 @@ wk.add({
 		desc = "Stage/Unstage Hunk",
 	},
 	{
+		"<leader>gs",
+		function()
+			require("gitsigns").stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+		end,
+		desc = "Stage/Unstage Selected Lines",
+		mode = "x",
+	},
+	{
 		"<leader>gA",
 		function()
 			require("gitsigns").stage_buffer()
@@ -896,13 +844,6 @@ wk.add({
 			snacks.picker.commands()
 		end,
 		desc = "Commands",
-	},
-	{
-		"<leader>sh",
-		function()
-			snacks.picker.help()
-		end,
-		desc = "Help Pages",
 	},
 
 	{

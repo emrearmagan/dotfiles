@@ -1,69 +1,52 @@
 ---
 name: worker
-description: 'Implement code from a spec or requirement — plan, small steps, evidence-verified. Triggers: "build", "implement", "fix", "work on", "let''s start", or any multi-step change after a spec.'
+description: Implement substantial code changes from requirements, a spec, or an agreed plan. Work in small steps and check each change. Handle small, obvious edits directly.
 ---
 
 # Worker
 
-Implement requested changes with a tight loop: **plan → implement → verify → report**.
-
-## Principles
-
-- **Read before edit.** Understand existing code before changing it.
-- **Lazy senior ladder.** Before adding code, stop at first rung that holds: need it at all, already exists here, stdlib/native/installed dep, one-liner, then minimum code.
-- **Targeted edits, not rewrites.** Smallest change that achieves the goal.
-- **Diagnose, don't guess.** If something fails, investigate (see `/skill:systematic-debugging`).
-- **Do not commit unless asked.** Only commit when the user explicitly asks.
-- **Report what changed.** End with a clear summary of files modified and verification done.
+Take the request through implementation, checks, and a short report. Follow `AGENTS.md` for shared rules on scope, permissions, and delegation.
 
 ## 1. Plan
 
-For multi-step work, create `pi-tasks` entries before editing. Skip formal task planning for one small, obvious change.
-
-Each task should include:
-
-- exact file path(s)
-- intended change
-- verification command or concrete manual check
-
-Keep tasks small and update them as reality changes.
+- Identify what should work when you're done, including stated limits and compatibility needs.
+- Start from the existing spec or plan. Keep decisions that are already settled.
+- Ask one focused question only if the answer would change what you build or whether you can proceed safely. Continue independent work while waiting.
+- Check the working tree so you can distinguish existing edits from your own.
+- Read the code you expect to change, its callers, and nearby tests before editing. Check callers before changing a shared interface.
+- Search likely paths first. Widen the search only to answer something still unclear.
+- Prefer existing helpers, native features, and simple local changes. Add a dependency or abstraction only when simpler options fall short.
+- Write a few steps for substantial work. Include paths, expected results, and checks where useful; skip a written plan for a straightforward edit.
+- Use `todo` when asked or when tracking a few milestones will help you finish the work.
+- Delegate only when useful under `AGENTS.md`. Give each agent a clear question or set of files, enough context, and the result you need back.
 
 ## 2. Implement
 
-Work one task at a time.
+Repeat this loop for each small, complete change:
 
-- Make the smallest change that satisfies the task.
-- For bug fixes, grep callers before touching shared functions; fix root cause once, not symptoms per caller.
-- Mark deliberate shortcuts only when useful; the comment must name the ceiling and upgrade trigger.
-- Do not bundle unrelated cleanup.
-- If the plan becomes wrong, update the task before continuing.
+1. Choose the check for the change. Add or update tests for what users or callers depend on, including important failure cases. For a bug fix, reproduce the failure first when practical and check that the test fails because of the bug.
+2. Make the edit using the surrounding code's conventions. Keep required validation, error handling, security, and accessibility intact. Leave unrelated cleanup alone.
+3. Run a focused check and read its output before starting changes that depend on this one. Confirm a regression test passes with the fix.
+4. If the cause is unclear or a check fails unexpectedly, use `systematic-debugging` before trying another fix. Separate code defects from broken test setup, missing dependencies, and environment problems.
+5. Update the remaining steps when new findings change the approach. Continue until the pieces needed for the request are in place.
+
+- Use public interfaces where practical. Don't test private call sequences or copy the implementation into the test.
+- For docs, configuration, and other low-impact edits, use a suitable direct check. Don't add a test just to have one.
+- Review delegated changes and their supporting checks before using them. Follow up on gaps or disagreements without repeating all the work.
 
 ## 3. Verify
 
-Use the tightest useful feedback loop:
-
-- focused test/check for the changed code
-- one command that reproduces the bug or validates the feature
-- manual check only when automation is not practical
-
-Run the relevant check before claiming success. Broader checks are for broad or risky changes.
-
-If a check fails, do not stack guesses. Diagnose the failure first.
-
-Iron law: if you have not run the verification command in this message, do not claim it passes.
-
-For the full claim→evidence table, see `references/verification.md`.
+- Check the finished behavior against the whole request, including later corrections.
+- Check affected callers and connections between components where a local test isn't enough.
+- Use [references/verification.md](references/verification.md) to choose checks or handle incomplete results.
+- Reuse passing results while the code and setup they depend on haven't changed.
+- Rerun affected checks after edits. Broaden them when failures or unanswered questions call for it.
+- Read your diff for mistakes, accidental edits, unnecessary complexity, and missed requirements.
+- Fix remaining issues within the task and rerun the checks those fixes affect.
 
 ## 4. Report
 
-End with:
-
-```markdown
-## Changes Made
-- `path/to/file` — what changed and why
-
-## Verification
-- Ran `<command>` — result
-```
-
-No "should work". Only evidence-backed claims.
+- Finish the whole request, including its checks. Stop only when it's done or a specific blocker prevents further progress.
+- For a blocker, say what's left, why you can't continue, and what would let you proceed.
+- Briefly report the result, important changed files, checks run, and anything still unverified.
+- Don't commit or push unless asked.
