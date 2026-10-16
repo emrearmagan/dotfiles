@@ -21,7 +21,7 @@ return {
 
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = { "dbui", "sql", "dbout" },
-			callback = function()
+			callback = function(event)
 				vim.keymap.set("n", "<leader>S", "<Plug>(DBUI_ExecuteQuery)", {
 					buffer = true,
 					desc = "DBExecuteQuery",
@@ -46,6 +46,14 @@ return {
 				vim.keymap.set("n", "<leader>Q", "<cmd>tabclose<CR>", {
 					buffer = true,
 					desc = "Close DBUI tab",
+				})
+
+				require("which-key").add({
+					buffer = event.buf,
+					icon = { cat = "filetype", name = "sql" },
+					{ "<leader>S", mode = { "n", "v" } },
+					{ "<leader>E" },
+					{ "<leader>W" },
 				})
 			end,
 		})

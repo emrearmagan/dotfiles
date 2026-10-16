@@ -54,7 +54,7 @@ return {
 	font = wezterm.font("JetBrainsMono Nerd Font"),
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
-	window_background_opacity = 100,
+	window_background_opacity = 1.0,
 	window_padding = {
 		left = 0,
 		right = 0,

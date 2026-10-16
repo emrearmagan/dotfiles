@@ -8,6 +8,16 @@ return {
 	},
 	config = function()
 		local lualine = require("lualine")
+		local all_lsp = require("lualine.components.ex.lsp.all")
+		local visible_lsp = all_lsp:extend()
+
+		-- Hide Copilot from the statusline while preserving the LSP icons and colours.
+		function visible_lsp:__clients()
+			return vim.tbl_filter(function(client)
+				return client.name ~= "copilot"
+			end, all_lsp.__clients(self))
+		end
+
 		local custom_theme = {
 			normal = {
 				a = { fg = "#89b4fa", bg = "NONE" },
@@ -100,8 +110,6 @@ return {
 						"filetype",
 						icon_only = true,
 						colored = true,
-						--color = { bg = "#313244" },
-						--separator = { left = "", right = "" },
 						padding = { left = 1, right = 0 },
 					},
 					{
@@ -164,7 +172,8 @@ return {
 						end,
 					},
 
-					{ "ex.lsp.single", color = { fg = "#89b4fa" } }, -- Active LSP
+					{ visible_lsp, only_attached = true }, -- Attached LSPs except Copilot
+					-- { "ex.lsp.single" }, -- Active LSP
 					{ "dap_status" },
 
 					-- Custom Xcode build status (requires `vim.g.xcodebuild_last_status`)
@@ -181,14 +190,7 @@ return {
 					},
 					{
 						"diff",
-						-- color = { fg = colors.mauve },
 						colored = true, -- Displays a colored diff status if set to true
-						diff_color = { -- match your palette
-							added = { fg = "#a6da95" }, -- green
-							modified = { fg = "#e0af68" }, -- yellow/peach
-							removed = { fg = "#f7768e" }, -- red
-						},
-						symbols = { added = "+", modified = "~", removed = "-" }, -- Changes the symbols used by the diff.
 					},
 				},
 				lualine_z = {

@@ -32,7 +32,7 @@ return {
 				show_close_icon = false,
 				show_buffer_close_icons = false,
 				show_tab_indicators = true,
-				always_show_bufferline = false,
+				always_show_bufferline = true,
 				color_icons = true,
 				tab_size = 0,
 				max_name_length = 120,

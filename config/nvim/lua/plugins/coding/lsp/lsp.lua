@@ -16,6 +16,28 @@ return {
 			})
 		end,
 	},
+	-- Install formatters and linters for Conform and nvim-lint via Mason.
+	{
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		dependencies = { "mason-org/mason.nvim" },
+		opts = {
+			ensure_installed = {
+				"goimports", -- gofmt comes with Go.
+				"golangci-lint",
+				"swiftformat",
+				"swiftlint",
+				"prettier",
+				"shfmt",
+				"stylua",
+				"selene",
+			},
+			integrations = {
+				["mason-lspconfig"] = false,
+				["mason-null-ls"] = false,
+				["mason-nvim-dap"] = false,
+			},
+		},
+	},
 	-- Bridge: Mason <-> LSPConfig
 	{
 		"mason-org/mason-lspconfig.nvim",
@@ -140,7 +162,6 @@ return {
 				settings = {
 					yaml = {
 						schemas = {
-							["https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook"] = "*/playbook.yml",
 							["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
 						},
 					},
@@ -160,13 +181,7 @@ return {
 
 			-- Ansible
 			vim.lsp.config("ansiblels", {
-				filetypes = { "yaml" },
 				capabilities = capabilities,
-				settings = {
-					ansible = {
-						ansibleLint = { enabled = true },
-					},
-				},
 			})
 
 			-- Bash / Shell

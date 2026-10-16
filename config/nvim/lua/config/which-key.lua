@@ -16,6 +16,28 @@ wk.add({
 	-- Disable plain <Space> in normal mode so it doesn't move the cursor when used as <leader>
 	-- (prevents accidental motion if <Space> is pressed alone)
 	{ " ", "<Nop>", desc = "Leader key noop", mode = "n" },
+	{ "<leader>a", group = "Apps", icon = "󰀻" },
+	{ "<leader>ag", "<cmd>Atlas pulls github<cr>", desc = "GitHub", silent = true },
+	{ "<leader>al", "<cmd>Atlas pulls gitlab<cr>", desc = "GitLab", silent = true },
+	{ "<leader>aG", "<cmd>Atlas issues github<cr>", desc = "GitHub Issues", silent = true },
+	{ "<leader>aL", "<cmd>Atlas issues gitlab<cr>", desc = "GitLab Issues", silent = true },
+	{
+		"<leader>aD",
+		"<cmd>Dockyard<cr>",
+		desc = "Docker",
+		icon = { cat = "filetype", name = "dockerfile" },
+		silent = true,
+	},
+	{ "<leader>ad", "<cmd>DBUIFull<cr>", desc = "Database", silent = true },
+	{
+		"<leader>ac",
+		function()
+			snacks.dashboard.pick("files", { cwd = vim.fn.stdpath("config") })
+		end,
+		desc = "Config",
+		icon = { cat = "filetype", name = "conf" },
+		silent = true,
+	},
 
 	-- Disable command-line window (q:) as its annoying
 	{
@@ -55,6 +77,7 @@ wk.add({
 			require("snacks.picker").lsp_implementations()
 		end,
 		desc = "Go to Implementation (Snacks)",
+		icon = "󰅩",
 	},
 	{
 		"grr",
@@ -69,6 +92,7 @@ wk.add({
 			require("snacks.picker").lsp_type_definitions()
 		end,
 		desc = "Go to Type Definition (Snacks)",
+		icon = "",
 	},
 
 	{
@@ -77,6 +101,7 @@ wk.add({
 			require("snacks.picker").lsp_symbols()
 		end,
 		desc = "Outline (Snacks Symbols)",
+		icon = "",
 	},
 	{
 		"gd",
@@ -84,6 +109,7 @@ wk.add({
 			require("snacks.picker").lsp_definitions()
 		end,
 		desc = "Go to Definition (Snacks)",
+		icon = "󰅩",
 	},
 	{
 		"gD",
@@ -91,6 +117,7 @@ wk.add({
 			require("snacks.picker").lsp_declarations()
 		end,
 		desc = "Go to Declaration (Snacks)",
+		icon = "󰅩",
 	},
 
 	-- Hover & Signature
@@ -104,6 +131,7 @@ wk.add({
 			})
 		end,
 		desc = "Hover Documentation",
+		icon = "󰈙",
 	},
 	-- Currently used by tmux for pane navigation
 	-- { "<C-;>", vim.lsp.buf.signature_help, desc = "Signature Help", mode = { "i", "n" } },
@@ -131,6 +159,7 @@ wk.add({
 			require("snacks.words").jump(-1)
 		end,
 		desc = "Previous Reference",
+		icon = "",
 	},
 	{
 		"]w",
@@ -138,6 +167,7 @@ wk.add({
 			require("snacks.words").jump(1)
 		end,
 		desc = "Next Reference",
+		icon = "",
 	},
 
 	-- ╭────────────────────────────────────────────────────╮
@@ -193,7 +223,7 @@ wk.add({
 		desc = "which_key_ignore",
 	},
 	{ "<leader>.", "<cmd>Neotree toggle reveal<CR>", desc = "which_key_ignore" },
-	{ "<leader>m", "<cmd>MyMarks<CR>", desc = "Marks" },
+	{ "<leader>m", "<cmd>MyMarks<CR>", desc = "Marks", icon = "" },
 
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                  Search (FzfLua)                   │
@@ -363,7 +393,15 @@ wk.add({
 	{
 		"<leader>cf",
 		function()
-			vim.lsp.buf.format({ async = true })
+			local range
+			local mode = vim.fn.mode()
+			if mode == "v" or mode == "V" or mode == "\22" then
+				local first, last = vim.fn.line("v"), vim.fn.line(".")
+				first, last = math.min(first, last), math.max(first, last)
+				-- Include the complete selected lines, including the final character.
+				range = { start = { first, 0 }, ["end"] = { last, #vim.fn.getline(last) } }
+			end
+			require("conform").format({ async = true, lsp_format = "fallback", range = range })
 		end,
 		desc = "Format File",
 		mode = { "n", "v" },
@@ -498,6 +536,7 @@ wk.add({
 	},
 
 	-- ───── Overseer (task runner) ─────
+	{ "<leader>r", group = "Run / Tasks", icon = "" },
 	{
 		"<leader>ro",
 		"<cmd>OverseerToggle<CR>",
@@ -791,7 +830,7 @@ wk.add({
 	-- ╭────────────────────────────────────────────────────╮
 	-- │                     Notes                          │
 	-- ╰────────────────────────────────────────────────────╯
-	{ "<leader>n", group = "Notes" },
+	{ "<leader>n", group = "Notes", icon = "󰠮" },
 
 	{ "<leader>nw", "<cmd>Obsidian workspace<CR>", desc = "Switch workspace" },
 	{ "<leader>nn", "<cmd>Obsidian new<CR>", desc = "New note" },

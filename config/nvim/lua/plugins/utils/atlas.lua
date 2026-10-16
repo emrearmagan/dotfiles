@@ -96,7 +96,7 @@ return {
 					items = {
 						["Neovim"] = {
 							layout = "grouped",
-							search = "is:pr repo:neovim/neovim (is:open OR is:merged) sort:updated-desc",
+							search = "is:pr repo:neovim/neovim is:open sort:updated-desc",
 						},
 						["My merged PRs"] = "is:pr is:merged author:@me sort:updated-desc",
 						["My declined PRs"] = "is:pr is:closed -is:merged author:@me sort:updated-desc",

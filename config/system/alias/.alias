@@ -128,6 +128,7 @@ alias gds='git diff --staged'
 alias gstaged='git diff --staged'
 alias gdc='nvim -c CodeDiff'
 alias glog="git log --color --graph --decorate=short --decorate-refs='refs/heads/*' --decorate-refs='refs/remotes/*' --decorate-refs='refs/tags/*' --decorate-refs-exclude='refs/remotes/*/HEAD' --pretty=format:'%C(bold blue)%h%C(reset) -%C(auto)%d%C(reset) %s %C(dim yellow)(%cr)%C(reset) %C(dim white)<%an>%C(reset)' --abbrev-commit"
+alias glogfull='git log --format=fuller --date=iso'
 glogbase() {
   if (( $# != 1 )); then
     echo 'Usage: glogbase <base-branch>' >&2

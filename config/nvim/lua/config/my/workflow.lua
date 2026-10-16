@@ -1,35 +1,51 @@
 local actions = {
 	{
 		label = " GitHub",
-		command = "Atlas pulls github",
+		run = function()
+			vim.cmd("Atlas pulls github")
+		end,
 	},
 	{
 		label = " GitLab",
-		command = "Atlas pulls gitlab",
+		run = function()
+			vim.cmd("Atlas pulls gitlab")
+		end,
 	},
 	{
 		label = "󰌃 JIRA",
-		command = "Atlas issues jira",
+		run = function()
+			vim.cmd("Atlas issues jira")
+		end,
 	},
 	{
 		label = " GitHub Issues",
-		command = "Atlas issues github",
+		run = function()
+			vim.cmd("Atlas issues github")
+		end,
 	},
 	{
 		label = " GitLab Issues",
-		command = "Atlas issues gitlab",
+		run = function()
+			vim.cmd("Atlas issues gitlab")
+		end,
 	},
 	{
 		label = " Docker",
-		command = "Dockyard",
+		run = function()
+			vim.cmd("Dockyard")
+		end,
 	},
 	{
 		label = "󰆼 Database",
-		command = "DBUIFull",
+		run = function()
+			vim.cmd("DBUIFull")
+		end,
 	},
 	{
 		label = " Config",
-		command = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+		run = function()
+			require("snacks").dashboard.pick("files", { cwd = vim.fn.stdpath("config") })
+		end,
 	},
 	{
 		label = "󰄬  Todo",
@@ -81,11 +97,6 @@ vim.api.nvim_create_user_command("Workflow", function()
 			return
 		end
 
-		if choice.run then
-			choice.run()
-			return
-		end
-
-		vim.cmd(choice.command)
+		choice.run()
 	end)
 end, {})
