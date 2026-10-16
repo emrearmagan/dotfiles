@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+# Review one branch across repositories in tmux.
+# Every repo gets a pi review on the left and an Atlas diff on the right.
+#
+# Usage:
+#   wt review <branch> [<repo-path...>] [--base=<branch>] [--target=<pull-request-url>] [--attach]
+#
+# Notes:
+#   - Runs as `wt review`: Worktrunk picks up wt-* executables on PATH
+#   - Worktrunk creates or reuses the worktrees (see worktrunk/config.toml)
+#   - Reused worktrees are fast-forwarded, so the review sees what was pushed
+#   - Uses tmux session: reviews
+#   - Running the same review again reuses its window and keeps the agents
+#   - Without repo paths, the current directory is used
+#   - --base is the branch to compare against (default: main)
+#   - --target opens Atlas diff for the pull request URL
+#   - Without --target, Atlas diff opens origin/<base>...HEAD
+#   - --attach attaches after review commands are sent
+#
+# Examples:
+#   wt review linux
+#   wt review linux --base=develop
+#   wt review linux --target=https://github.com/owner/repo/pull/123
+#   wt review linux ~/repo/a ~/repo/b
+#   wt review linux --attach
+
+set -euo pipefail
+
+session=reviews
+model=openai-codex/gpt-5.6-sol
+
+usage() {
+	printf 'Usage: wt review <branch> [<repo-path...>] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n'
+}
+
+if [[ "${1:-}" == -h || "${1:-}" == --help ]]; then
+	usage
+	exit 0
+fi
+
+if [[ -z "${1:-}" || "$1" == -* ]]; then
+	usage >&2
+	exit 1
+fi
+
+branch="$1"
+shift
+base=main
+target=""
+attach=0
+repos=()
+
+for arg in "$@"; do
+	case "$arg" in
+	--base=*) base="${arg#--base=}" ;;
+	--target=*) target="${arg#--target=}" ;;
+	--attach) attach=1 ;;
+	-*)
+		printf 'Unknown option: %s\n' "$arg" >&2
+		usage >&2
+		exit 1
+		;;
+	*) repos+=("$arg") ;;
+	esac
+done
+
+if [[ ${#repos[@]} -eq 0 ]]; then
+	repos=("$PWD")
+fi
+
+worktrees=()
+for repo in "${repos[@]}"; do
+	git -C "$repo" fetch --quiet origin
+	worktree="$(wt -C "$repo" switch "$branch" --no-cd --format=json | jq -er '.path')"
+	if git -C "$worktree" rev-parse --quiet --verify '@{upstream}' >/dev/null; then
+		git -C "$worktree" merge --ff-only --quiet '@{upstream}'
+	fi
+	worktrees+=("$worktree")
+done
+
+comparison="origin/$base"
+prompt="/review this branch versus $comparison."
+if [[ -n "$target" ]]; then
+	prompt="$prompt Pull request: $target"
+fi
+# The leading space keeps the pi command out of shell history.
+printf -v pi_command ' pi --no-session --model %q %q' "$model" "$prompt"
+printf -v atlas_command 'nvim -c %q' "Atlas diff ${target:-$comparison...HEAD}"
+
+label="$(basename "${worktrees[0]}")"
+key="$(printf '%s\0' "${worktrees[@]}" | cksum | cut -d ' ' -f 1)"
+window="review-${label//[^[:alnum:]_-]/-}-$key"
+
+window_id=""
+created=""
+if ! tmux has-session -t "=$session" 2>/dev/null; then
+	# Match the current client's width so the splits come out right.
+	size=()
+	if [[ -n "${TMUX:-}" ]]; then
+		size=(-x "$(tmux display-message -p '#{client_width}')")
+	fi
+	created="$(tmux new-session -d ${size[@]+"${size[@]}"} -s "$session" -n "$window" -c "${worktrees[0]}" -P -F '#{window_id} #{pane_id}')"
+else
+	window_id="$(tmux list-windows -t "=$session" -f "#{==:#{window_name},$window}" -F '#{window_id}')"
+	if [[ -z "$window_id" ]]; then
+		created="$(tmux new-window -d -t "$session:" -n "$window" -c "${worktrees[0]}" -P -F '#{window_id} #{pane_id}')"
+	fi
+fi
+
+if [[ -n "$created" ]]; then
+	read -r window_id first_pane <<<"$created"
+	tmux set-option -w -t "$window_id" allow-rename off
+
+	# One column per repo, then split each column into pi | Atlas.
+	panes=("$first_pane")
+	for ((i = 1; i < ${#worktrees[@]}; i++)); do
+		panes+=("$(tmux split-window -d -h -t "$window_id" -c "${worktrees[$i]}" -P -F '#{pane_id}')")
+		tmux select-layout -t "$window_id" even-horizontal >/dev/null
+	done
+
+	for ((i = 0; i < ${#worktrees[@]}; i++)); do
+		atlas_pane="$(tmux split-window -d -h -p 80 -t "${panes[$i]}" -c "${worktrees[$i]}" -P -F '#{pane_id}')"
+		tmux send-keys -t "$atlas_pane" -l "$atlas_command"
+		tmux send-keys -t "$atlas_pane" Enter
+		tmux send-keys -t "${panes[$i]}" -l "$pi_command"
+		tmux send-keys -t "${panes[$i]}" Enter
+	done
+fi
+
+printf 'Review ready: %s:%s\n' "$session" "$window"
+
+if [[ "$attach" -eq 1 ]]; then
+	tmux select-window -t "$window_id"
+	if [[ -n "${TMUX:-}" ]]; then
+		tmux switch-client -t "=$session"
+	else
+		exec tmux attach-session -t "=$session"
+	fi
+fi

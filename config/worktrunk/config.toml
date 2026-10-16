@@ -1,4 +1,17 @@
 worktree-path = "{{ repo_path }}/../worktrees/{{ repo }}/{{ branch | sanitize }}"
 
-[pre-switch]
-reject-review = 'test {{ branch }} != review || { echo "Branch name review is reserved for review worktrees." >&2; exit 1; }'
+# `wt review` is not an alias: it is config/system/scripts/wt-review.
+[aliases]
+# wt open <branch> [--create]
+# Fetch, create or reuse the worktree and give it a window in the current tmux session.
+# {% raw %} defers the window name to `wt switch`, so it uses the target branch.
+open = '''
+git fetch --quiet origin &&
+wt switch {{ args }} --no-cd -x sh -- -c '
+  set -eu
+  name=$(printf "%s" "$1" | tr -c "[:alnum:]_-" "-")
+  tmux new-window -dS -n "$name" -c "$PWD"
+  tmux set-option -w -t ":=$name" allow-rename off
+  echo "Worktree ready: $PWD (window $name)"
+' wt-open '{% raw %}{{ repo | sanitize }}-{{ branch | sanitize }}{% endraw %}'
+'''

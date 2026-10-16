@@ -141,7 +141,7 @@ return {
 			custom_actions = {
 				{
 					id = "checkout_worktree",
-					label = "Checkout (worktrees)",
+					label = "Checkout (Worktrunk)",
 
 					---@param _ PullRequest
 					---@param ctx AtlasPullsCustomActionContext
@@ -153,15 +153,11 @@ return {
 						end
 
 						local branch = tostring(ctx.pr.source.branch or "")
-						local destination = ctx.repo_path .. ".worktrees"
-						local command = {
-							"worktrees",
-							branch,
-							destination,
-							ctx.repo_path,
-							"--split=h",
-							"--session=worktrees",
-						}
+						if branch == "" then
+							done(false, "No source branch")
+							return
+						end
+						local command = { "wt", "open", branch }
 
 						local function write(_, data)
 							if data then
@@ -169,7 +165,7 @@ return {
 							end
 						end
 
-						ctx.write("worktrees\n")
+						ctx.write("wt open\n")
 
 						vim.system(command, {
 							cwd = ctx.repo_path,
@@ -177,7 +173,7 @@ return {
 							stderr = write,
 						}, function(result)
 							if result.code ~= 0 then
-								done(false, "worktrees failed (exit " .. result.code .. ")")
+								done(false, "wt open failed (exit " .. result.code .. ")")
 								return
 							end
 
@@ -199,18 +195,19 @@ return {
 						end
 
 						local branch = tostring(ctx.pr.source.branch or "")
-						local destination = ctx.repo_path .. ".reviews"
+						if branch == "" then
+							done(false, "No source branch")
+							return
+						end
 						local target = tostring((ctx.pr.link or {}).html or "")
 						local base = tostring((ctx.pr.destination or {}).branch or "")
-						local command = {
-							"worktrees-review",
-							branch,
-							destination,
-							ctx.repo_path,
-							"--skip-unchanged",
-							"--target=" .. target,
-							"--base=" .. base,
-						}
+						local command = { "wt", "review", branch }
+						if target ~= "" then
+							table.insert(command, "--target=" .. target)
+						end
+						if base ~= "" then
+							table.insert(command, "--base=" .. base)
+						end
 
 						local function write(_, data)
 							if data then
@@ -218,7 +215,7 @@ return {
 							end
 						end
 
-						ctx.write("worktrees-review\n")
+						ctx.write("wt review\n")
 
 						vim.system(command, {
 							cwd = ctx.repo_path,
@@ -226,7 +223,7 @@ return {
 							stderr = write,
 						}, function(result)
 							if result.code ~= 0 then
-								done(false, "worktrees-review failed (exit " .. result.code .. ")")
+								done(false, "wt review failed (exit " .. result.code .. ")")
 								return
 							end
 
