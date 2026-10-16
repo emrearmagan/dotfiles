@@ -1,0 +1,7 @@
+[directories]
+# Relative to this file: ~/.config/tealdeer/pages
+# <command>.page.md replaces a page, <command>.patch.md appends to it.
+custom_pages_dir = "pages"
+
+[updates]
+auto_update = true
