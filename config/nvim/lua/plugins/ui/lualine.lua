@@ -97,10 +97,6 @@ return {
 					newfile = "[New]", -- Label for new buffers
 				},
 				disabled_buftypes = { "quickfix", "prompt" }, -- Disable lualine for these types
-				disabled_filetypes = {
-					statusline = { "atlas-ui" },
-					winbar = {},
-				},
 				component_separators = "",
 				section_separators = "",
 			},

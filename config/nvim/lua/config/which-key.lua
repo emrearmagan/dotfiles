@@ -177,6 +177,8 @@ wk.add({
 	{ "<C-p>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous Buffer", mode = "n" },
 	{ "<Tab>", "<cmd>BufferLineCycleNext<CR>", desc = "Next Buffer", mode = "n" },
 	{ "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous Buffer", mode = "n" },
+	-- Without this, Ctrl-i also triggers the <Tab> mapping above. Mapping it to itself keeps it as jump forward.
+	{ "<C-i>", "<C-i>", desc = "Jump forward", mode = "n" },
 	{
 		"<C-x>",
 		function()
@@ -691,7 +693,7 @@ wk.add({
 	{
 		"<leader>gl",
 		function()
-			snacks.picker.git_log()
+			require("neogit").action("log", "log_current", { "--graph", "--decorate" })()
 		end,
 		desc = "Git Log",
 	},
@@ -705,9 +707,9 @@ wk.add({
 	{
 		"<leader>gc",
 		function()
-			snacks.picker.git_diff()
+			require("neogit").open({ "commit" })
 		end,
-		desc = "Git Changes (Hunks)",
+		desc = "Git Commit",
 	},
 	{
 		"<leader>gs",

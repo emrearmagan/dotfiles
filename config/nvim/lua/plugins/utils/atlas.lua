@@ -78,10 +78,10 @@ return {
 						search = "is:pr is:open author:@me sort:updated-desc",
 					},
 					{
-						name = "Review Requested",
+						name = "Contributions",
 						key = "2",
 						layout = "compact",
-						search = "is:pr is:open review-requested:@me sort:updated-desc",
+						search = "is:pr is:open user:emrearmagan -author:@me sort:updated-desc",
 					},
 					{
 						name = "My Repos",
