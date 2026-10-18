@@ -112,14 +112,25 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
         minLength: 1,
         description: "Pull request URL or canonical Atlas target.",
       }),
+      commit: Type.String({
+        minLength: 1,
+        description: "Pull request head commit SHA the line numbers refer to.",
+      }),
       file: Type.String({
         minLength: 1,
         description: "Repository-relative file path.",
       }),
-      line: Type.Integer({
+      start_line: Type.Integer({
         minimum: 1,
-        description: "1-based line number in the pull request head.",
+        description: "First line of the note, 1-based, in that commit.",
       }),
+      end_line: Type.Optional(
+        Type.Integer({
+          minimum: 1,
+          description:
+            "Last line of a multi-line note. Defaults to start_line.",
+        }),
+      ),
       body: Type.String({
         minLength: 1,
         description: "Review note body.",
@@ -127,7 +138,7 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
       context: Type.Optional(
         Type.String({
           description:
-            "Exact source line used to detect whether the note becomes outdated. Without it, the note is always outdated.",
+            "Source lines of the note, separated by newlines. Shown with the note in Atlas.",
         }),
       ),
       type: Type.Optional(NOTE_TYPE),
@@ -135,8 +146,10 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
     async execute(_toolCallId, params, signal) {
       const note = params as {
         target: string;
+        commit: string;
         file: string;
-        line: number;
+        start_line: number;
+        end_line?: number;
         body: string;
         context?: string;
         type?: string;
@@ -145,13 +158,17 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
         "add",
         "--target",
         note.target,
+        "--commit",
+        note.commit,
         "--file",
         note.file,
-        "--line",
-        String(note.line),
+        "--start-line",
+        String(note.start_line),
         "--body",
         note.body,
       ];
+      if (note.end_line !== undefined)
+        args.push("--end-line", String(note.end_line));
       if (note.context !== undefined) args.push("--context", note.context);
       if (note.type) args.push("--type", note.type);
       return execute(args, signal);
