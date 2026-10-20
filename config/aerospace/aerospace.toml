@@ -105,7 +105,10 @@ alt-shift-s = "exec-and-forget osascript -e 'tell application \"Safari\" to make
 alt-shift-t = "exec-and-forget open -n -a WezTerm"
 
 alt-s = 'exec-and-forget open -a /Applications/Safari.app'
-alt-t = 'exec-and-forget open -a /Applications/WezTerm.app'
+alt-t = 'exec-and-forget ~/.config/scripts/popup tasks'
+alt-m = 'exec-and-forget ~/.config/scripts/popup mail'
+alt-enter = 'exec-and-forget ~/.config/scripts/popup shell'
+alt-p = 'exec-and-forget ~/.config/scripts/popup pass'
 
 # All possible keys:
 # - Letters.        a, b, c, ..., z

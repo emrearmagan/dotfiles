@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Toggle a kitty quick access terminal popup.
+# The same key hides it again, and the next press shows it as you left it.
+#
+# Usage:
+#   popup <name>
+#
+# Notes:
+#   - Popups: mail, shell, pass, tasks
+#   - Each name is its own kitty instance, so every popup keeps its own state
+#   - The shared look (border, rounding, opacity) lives in ~/.config/kitty/popup.conf
+#   - Popups start in $HOME; default size is 120x40 and a popup can override it
+#
+# Examples:
+#   popup mail
+#   popup pass
+
+set -euo pipefail
+
+usage() {
+	printf 'Usage: popup <mail|shell|pass|tasks>\n'
+}
+
+if [[ "${1:-}" == -h || "${1:-}" == --help ]]; then
+	usage
+	exit 0
+fi
+
+name="${1:-}"
+columns=120
+lines=40
+
+case "$name" in
+mail)
+	cmd="matcha"
+	;;
+shell)
+	cmd="tmux-popup"
+	;;
+pass)
+	cmd="pass-pick"
+	columns=80
+	lines=20
+	;;
+tasks)
+	cmd="tb"
+	;;
+*)
+	usage >&2
+	exit 1
+	;;
+esac
+
+cd "$HOME"
+nohup kitten quick-access-terminal --instance-group "$name" \
+	--config "$HOME/.config/kitty/popup.conf" \
+	-o columns="$columns" -o lines="$lines" \
+	zsh -lic "$cmd" >/dev/null 2>&1 &

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pick a pass entry with fzf and copy it to the clipboard.
+# enter copies the password, ctrl-o copies the OTP code.
+#
+# Usage:
+#   pass-pick
+
+# Keep pass's 45 second clipboard clear alive when the popup closes.
+trap '' HUP
+export GPG_TTY="$(tty)"
+
+store="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
+
+result=$(cd "$store" && find . -name '*.gpg' | sed 's|^\./||; s|\.gpg$||' | sort |
+	fzf --no-preview --prompt 'pass> ' --expect ctrl-o --header 'enter: password · ctrl-o: otp') || exit 0
+
+key=$(head -n 1 <<<"$result")
+entry=$(tail -n 1 <<<"$result")
+
+# pinentry-curses can't find kitty's terminfo, so let it draw as a plain xterm.
+export TERM=xterm-256color
+
+if [ "$key" = "ctrl-o" ]; then
+	pass otp -c "$entry" || read -rp 'Press enter to close'
+else
+	pass -c "$entry" || read -rp 'Press enter to close'
+fi

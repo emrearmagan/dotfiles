@@ -76,6 +76,7 @@ source "$ITEM_DIR/ssh.sh"
 
 source "$ITEM_DIR/brew.sh"
 source "$ITEM_DIR/taskbook.sh"
+source "$ITEM_DIR/mail.sh"
 source "$ITEM_DIR/battery.sh"
 
 source "$ITEM_DIR/meeting.sh"
@@ -91,7 +92,7 @@ status_bracket=(
   background.border_width=2
   background.padding_left=20
 )
-sketchybar --add bracket status battery brew taskbook vpn ssh \
+sketchybar --add bracket status battery mail brew taskbook vpn ssh \
            --set status "${status_bracket[@]}"
 
 sketchybar --set battery padding_left=10

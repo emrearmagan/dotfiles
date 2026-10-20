@@ -33,7 +33,6 @@ fi
 # The popup server loads the normal tmux config, so keep normal prefix/key behavior
 # and override only the keys that should close this popup client.
 tmux_popup bind-key t detach-client
-tmux_popup bind-key -n Escape detach-client
 
 if [ "$detach" -eq 1 ]; then
 	exit 0

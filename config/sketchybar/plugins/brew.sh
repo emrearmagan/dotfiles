@@ -20,13 +20,13 @@ LIST=$({ "$BREW" outdated --quiet --formula; "$BREW" outdated --quiet --cask; } 
 COUNT=$(printf '%s' "$LIST" | grep -c .)
 
 case "$COUNT" in
-0) COLOR=$GREEN LABEL="" ;;
-[12]) COLOR=$WHITE LABEL="$COUNT" ;;
-[34]) COLOR=$YELLOW LABEL="$COUNT" ;;
-[5-7]) COLOR=$PEACH LABEL="$COUNT" ;;
-*) COLOR=$RED LABEL="$COUNT" ;;
+0) COLOR=$GREEN LABEL="" DRAW=off ;;
+[12]) COLOR=$WHITE LABEL="$COUNT" DRAW=on ;;
+[34]) COLOR=$YELLOW LABEL="$COUNT" DRAW=on ;;
+[5-7]) COLOR=$PEACH LABEL="$COUNT" DRAW=on ;;
+*) COLOR=$RED LABEL="$COUNT" DRAW=on ;;
 esac
-sketchybar --set brew label="$LABEL" icon.color=$COLOR
+sketchybar --set brew label="$LABEL" label.drawing=$DRAW icon.color=$COLOR
 
 # ---- popup: outdated package list ----
 idx=1

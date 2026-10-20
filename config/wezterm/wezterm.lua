@@ -1,5 +1,4 @@
 local wezterm = require("wezterm")
-require("startup")
 
 local keys = require("mappings")
 local ui = require("ui")
