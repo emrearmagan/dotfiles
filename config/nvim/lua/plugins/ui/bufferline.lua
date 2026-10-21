@@ -3,6 +3,10 @@ return {
 	version = "*",
 	dependencies = { "nvim-tree/nvim-web-devicons", "catppuccin/nvim" },
 	event = { "BufReadPost", "BufNewFile" },
+	init = function()
+		-- Hide the native tab bar until bufferline loads.
+		vim.opt.showtabline = 0
+	end,
 	config = function()
 		local bufferline = require("bufferline")
 		local mocha = require("catppuccin.palettes").get_palette("mocha")

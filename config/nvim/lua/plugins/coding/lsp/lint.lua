@@ -1,13 +1,13 @@
 return {
 	"mfussenegger/nvim-lint",
-	event = { "BufReadPost", "BufNewFile" },
+	event = { "BufReadPre", "BufNewFile" },
 	dependencies = { "mason-org/mason.nvim" },
 	config = function()
 		local lint = require("lint")
 		lint.linters_by_ft = {
 			lua = { "selene" },
 			luau = { "selene" },
-			swift = { "swiftlint" },
+			swift = { "swiftlint", "swiftformat" },
 			go = { "golangcilint" },
 		}
 
@@ -19,6 +19,41 @@ return {
 			linter.args = { "lint", "--use-stdin", "--quiet", "--reporter", "xcode" }
 			return linter
 		end
+
+		lint.linters.swiftformat = {
+			cmd = "swiftformat",
+			stdin = true,
+			args = {
+				"stdin",
+				"--lint",
+				"--stdinpath",
+				function()
+					return vim.api.nvim_buf_get_name(0)
+				end,
+				"--cache",
+				"ignore",
+			},
+			stream = "stderr",
+			ignore_exitcode = true,
+			parser = require("lint.parser").from_pattern(
+				function(line)
+					local lnum, col, severity, message = line:match("[^:]+:(%d+):(%d+): (%w+): (.+)")
+					if lnum then
+						return { lnum, col, severity, message }
+					end
+					-- Parse and configuration failures omit the filename.
+					message = line:match("^error: (.+)")
+					if message then
+						lnum, col = message:match(" at (%d+):(%d+)%.?$")
+						return { lnum or "1", col or "1", "error", message }
+					end
+					return {}
+				end,
+				{ "lnum", "col", "severity", "message" },
+				{ error = vim.diagnostic.severity.ERROR, warning = vim.diagnostic.severity.WARN },
+				{ source = "swiftformat" }
+			),
+		}
 
 		-- Resolve the package from this file, independently of Neovim's launch directory.
 		lint.linters.golangcilint = function()
@@ -33,6 +68,7 @@ return {
 		local tools = {
 			selene = { command = "selene", roots = { "selene.toml", ".git" } },
 			swiftlint = { command = "swiftlint", roots = { ".swiftlint.yml", "Package.swift", ".git" } },
+			swiftformat = { command = "swiftformat", roots = { ".swiftformat", "Package.swift", ".git" } },
 			golangcilint = { command = "golangci-lint", roots = { "go.mod", "go.work", ".git" } },
 		}
 		vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "InsertLeave" }, {
