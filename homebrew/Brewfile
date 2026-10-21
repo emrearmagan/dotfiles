@@ -7,6 +7,7 @@ tap "nikitabobko/tap", trusted: true # for aerospace
 tap "cesarferreira/tap", trusted: true
 tap "momenbasel/tap", trusted: true
 tap "floatpane/matcha", trusted: true
+tap "josejuanqm/tap", trusted: true
 
 # ───────────────────────────────
 # CLI Utilities
@@ -142,3 +143,4 @@ cask "zed"                  # code editor
 cask "claude-code"          # ai assistant
 cask "chatgpt"              # ai assistant desktop app
 cask "momenbasel/tap/puremac"
+cask "josejuanqm/tap/docky"

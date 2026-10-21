@@ -35,6 +35,7 @@ link "config/borders" ".config/borders"
 
 link "config/opencode" ".config/opencode"
 link "config/pi" ".pi/agent"
+link "config/mcp/mcp.json" ".pi/agent/mcp.json"
 link "config/claude/settings.json" ".claude/settings.json"
 link "config/cursor/hooks.json" ".cursor/hooks.json"
 link "config/codex/hooks.json" ".codex/hooks.json"

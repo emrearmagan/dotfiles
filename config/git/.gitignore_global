@@ -42,3 +42,6 @@ Config.swift
 **/.pi/tasks/
 .pi/subagents.json
 .notes
+
+# Neovim Xcodebuild state
+.nvim/xcodebuild/
