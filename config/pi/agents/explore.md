@@ -5,6 +5,7 @@ description: Fast read-only scout for locating code, inspecting one bounded loca
 model: openai-codex/gpt-5.6-luna
 thinking: low
 tools: read, grep, find, ls, fetch_content
+run_in_background: true
 max_turns: 6
 ---
 

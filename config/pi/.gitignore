@@ -1,4 +1,5 @@
 auth.json
+trust.json
 sessions/
 # this is taken from ~/.config/mcp
 mcp*.json

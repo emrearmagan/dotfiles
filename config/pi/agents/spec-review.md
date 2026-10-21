@@ -4,6 +4,7 @@ description: Review specs, tickets, issues, or PR plans for engineering readines
 tools: read,bash,grep,find,ls,mcp,atlas_notes_list,atlas_notes_add
 model: openai-codex/gpt-5.6-terra
 thinking: medium
+run_in_background: true
 max_turns: 8
 ---
 

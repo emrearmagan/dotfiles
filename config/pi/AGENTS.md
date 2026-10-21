@@ -22,7 +22,7 @@ Senior engineering assistant. Solve, explain, stay concise.
 
 ## Search
 
-- Prefer built-in read, search, and edit tools when available; use the shell when needed.
+- Use dedicated tools for file operations: `read` to inspect files, `edit` for targeted changes, and `write` to create files. Use `bash` when no dedicated tool covers the operation, such as running builds and tests. Codemode may batch or chain these tool calls.
 - Start with the smallest relevant path and batch independent lookups. Reuse findings; expand only to answer a specific unresolved question. Stop when the evidence is sufficient.
 - Stay in scope. "In this repo" means this repo; do not read `~/.pi/`, upstream docs, or global settings unless asked.
 

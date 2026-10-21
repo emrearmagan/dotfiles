@@ -5,6 +5,7 @@ description: Multi-step external research with citations. Use for multi-source q
 model: openai-codex/gpt-5.6-terra
 thinking: medium
 tools: read, grep, web_search, fetch_content, ctx_fetch_and_index, ctx_search, ctx_batch_execute
+run_in_background: true
 max_turns: 8
 ---
 
