@@ -5,7 +5,7 @@ set -u
 
 # name : label shown while running : command
 JOBS=(
-	"brew:Brewing fresh packages:brew update && brew upgrade --formula --yes && brew cleanup --formula --yes"
+	"brew:Brewing fresh packages:brew update && brew upgrade --formula --yes && brew cleanup"
 	"tmux:Tightening tmux plugins:~/.tmux/plugins/tpm/bin/update_plugins all"
 	"pi:Baking fresh pi:pi update --extensions"
 )

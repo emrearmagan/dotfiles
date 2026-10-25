@@ -40,7 +40,7 @@ return {
 			"MunifTanjim/nui.nvim", -- UI framework for floating windows
 			"nvim-treesitter/nvim-treesitter", -- (optional) for Quick tests support (required Swift parser)
 		},
-		lazy = true,
+		ft = "swift",
 		config = function()
 			require("xcodebuild").setup({
 				integrations = {

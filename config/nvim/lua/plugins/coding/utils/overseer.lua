@@ -1,28 +1,24 @@
 return {
 	"stevearc/overseer.nvim",
 	branch = "master",
-	lazy = true,
-	opts = {},
+	cmd = { "OverseerOpen", "OverseerClose", "OverseerToggle", "OverseerRun", "OverseerShell", "OverseerTaskAction" },
 	config = function()
+		local overseer = require("overseer")
+
 		vim.api.nvim_create_autocmd("VimLeavePre", {
 			callback = function()
-				pcall(vim.cmd, "OverseerStopAll")
+				for _, task in ipairs(overseer.list_tasks({ status = "RUNNING" })) do
+					task:stop()
+				end
 			end,
 		})
 
-		require("overseer").setup({
-			-- Automatically detect build systems like Makefile, npm, composer, etc.
-			templates = { "builtin" },
-
-			-- Default strategy: open task output in a toggleable terminal
-			strategy = "terminal",
-
+		overseer.setup({
 			-- Task list window configuration
 			task_list = {
 				direction = "bottom", -- "bottom", "left", or "right"
 				max_height = { 15, 0.25 }, -- max of 15 lines OR 25% of window height
 				min_height = 8, -- at least 8 lines tall
-				default_detail = 1,
 			},
 		})
 	end,

@@ -54,7 +54,7 @@ commandTemplates:
   serviceTop: "{{ .DockerCompose }} top {{ .Service.Name }}"
 oS:
   openCommand: $EDITOR {{filename}}
-  openLinkCommand: xdg-open {{link}}
+  openLinkCommand: open {{link}}
 stats:
   graphs:
     - caption: CPU (%)

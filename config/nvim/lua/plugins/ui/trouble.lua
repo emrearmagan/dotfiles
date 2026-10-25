@@ -1,6 +1,7 @@
 return {
 	"folke/trouble.nvim",
 	event = "LspAttach",
+	cmd = "Trouble",
 	opts = {
 		use_diagnostic_signs = true,
 		auto_preview = true,

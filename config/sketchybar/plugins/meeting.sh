@@ -38,7 +38,6 @@ COMMON_ARGS=(
 	--propertyOrder "datetime,title"
 	--noCalendarNames --dateFormat "%A" --limitItems 1
 	--excludeAllDayEvents --separateByDate --bullet ""
-	--excludeCals "training,omerxx@gmail.com"
 )
 NOW_EVENT=$($ICAL_BUDDY "${COMMON_ARGS[@]}" eventsNow 2>/dev/null)
 if [ -n "$NOW_EVENT" ]; then

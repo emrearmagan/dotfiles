@@ -94,17 +94,8 @@ return {
 		-- 📦 Automatically open DAP UI on session start
 		dap.listeners.after.event_initialized["dapui_config"] = function()
 			if _G.run_mode then
-				-- Always reset back to the old layout and enable all breakpoints. See nvim.dap.lua for changed layout
-				for _, bp in ipairs(dap.list_breakpoints() or {}) do
-					bp.enabled = false
-				end
-
-				dapui.setup({ default_config, layouts = console_layout })
+				dapui.setup(vim.tbl_extend("force", default_config, { layouts = console_layout }))
 			else
-				for _, bp in ipairs(dap.list_breakpoints() or {}) do
-					bp.enabled = false
-				end
-
 				dapui.setup(default_config) --  Restore full layout
 			end
 

@@ -143,7 +143,7 @@ return {
 					{
 						"diagnostics",
 
-						sources = { "nvim_diagnostic", "nvim_lsp", "nvim_workspace_diagnostic" },
+						sources = { "nvim_diagnostic" },
 					}, -- Show LSP diagnostics (errors/warnings)
 				},
 

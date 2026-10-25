@@ -67,7 +67,4 @@ case "$SENDER" in
 "mouse.exited")
 	mouse_exited
 	;;
-"front_app_switched")
-	sketchybar --set "$NAME" popup.drawing=off
-	;;
 esac

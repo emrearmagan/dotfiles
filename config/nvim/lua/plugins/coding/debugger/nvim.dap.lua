@@ -1,3 +1,8 @@
+local function start_debugging()
+	_G.run_mode = false -- full debug UI
+	require("dap").continue()
+end
+
 -- DAP listener bindings (attach/remove keys on start/stop)
 local function setup_listeners()
 	local dap = require("dap")
@@ -35,7 +40,7 @@ local function setup_listeners()
 	local function cleanup()
 		if areSet then
 			areSet = false
-			vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Start Debugging" })
+			vim.keymap.set("n", "<leader>dc", start_debugging, { desc = "Start Debugging" })
 
 			vim.keymap.del("n", "<leader>dC")
 			vim.keymap.del("n", "<leader>ds")
@@ -75,7 +80,7 @@ local function setup_listeners()
 			name = "Listen for Xdebug",
 			port = 9003,
 			pathMappings = {
-				["/home/zzv-core/current"] = "/Users/emre.armagan/Projects/zzv/zzv-core/",
+				["/home/zzv-core/current"] = "${workspaceFolder}/",
 			},
 		},
 	}
@@ -113,11 +118,7 @@ return {
 
 		-- Keybinding --
 		vim.keymap.set("n", "<leader>dt", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
-		vim.keymap.set("n", "<leader>dc", function()
-			local dap = require("dap")
-			_G.run_mode = false -- full debug UI
-			dap.continue()
-		end, { desc = "Start Debugging" })
+		vim.keymap.set("n", "<leader>dc", start_debugging, { desc = "Start Debugging" })
 
 		vim.keymap.set("n", "<leader>dD", function()
 			require("dap").clear_breakpoints()
@@ -125,7 +126,7 @@ return {
 			fidget.notify("All breakpoints cleared", vim.log.levels.INFO)
 		end, { desc = "Clear All Breakpoints" })
 
-		-- Run mode: Uses the console-only layout, disabled all breakpoints temporarily
+		-- Run mode: uses the console-only layout
 		vim.keymap.set("n", "<leader>dr", function()
 			local dap = require("dap")
 			_G.run_mode = true

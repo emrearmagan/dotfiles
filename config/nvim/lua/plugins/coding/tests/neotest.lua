@@ -37,6 +37,9 @@ return {
 						runner = "gotestsum",
 					}),
 
+					-- JavaScript / TypeScript (Jest)
+					require("neotest-jest")({}),
+
 					-- Swift
 					require("neotest-swift-testing")({}),
 

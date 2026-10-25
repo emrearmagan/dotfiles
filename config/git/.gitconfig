@@ -6,7 +6,7 @@
   defaultBranch = main
 
 [core]
-	excludesfile = /Users/emrearmagan/.gitignore_global
+	excludesfile = ~/.gitignore_global
   autocrlf = input
 
 [pager]
@@ -63,17 +63,14 @@
 [pull]
 	rebase = true
 
-[filter "lfs"]
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
-
 [credential]
 	helper = cache
 
 [merge]
   tool = codediff
+
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
 
 [mergetool "codediff"]
   cmd = nvim -f -c "CodeDiff" "$MERGED"

@@ -74,7 +74,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
       "options": {
-        "baseURL": "https://ollama.local.emrearmagan.dev/v1",
+        "baseURL": "{env:OLLAMA_BASE_URL}",
       },
       "models": {
         "qwen3:8b": {

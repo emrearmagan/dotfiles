@@ -15,7 +15,7 @@ ipcheck() {
         host="${host%%/*}"            # strip path
         host="${host%%:*}"            # strip :port
         local resolved
-        resolved=$(dig +short "$host" A | grep -E '^[0-9.]+$' | head -1)
+        resolved=$(command dig +short "$host" A | grep -E '^[0-9.]+$' | head -1)
         if [[ -z "$resolved" ]]; then
             echo "${RED}could not resolve $host${RST}" >&2
             return 1

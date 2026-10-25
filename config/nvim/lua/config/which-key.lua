@@ -552,8 +552,30 @@ wk.add({
 		mode = "n",
 	},
 	{
+		"<leader>rs",
+		"<cmd>OverseerShell<CR>",
+		desc = "Run shell command (Overseer)",
+		mode = "n",
+	},
+	{
+		"<leader>ra",
+		"<cmd>OverseerTaskAction<CR>",
+		desc = "Task action (Overseer)",
+		mode = "n",
+	},
+	{
 		"<leader>rR",
-		"<cmd>OverseerRestartLast<CR>",
+		function()
+			local overseer = require("overseer")
+			local tasks = overseer.list_tasks({
+				sort = function(a, b)
+					return a.id > b.id
+				end,
+			})
+			if tasks[1] then
+				overseer.run_action(tasks[1], "restart")
+			end
+		end,
 		desc = "Restart last task (Overseer)",
 		mode = "n",
 	},

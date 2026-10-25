@@ -18,4 +18,7 @@ osascript -e 'tell application "System Events" to if not (exists login item "Omn
 brew services start sketchybar
 skhd --start-service
 
+# Import RSS feeds; existing feeds are kept, not duplicated.
+pgrep -xq eilmeldung || eilmeldung --import-opml "$REPO_ROOT/config/eilmeldung/feeds.opml"
+
 defaults write mo.com.sleeplessmind.kindaVim appsToIgnore -string '["com.tinycast.app","net.kovidgoyal.kitty","com.mitchellh.ghostty","com.github.wez.wezterm","com.googlecode.iterm2","com.raycast-x.macos","net.kovidgoyal.kitty-quick-access"]'

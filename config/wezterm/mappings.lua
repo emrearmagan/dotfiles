@@ -35,9 +35,7 @@ wezterm.on("activate_pane_d", function(window, pane)
 end)
 
 return {
-	leader = { key = "F12", mods = "", timeout_milliseconds = 5000 },
 	keys = {
-		{ key = "/", mods = "LEADER", action = act.Search("CurrentSelectionOrEmptyString") },
 		{
 			key = "r",
 			mods = "CMD",

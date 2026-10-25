@@ -46,14 +46,6 @@ cap_first() {
 	printf '%s%s' "$(tr '[:lower:]' '[:upper:]' <<<"${s:0:1}")" "${s:1}"
 }
 
-usd() {
-	local n="${1:-}"
-	[[ "$n" =~ ^-?[0-9]+([.][0-9]+)?$ ]] || {
-		printf '%s' "$n"
-		return
-	}
-	jq -nr --argjson n "$n" '"$" + (($n * 100 | round) / 100 | tostring)'
-}
 
 progress_color() {
 	local percent="${1:-}"
@@ -271,57 +263,46 @@ codex() {
 	fi
 }
 
-# ---- OpenRouter ----
+# ---- Claude Code ----
 
-openrouter() {
-	header '== OpenRouter =='
-	[[ -n "${OPENROUTER_API_KEY:-}" ]] || {
-		echo 'status: OPENROUTER_API_KEY missing'
+claude_code() {
+	local version
+	version=$(command claude --version 2>/dev/null | awk '{print $1}' || true)
+	[[ -n "$version" ]] || version="unknown"
+	header "== Claude $version (claude-code) =="
+
+	local creds token plan
+	creds=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null || true)
+	token=$(jq -r '.claudeAiOauth.accessToken // empty' <<<"$creds" 2>/dev/null || true)
+	plan=$(jq -r '.claudeAiOauth.subscriptionType // empty' <<<"$creds" 2>/dev/null || true)
+	[[ -n "$token" ]] || {
+		echo 'status: not logged in (run claude)'
 		return
 	}
 
 	local r
-	r=$(curl -fsS https://openrouter.ai/api/v1/key -H "Authorization: Bearer $OPENROUTER_API_KEY") || {
-		echo 'status: request failed'
+	r=$(curl --connect-timeout 4 --max-time 10 -fsS "https://api.anthropic.com/api/oauth/usage" -H "Authorization: Bearer $token" -H "anthropic-beta: oauth-2025-04-20") || {
+		echo 'status: usage request failed'
 		return
 	}
 
-	local label_key used limit left used_pct reset expires
-	local usage_daily usage_weekly usage_monthly
-	label_key=$(jq -r '.data.label // empty' <<<"$r")
-	used=$(jq -r '.data.usage // "n/a"' <<<"$r")
-	limit=$(jq -r '.data.limit // "n/a"' <<<"$r")
-	left=$(jq -r '.data.limit_remaining // empty' <<<"$r")
-	reset=$(jq -r '.data.limit_reset // empty' <<<"$r")
-	expires=$(jq -r '.data.expires_at // empty' <<<"$r")
-	usage_daily=$(jq -r '.data.usage_daily // empty' <<<"$r")
-	usage_weekly=$(jq -r '.data.usage_weekly // empty' <<<"$r")
-	usage_monthly=$(jq -r '.data.usage_monthly // empty' <<<"$r")
+	local label used reset_after
+	while IFS=$'\t' read -r label used reset_after <&3; do
+		printf '%s: %s%% left %s %s\n' "$(key "$label")" "$((100 - used))" "$(bar "$used" "$(progress_color "$used")")" "$(meta "(resets in $(eta "$reset_after"))")"
+	done 3< <(jq -r '.limits[]? | [
+		(if .kind == "session" then "Session" elif .kind == "weekly_all" then "Weekly" else "Weekly (" + (.scope.model.display_name // "model") + ")" end),
+		(.percent | floor),
+		((.resets_at | sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | fromdateiso8601) - now | floor)
+	] | @tsv' <<<"$r")
 
-	if [[ -z "$left" ]] && jq -e '.data.usage != null and .data.limit != null' >/dev/null 2>&1 <<<"$r"; then
-		left=$(jq -r '(.data.limit - .data.usage)' <<<"$r")
+	local email plan_pretty
+	email=$(jq -r '.oauthAccount.emailAddress // empty' "$HOME/.claude.json" 2>/dev/null || true)
+	plan_pretty=$(cap_first "$plan")
+	if [[ -n "$email" && -n "$plan_pretty" ]]; then
+		printf '%s: %s (%s)\n' "$(key 'Account')" "$email" "$plan_pretty"
+	elif [[ -n "$email" ]]; then
+		printf '%s: %s\n' "$(key 'Account')" "$email"
 	fi
-
-	if [[ "$used" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$limit" =~ ^[0-9]+([.][0-9]+)?$ ]] && [[ "$limit" != "0" ]]; then
-		used_pct=$(jq -nr --argjson u "$used" --argjson l "$limit" '($u * 100 / $l)')
-	else
-		used_pct=""
-	fi
-
-	printf '%s: %s/%s left %s\n' "$(key 'Credits')" "$(usd "$left")" "$(usd "$limit")" "$(bar "$used_pct" "$(progress_color "$used_pct")")"
-	[[ -n "$usage_daily" ]] && printf '%s: %s\n' "$(key 'Daily')" "$(usd "$usage_daily")"
-	[[ -n "$usage_weekly" ]] && printf '%s: %s\n' "$(key 'Weekly')" "$(usd "$usage_weekly")"
-	[[ -n "$usage_monthly" ]] && printf '%s: %s\n' "$(key 'Monthly')" "$(usd "$usage_monthly")"
-
-	if [[ -n "$reset" && "$reset" != "null" ]]; then
-		printf '%s %s\n' "$(meta 'Resets on')" "$reset"
-	elif [[ -n "$expires" && "$expires" != "null" ]]; then
-		printf '%s %s\n' "$(meta 'Expires on')" "$expires"
-	else
-		printf '%s %s\n' "$(meta 'Resets')" "n/a"
-	fi
-
-	[[ -n "$label_key" ]] && printf '%s: %s\n' "$(key 'Account')" "$label_key"
 }
 
 # ---- main ----
@@ -331,7 +312,7 @@ main() {
 	printf '\n'
 	codex
 	printf '\n'
-	openrouter
+	claude_code
 	printf '\n'
 }
 

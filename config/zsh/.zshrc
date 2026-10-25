@@ -1,4 +1,4 @@
-source ~/.env
+[[ -r ~/.env ]] && source ~/.env
 
 #Only run in interative shells
 [[ ! -t 1 ]] && return
@@ -18,12 +18,11 @@ export MANPAGER='nvim +Man!'
 # ----------------------
 # Export
 # ----------------------
-export PATH=/opt/homebrew/bin:$PATH
+typeset -U path PATH
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
 export PATH="$HOME/.config/scripts:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
 export GOBIN="$HOME/go/bin"
 export PATH="$GOBIN:$PATH"
 
@@ -90,11 +89,12 @@ setopt hist_find_no_dups    # Prevent finding duplicate commands in history sear
 # -------------------------------------------------------
 # Catppuccin Mocha — minimal LS_COLORS
 # -------------------------------------------------------
-export LS_COLORS="\
-di=94:\        # directories: blue
-ex=92:\        # executables: green
-fi=97:\        # regular files: soft white
-"
+ls_colors=(
+  di=94  # directories: blue
+  ex=92  # executables: green
+  fi=97  # regular files: soft white
+)
+export LS_COLORS="${(j.:.)ls_colors}"
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi

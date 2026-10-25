@@ -9,5 +9,5 @@ sketchybar --add item music right \
 	scroll_texts=on label.scroll_duration=200 label.max_chars=25 \
 	padding_left=6 padding_right=6 \
 	script="$PLUGIN_DIR/music.sh" \
-	click_script="osascript -e 'tell application \"Music\" to playpause'; sketchybar --update" \
+	click_script="osascript -e 'tell application \"Music\" to playpause'; $PLUGIN_DIR/music.sh" \
 	--subscribe music system_woke

@@ -1,7 +1,5 @@
-tap "homebrew/bundle"
 tap "abue-ammar/tinycast", trusted: true
 tap "buo/cask-upgrade", trusted: true
-tap "michaelroosz/ssh", trusted: true
 tap "FelixKratz/formulae", trusted: true    # for sketchybar
 # tap "nikitabobko/tap", trusted: true # for aerospace
 tap "cesarferreira/tap", trusted: true
@@ -9,6 +7,7 @@ tap "momenbasel/tap", trusted: true
 tap "floatpane/matcha", trusted: true
 tap "josejuanqm/tap", trusted: true
 tap "koekeishiya/formulae", trusted: true
+tap "christo-auer/eilmeldung", "https://github.com/christo-auer/eilmeldung", trusted: true
 
 # ───────────────────────────────
 # CLI Utilities
@@ -50,6 +49,7 @@ brew "fzf-tab"              # fzf based zsh autocomplete
 # used for opencode. Run "rtk init -g --opencode"
 brew "rtk"                  # run tool for shell commands
 brew "ical-buddy"           # calendar cli
+brew "christo-auer/eilmeldung/eilmeldung" # rss reader
 
 # Core Dev Tools
 brew "neovim"               # editor
@@ -91,9 +91,7 @@ brew "jq"                   # json processor (duplicate)
 brew "coreutils"            # gnu core utilities
 
 # Database Tools
-# make sure to run "brew link --force libpq" afterwards
 brew "postgresql"           # postgres database
-brew "libpq"                # postgres tools
 
 # ───────────────────────────────
 # Formatter & Linter Tools
@@ -119,6 +117,7 @@ brew "mole"                    # mac cleaner
 cask "iterm2"               # terminal emulator
 cask "wezterm@nightly"      # gpu terminal
 cask "kitty"                # gpu terminal
+cask "ghostty"              # gpu terminal
 cask "docker-desktop"       # container platform
 cask "mitmproxy"            # http proxy
 cask "fork"                 # git gui

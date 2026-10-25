@@ -71,8 +71,7 @@
     ]
   },
   "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": true,
-    "prismantis@prismantis": true
+    "lua-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "prismantis": {
@@ -82,38 +81,13 @@
       }
     }
   },
+  "feedbackDrafts": "off",
   "modelSettings": {
     "claude-opus-5-5": {
       "effortLevel": "xhigh"
     }
   },
-  "pluginConfigs": {
-    "prismantis@prismantis": {
-      "options": {
-        "enabled": true,
-        "theme": "catppuccin-mocha",
-        "headingStyle": "banner",
-        "tableStyle": "box",
-        "promptStyle": "off",
-        "clock": "off",
-        "toolStyle": "chat",
-        "toolOutput": "full",
-        "taskStyle": "checks",
-        "rtl": "auto",
-        "highlightNumbers": true,
-        "highlightPaths": true,
-        "mermaidAscii": false,
-        "toolRows": true,
-        "diffStyle": "card",
-        "mermaid": true,
-        "copyButtons": false,
-        "copyButtonStyle": "inline",
-        "issueHint": true,
-        "diagramHints": true,
-        "latex": false
-      }
-    }
-  },
+  "pluginConfigs": {},
   "tui": "fullscreen",
   "theme": "dark",
   "skipAutoPermissionPrompt": true

@@ -1,0 +1,6 @@
+[login_setup]
+login_type = "no_login"
+provider = "local_rss"
+
+[theme]
+base16_theme = "catppuccin-mocha"

@@ -64,8 +64,8 @@ return {
 					-- sourcekit (Swift) is macOS native, not installable via Mason
 					-- Make sure to have Xcode installed or CLI Tools: xcode-select --install
 				},
-				automatic_enable = true,
-				automatic_installation = true,
+				-- stylua runs through conform, so we dont need to enable it
+				automatic_enable = { exclude = { "stylua" } },
 			})
 		end,
 	},

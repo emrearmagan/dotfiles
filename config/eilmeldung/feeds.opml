@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>eilmeldung feeds</title>
+  </head>
+  <body>
+    <outline text="Dev" title="Dev">
+      <outline text="r/neovim" title="r/neovim" type="rss" xmlUrl="https://www.reddit.com/r/neovim/.rss" htmlUrl="https://www.reddit.com/r/neovim/"/>
+      <outline text="Lobsters" title="Lobsters" type="rss" xmlUrl="https://lobste.rs/rss" htmlUrl="https://lobste.rs/"/>
+      <outline text="Hacker News" title="Hacker News" type="rss" xmlUrl="https://news.ycombinator.com/rss" htmlUrl="https://news.ycombinator.com/"/>
+    </outline>
+  </body>
+</opml>
