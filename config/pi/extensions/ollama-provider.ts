@@ -3,7 +3,8 @@
  *
  * Registers a local Ollama server as the "ollama" provider with all models it
  * serves. Skipped when OLLAMA_BASE_URL is unset or the server doesn't answer
- * within 200ms, so pi starts normally without it.
+ * within 200ms, so pi starts normally without it. When the server is set but
+ * can't be used, pi shows a warning with the reason.
  *
  * Usage:
  *   /model ollama/<model>
@@ -17,11 +18,20 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL;
 const FETCH_TIMEOUT_MS = 200;
 
-export default function (pi: ExtensionAPI) {
-  void registerOllamaProvider(pi);
+// pi waits for this before startup, so ollama models work as the default model
+export default async function (pi: ExtensionAPI) {
+  const error = await registerOllamaProvider(pi);
+  if (!error) return;
+
+  pi.on("session_start", async (_event, ctx) => {
+    if (ctx.hasUI) ctx.ui.notify(`Ollama: ${error}`, "warning");
+  });
 }
 
-async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
+// Returns why the provider wasn't registered, or nothing when it was or Ollama isn't set up
+async function registerOllamaProvider(
+  pi: ExtensionAPI,
+): Promise<string | undefined> {
   if (!OLLAMA_BASE_URL) return;
 
   const controller = new AbortController();
@@ -31,7 +41,7 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
       signal: controller.signal,
     });
 
-    if (!response.ok) return;
+    if (!response.ok) return `server answered with ${response.status}`;
 
     const payload = (await response.json()) as {
       data?: Array<{
@@ -63,7 +73,7 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
         cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
       }));
 
-    if (models.length === 0) return;
+    if (models.length === 0) return "server has no models";
 
     pi.registerProvider("ollama", {
       name: "Ollama (local)",
@@ -77,7 +87,9 @@ async function registerOllamaProvider(pi: ExtensionAPI): Promise<void> {
       models,
     });
   } catch {
-    // Ollama is optional. If it is unavailable, skip registering the provider.
+    return controller.signal.aborted
+      ? `server didn't answer within ${FETCH_TIMEOUT_MS}ms`
+      : "server not reachable";
   } finally {
     clearTimeout(timeout);
   }

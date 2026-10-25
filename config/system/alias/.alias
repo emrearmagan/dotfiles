@@ -67,6 +67,7 @@ alias jira='nvim -c "autocmd VimEnter * ++once lua vim.schedule(function() vim.c
 alias v=nvim
 alias vim=nvim
 alias cursor="cursor-agent"
+alias pi-ollama="pi --no-tools --no-mcp"
 
 # Search files
 alias f="fzf | xargs -I {} nvim \"{}\""
