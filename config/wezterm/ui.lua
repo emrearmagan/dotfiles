@@ -51,7 +51,7 @@ return {
 
 	-- Appearance
 	color_scheme = "Catppuccin Mocha",
-	font = wezterm.font("JetBrainsMono Nerd Font"),
+	font = wezterm.font_with_fallback({ "JetBrainsMono Nerd Font", "SF Pro" }),
 	font_size = 13,
 	adjust_window_size_when_changing_font_size = false,
 	window_background_opacity = 1.0,
