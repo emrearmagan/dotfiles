@@ -106,7 +106,7 @@
         "toolRows": true,
         "diffStyle": "card",
         "mermaid": true,
-        "copyButtons": true,
+        "copyButtons": false,
         "copyButtonStyle": "inline",
         "issueHint": true,
         "diagramHints": true,

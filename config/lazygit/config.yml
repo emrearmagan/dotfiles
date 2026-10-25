@@ -1,7 +1,7 @@
 gui:
   screenMode: "normal" # one of 'normal' | 'half' | 'full'
   scrollHeight: 2
-  showIcons: true
+  nerdFontsVersion: "3"
   showFileTree: true
   border: "rounded" # 'single' | 'double' | 'rounded' | 'hidden'
   theme:
