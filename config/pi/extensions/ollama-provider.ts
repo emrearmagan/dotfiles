@@ -1,3 +1,17 @@
+/**
+ * Ollama Provider Extension
+ *
+ * Registers a local Ollama server as the "ollama" provider with all models it
+ * serves. Skipped when OLLAMA_BASE_URL is unset or the server doesn't answer
+ * within 200ms, so pi starts normally without it.
+ *
+ * Usage:
+ *   /model ollama/<model>
+ *
+ * Environment:
+ *   OLLAMA_BASE_URL   OpenAI-compatible Ollama endpoint, e.g. https://ollama.example.com/v1
+ */
+
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL;

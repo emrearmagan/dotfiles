@@ -1,3 +1,12 @@
+/**
+ * Hooks Extension
+ *
+ * Forwards pi's session, agent, message and tool events to
+ * ~/.config/scripts/agent-status-hook, which keeps the agent status in
+ * sketchybar up to date. Permission prompts are reported as needing
+ * attention. Runs automatically in the background and never blocks pi.
+ */
+
 import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";

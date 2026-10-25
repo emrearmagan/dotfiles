@@ -1,3 +1,17 @@
+/**
+ * Atlas Notes Extension
+ *
+ * Provides tools that let the LLM list and add private Atlas review notes on
+ * pull request diffs through the `atlas-notes` CLI. A note can be an issue,
+ * suggestion, note or praise and is shown next to its lines in Atlas.
+ *
+ * Usage:
+ *   Ask the LLM: "review this PR and leave Atlas notes on anything risky"
+ *
+ * Requires:
+ *   atlas-notes on PATH
+ */
+
 import { spawn } from "node:child_process";
 import { Type } from "@sinclair/typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
