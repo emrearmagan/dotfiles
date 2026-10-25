@@ -1,0 +1,10 @@
+# Hotkeys that run commands. Window management keys live in the window manager config.
+# NOTE: Remove when using AeroSpace
+
+alt - return : $HOME/.config/scripts/popup shell
+alt - m : $HOME/.config/scripts/popup mail
+alt - p : $HOME/.config/scripts/popup pass
+alt - t : $HOME/.config/scripts/popup tasks
+
+shift + alt - s : osascript -e 'tell application "Safari" to make new document' -e 'tell application "Safari" to activate'
+shift + alt - t : open -n -a WezTerm

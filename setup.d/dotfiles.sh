@@ -30,6 +30,8 @@ link "config/bat" ".config/bat"
 link "config/lazygit" ".config/lazygit"
 link "config/starship/starship.toml" ".config/starship.toml"
 link "config/aerospace" ".config/aerospace"
+link "config/omniwm" ".config/omniwm"
+link "config/skhd" ".config/skhd"
 link "config/sketchybar" ".config/sketchybar"
 link "config/borders" ".config/borders"
 

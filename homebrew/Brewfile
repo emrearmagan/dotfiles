@@ -3,11 +3,12 @@ tap "abue-ammar/tinycast", trusted: true
 tap "buo/cask-upgrade", trusted: true
 tap "michaelroosz/ssh", trusted: true
 tap "FelixKratz/formulae", trusted: true    # for sketchybar
-tap "nikitabobko/tap", trusted: true # for aerospace
+# tap "nikitabobko/tap", trusted: true # for aerospace
 tap "cesarferreira/tap", trusted: true
 tap "momenbasel/tap", trusted: true
 tap "floatpane/matcha", trusted: true
 tap "josejuanqm/tap", trusted: true
+tap "koekeishiya/formulae", trusted: true
 
 # ───────────────────────────────
 # CLI Utilities
@@ -105,12 +106,11 @@ brew "xcbeautify"           # xcode build formatter (duplicate)
 # ───────────────────────────────
 # Desktop UI & Automation
 # ───────────────────────────────
-# sketchybars and borders are started with aerospace.
-# Otherwise manually run:
-#   brew services start sketchybar
-#   brew services start borders
-brew "borders"                 # window borders
+# sketchybar and skhd are started as services by setup.d/macos.sh.
+# borders is only needed with AeroSpace; OmniWM draws its own borders.
+# brew "borders"               # window borders
 brew "sketchybar"              # status bar
+brew "koekeishiya/formulae/skhd" # hotkeys that run commands
 brew "mole"                    # mac cleaner
 
 # ───────────────────────────────
@@ -137,7 +137,8 @@ cask "floatpane/matcha/matcha"
 cask "shortcat"             # mouse-free navigation
 cask "kindavim"             # vim keybindings for mac apps
 cask "vorssaint"            # menu bar utilities
-cask "aerospace"            # tiling window manager
+# cask "aerospace"          # tiling window manager
+cask "omniwm"               # tiling window manager with animations
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
 cask "claude-code"          # ai assistant

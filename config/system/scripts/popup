@@ -34,6 +34,8 @@ lines=40
 case "$name" in
 mail)
 	cmd="matcha"
+	columns=180
+	lines=50
 	;;
 shell)
 	cmd="tmux-popup"
