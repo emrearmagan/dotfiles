@@ -1,0 +1,4 @@
+[permissions]
+net = false
+env = false
+agent = false

@@ -53,6 +53,7 @@ AGENT_ICON_CLAUDE=:claude:
 AGENT_ICON_CURSOR=:cursor:
 AGENT_ICON_CODEX=:openai:
 AGENT_ICON_PI=π
+AGENT_ICON_MAKI=M
 
 # System / hardware icons
 CPU_ICON=􀫥

@@ -86,8 +86,8 @@ count=${#ordered[@]}
 
 icon_for() { case "$1" in attention) printf '%s' "$AGENT_WAIT" ;; working) printf '%s' "$AGENT_WORKING" ;; idle) printf '%s' "$AGENT_IDLE" ;; esac; }
 color_for() { case "$1" in attention) printf '%s' "$RED" ;; working) printf '%s' "$YELLOW" ;; idle) printf '%s' "$BLUE" ;; esac; }
-agent_icon() { case "$1" in claude) printf '%s' "$AGENT_ICON_CLAUDE" ;; cursor) printf '%s' "$AGENT_ICON_CURSOR" ;; codex) printf '%s' "$AGENT_ICON_CODEX" ;; pi) printf '%s' "$AGENT_ICON_PI" ;; *) printf '%s' ":default:" ;; esac; }
-agent_font() { case "$1" in pi) printf '%s' "SF Pro:Semibold:$ICON_SIZE" ;; *) printf '%s' "sketchybar-app-font:Regular:$ICON_SIZE" ;; esac; }
+agent_icon() { case "$1" in claude) printf '%s' "$AGENT_ICON_CLAUDE" ;; cursor) printf '%s' "$AGENT_ICON_CURSOR" ;; codex) printf '%s' "$AGENT_ICON_CODEX" ;; pi) printf '%s' "$AGENT_ICON_PI" ;; maki) printf '%s' "$AGENT_ICON_MAKI" ;; *) printf '%s' ":default:" ;; esac; }
+agent_font() { case "$1" in pi | maki) printf '%s' "SF Pro:Semibold:$ICON_SIZE" ;; *) printf '%s' "sketchybar-app-font:Regular:$ICON_SIZE" ;; esac; }
 set_chip() { sketchybar --set "agent.chip.$1" drawing=on icon="$2" icon.color="$3" label="$4" label.color="$3"; }
 hide_chip() { sketchybar --set "agent.chip.$1" drawing=off; }
 

@@ -1,0 +1,17 @@
+[bash]
+default = "allow"
+deny = [
+    "env *",
+    "printenv *",
+    "rm -rf *",
+    "sudo *",
+]
+
+[webfetch]
+default = "allow"
+
+[websearch]
+default = "allow"
+
+[mcp.context7]
+default = "allow"
