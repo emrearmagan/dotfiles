@@ -16,6 +16,7 @@ osascript -e 'tell application "System Events" to if exists login item "AeroSpac
 osascript -e 'tell application "System Events" to if not (exists login item "OmniWM") then make login item at end with properties {path:"/Applications/OmniWM.app", hidden:false}'
 
 brew services start sketchybar
+brew services start ollama
 skhd --start-service
 
 # Import RSS feeds; existing feeds are kept, not duplicated.

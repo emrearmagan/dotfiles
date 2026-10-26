@@ -80,6 +80,7 @@ brew "tree-sitter-cli"      # tree-sitter cli for nvim
 brew "tree-sitter"
 brew "httpstat"             # http request stats
 brew "cloudflared"          # cloudflare cli
+brew "ollama"               # local llms
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server
@@ -104,7 +105,7 @@ brew "xcbeautify"           # xcode build formatter (duplicate)
 # ───────────────────────────────
 # Desktop UI & Automation
 # ───────────────────────────────
-# sketchybar and skhd are started as services by setup.d/macos.sh.
+# sketchybar, skhd and ollama are started as services by setup.d/macos.sh.
 # borders is only needed with AeroSpace; OmniWM draws its own borders.
 # brew "borders"               # window borders
 brew "sketchybar"              # status bar

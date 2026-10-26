@@ -10,4 +10,4 @@ My own extensions for [pi](https://pi.dev).
 - **clipboard.ts**: lets pi copy text to your clipboard, also over SSH.
 - **atlas-notes.ts**: lets pi list and add private Atlas review notes on pull request diffs.
 - **hooks.ts**: sends pi's events to `agent-status-hook`, which shows the agent status in sketchybar.
-- **ollama-provider.ts**: adds your Ollama server as a provider when `OLLAMA_BASE_URL` is set.
+- **ollama-provider.ts**: adds your remote Ollama server as a provider when `OLLAMA_REMOTE_HOST` is set.

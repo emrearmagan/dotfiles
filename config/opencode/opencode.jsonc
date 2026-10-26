@@ -72,9 +72,9 @@
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
+      "name": "Ollama (remote)",
       "options": {
-        "baseURL": "{env:OLLAMA_BASE_URL}",
+        "baseURL": "{env:OLLAMA_REMOTE_HOST}/v1",
       },
       "models": {
         "qwen3:8b": {

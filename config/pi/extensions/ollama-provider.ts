@@ -1,8 +1,8 @@
 /**
  * Ollama Provider Extension
  *
- * Registers a local Ollama server as the "ollama" provider with all models it
- * serves. Skipped when OLLAMA_BASE_URL is unset or the server doesn't answer
+ * Registers your remote Ollama server as the "ollama" provider with all models
+ * it serves. Skipped when OLLAMA_REMOTE_HOST is unset or the server doesn't answer
  * within 200ms, so pi starts normally without it. When the server is set but
  * can't be used, pi shows a warning with the reason.
  *
@@ -10,12 +10,13 @@
  *   /model ollama/<model>
  *
  * Environment:
- *   OLLAMA_BASE_URL   OpenAI-compatible Ollama endpoint, e.g. https://ollama.example.com/v1
+ *   OLLAMA_REMOTE_HOST   Ollama server, e.g. https://ollama.example.com
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL;
+const OLLAMA_REMOTE_HOST = process.env.OLLAMA_REMOTE_HOST;
+const OLLAMA_BASE_URL = OLLAMA_REMOTE_HOST && `${OLLAMA_REMOTE_HOST}/v1`;
 const FETCH_TIMEOUT_MS = 200;
 
 // pi waits for this before startup, so ollama models work as the default model
@@ -76,7 +77,7 @@ async function registerOllamaProvider(
     if (models.length === 0) return "server has no models";
 
     pi.registerProvider("ollama", {
-      name: "Ollama (local)",
+      name: "Ollama (remote)",
       baseUrl: OLLAMA_BASE_URL,
       api: "openai-completions",
       apiKey: "ollama",
