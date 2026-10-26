@@ -41,6 +41,15 @@ link "config/mcp/mcp.json" ".pi/agent/mcp.json"
 link "config/claude/settings.json" ".claude/settings.json"
 link "config/cursor/hooks.json" ".cursor/hooks.json"
 link "config/codex/hooks.json" ".codex/hooks.json"
+
+link "config/agents" ".agents"
+link "config/agents/AGENTS.md" ".codex/AGENTS.md"
+link "config/agents/AGENTS.md" ".claude/CLAUDE.md"
+# Claude Code only reads ~/.claude/skills and keeps its own synced skills there, so link each skill.
+for skill in "$REPO_ROOT"/config/agents/skills/*/; do
+	skill=$(basename "$skill")
+	link "config/agents/skills/$skill" ".claude/skills/$skill"
+done
 link "config/mcp/mcp.json" ".config/mcp/mcp.json"
 
 link "config/btop" ".config/btop"
