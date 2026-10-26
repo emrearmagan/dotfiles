@@ -2,8 +2,8 @@
 name: explore
 display_name: Explore (gpt-5.6-luna)
 description: Fast read-only scout for locating code, inspecting one bounded local area, and single-page lookups. Returns concise evidence for the coordinator.
-model: openai-codex/gpt-5.6-luna
-thinking: low
+model: openai/gpt-6-luna
+thinking: medium
 tools: read, grep, find, ls, fetch_content
 run_in_background: true
 max_turns: 6

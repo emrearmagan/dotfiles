@@ -2,7 +2,7 @@
 display_name: Code Review (gpt-5.6-sol)
 description: Review code, diffs, or PRs for real implementation defects with file:line evidence. Never edits source; may add private Atlas notes.
 tools: read,bash,grep,find,ls,mcp,atlas_notes_list,atlas_notes_add
-model: openai-codex/gpt-5.6-sol
+model: openai/gpt-6-sol
 thinking: high
 run_in_background: true
 max_turns: 10

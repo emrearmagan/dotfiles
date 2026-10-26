@@ -2,7 +2,7 @@
   "defaultProvider": "openai",
   "defaultModel": "gpt-6-astra",
   "defaultThinkingLevel": "xhigh",
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "thinkingBudgets": {
     "minimal": 1024,
     "low": 4096,
@@ -24,11 +24,15 @@
     "npm:@juicesharp/rpiv-todo",
     "npm:@gotgenes/pi-permission-system",
     "npm:@gotgenes/pi-subagents",
-    "git:github.com/MasuRii/pi-tool-display",
     "npm:billion-context"
   ],
   "theme": "catppuccin-mocha-pi",
   "permissionLevel": "low",
   "deviceId": "30c7aa4d-789b-4d05-9f5e-5ceb1fe301b2",
-  "steeringMode": "one-at-a-time"
+  "steeringMode": "all",
+  "defaultTools": [
+    "+grep",
+    "+find",
+    "+ls"
+  ]
 }

@@ -2,8 +2,8 @@
 display_name: Spec Review (gpt-5.6-terra)
 description: Review specs, tickets, issues, or PR plans for engineering readiness — clarity, scope, blockers, acceptance criteria.
 tools: read,bash,grep,find,ls,mcp,atlas_notes_list,atlas_notes_add
-model: openai-codex/gpt-5.6-terra
-thinking: medium
+model: openai/gpt-5.6-terra
+thinking: high
 run_in_background: true
 max_turns: 8
 ---

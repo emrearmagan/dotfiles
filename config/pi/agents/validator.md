@@ -2,7 +2,7 @@
 name: validator
 display_name: Validator (gpt-5.6-luna)
 description: Run focused tests, builds, and linters to verify completed work. Never edits source.
-model: openai-codex/gpt-5.6-luna
+model: openai/gpt-6-luna
 thinking: low
 tools: read, bash, grep, find, ls
 max_turns: 8
