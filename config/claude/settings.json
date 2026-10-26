@@ -3,8 +3,33 @@
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1"
   },
   "permissions": {
-    "allow": [
-      "mcp__pencil"
+    "ask": [
+      "Bash(gh issue comment *)",
+      "Bash(gh issue create *)",
+      "Bash(gh pr comment *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh pr review *)",
+      "Bash(git -C * push *)",
+      "Bash(git checkout *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git rebase *)",
+      "Bash(git reset --hard *)",
+      "Bash(git stash *)",
+      "Bash(git switch *)"
+    ],
+    "deny": [
+      "Bash(env *)",
+      "Bash(printenv *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Edit(**/.dev.vars)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Read(**/.dev.vars)",
+      "Read(**/.env)",
+      "Read(**/.env.*)"
     ]
   },
   "model": "opus",
