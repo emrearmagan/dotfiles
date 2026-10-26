@@ -44,7 +44,6 @@ link "config/codex/hooks.json" ".codex/hooks.json"
 link "config/mcp/mcp.json" ".config/mcp/mcp.json"
 
 link "config/btop" ".config/btop"
-link "config/lazydocker" ".config/lazydocker"
 link "config/ripgrep" ".config/ripgrep"
 link "config/worktrunk" ".config/worktrunk"
 link "config/tealdeer" ".config/tealdeer"

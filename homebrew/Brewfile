@@ -8,6 +8,8 @@ tap "floatpane/matcha", trusted: true
 tap "josejuanqm/tap", trusted: true
 tap "koekeishiya/formulae", trusted: true
 tap "christo-auer/eilmeldung", "https://github.com/christo-auer/eilmeldung", trusted: true
+tap "neur0map/tap", trusted: true
+tap "s-sigdel/tap", trusted: true
 
 # ───────────────────────────────
 # CLI Utilities
@@ -22,12 +24,15 @@ brew "fzf"                  # fuzzy finder
 brew "zoxide"               # fast cd
 brew "imagemagick"          # image processing
 brew "ghostscript"          # pdf processing
+brew "ffmpeg"               # video and audio processing
 brew "fd"                   # find alternative
 brew "difftastic"           # better diff
 brew "cesarferreira/tap/rip"# kill process
 
 # System & Network
 brew "btop"                 # system monitor
+brew "ncdu"                 # disk usage analyzer
+brew "neur0map/tap/gpk"     # package manager dashboard
 brew "nmap"                 # network scanner
 brew "doggo"                # modern dig (DNS lookups)
 brew "curl"                 # http client
@@ -46,17 +51,18 @@ brew "zsh-syntax-highlighting" # zsh colors
 brew "zsh-completions"      # zsh completions
 brew "zsh-vi-mode"            # zsh vi key bindings
 brew "fzf-tab"              # fzf based zsh autocomplete
-# used for opencode. Run "rtk init -g --opencode"
-brew "rtk"                  # run tool for shell commands
 brew "ical-buddy"           # calendar cli
 brew "christo-auer/eilmeldung/eilmeldung" # rss reader
 
 # Core Dev Tools
 brew "neovim"               # editor
+brew "s-sigdel/tap/vimhjkl" # vim trainer
 brew "tmux"                 # terminal multiplexer
 brew "lazygit"              # git ui
+brew "gh"                   # github cli
 brew "opencode"             # ai code cli
 brew "pi-coding-agent"      # ai code cli
+brew "maki"                 # ai code cli
 
 # Security
 brew "pass"                 # password manager
@@ -73,17 +79,24 @@ brew "git"                  # version control
 brew "worktrunk"            # git worktree tool
 brew "go"                   # go lang
 brew "python"               # scripting
+brew "uv"                   # python package manager
 brew "xcodegen"             # xcode project gen
 brew "ruby"                 # ruby lang
 brew "luarocks"             # lua package manager
+brew "busted"               # lua tests (nvim)
+brew "stylua"               # lua formatter
+brew "selene"               # lua linter
 brew "tree-sitter-cli"      # tree-sitter cli for nvim
 brew "tree-sitter"
+brew "libomp"               # used by codediff.nvim
 brew "httpstat"             # http request stats
 brew "cloudflared"          # cloudflare cli
+brew "ansible"              # server provisioning
 brew "ollama"               # local llms
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server
+brew "xcp"                  # xcode project cli
 brew "xcbeautify"           # xcode build formatter
 brew "ruby"                 # ruby lang (duplicate)
 brew "pipx"                 # python package installer
@@ -142,6 +155,12 @@ cask "omniwm"               # tiling window manager with animations
 cask "obsidian"             # note taking
 cask "zed"                  # code editor
 cask "claude-code"          # ai assistant
+cask "codex"                # ai code cli
 cask "chatgpt"              # ai assistant desktop app
 cask "momenbasel/tap/puremac"
 cask "josejuanqm/tap/docky"
+
+# Fonts
+cask "font-jetbrains-mono-nerd-font" # terminal font
+cask "font-sf-pro"          # sketchybar font
+cask "font-sketchybar-app-font" # sketchybar app icons

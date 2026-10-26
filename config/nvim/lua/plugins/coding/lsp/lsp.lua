@@ -30,6 +30,7 @@ return {
 				"shfmt",
 				"stylua",
 				"selene",
+				"ansible-lint",
 			},
 			integrations = {
 				["mason-lspconfig"] = false,

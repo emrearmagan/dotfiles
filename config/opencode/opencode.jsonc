@@ -31,7 +31,6 @@
       "find *": "allow",
       "rg *": "allow",
       "grep *": "allow",
-      "rtk *": "allow",
 
       // Git
       "git status *": "allow",
