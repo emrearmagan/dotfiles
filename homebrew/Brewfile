@@ -25,6 +25,7 @@ brew "zoxide"               # fast cd
 brew "imagemagick"          # image processing
 brew "ghostscript"          # pdf processing
 brew "ffmpeg"               # video and audio processing
+brew "mermaid-cli"          # mermaid diagrams (used by snacks.nvim)
 brew "fd"                   # find alternative
 brew "difftastic"           # better diff
 brew "cesarferreira/tap/rip"# kill process

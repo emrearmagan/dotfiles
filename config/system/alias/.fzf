@@ -40,8 +40,10 @@ fssh() {
     ' $cfgs 2>/dev/null \
     | sort -u \
     | fzf --no-preview --height 40% --layout=reverse --prompt="ssh> "
-  ) || return
-  ssh "$h"
+  ) || { zle reset-prompt; return }
+  # Run ssh as a normal command, a widget has no terminal on stdin
+  BUFFER="ssh ${(q)h}"
+  zle accept-line
 }
 zle -N fssh
 

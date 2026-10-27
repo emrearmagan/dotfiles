@@ -98,8 +98,8 @@ return {
 		image = {
 			enabled = true,
 			doc = {
-				max_width = 60,
-				max_height = 20,
+				max_width = 120,
+				max_height = 40,
 			},
 			resolve = function(path, src)
 				local api = require("obsidian.api")
@@ -107,6 +107,14 @@ return {
 					return api.resolve_attachment_path(src)
 				end
 			end,
+			convert = {
+				mermaid = function()
+					-- mermaid-cli needs a headless Chrome; use the installed one instead of puppeteer's own download
+					vim.env.PUPPETEER_EXECUTABLE_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+					local theme = vim.o.background == "light" and "neutral" or "dark"
+					return { "-i", "{src}", "-o", "{file}", "-b", "transparent", "-t", theme, "-s", "{scale}" }
+				end,
+			},
 		},
 		indent = {
 			enabled = true,
