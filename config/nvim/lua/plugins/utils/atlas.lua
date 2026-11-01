@@ -1,5 +1,5 @@
 if vim.env.ATLAS_DEV == "1" then
-	return dofile(vim.fn.expand("~/development/nvim/atlas/atlas-dev.lua"))
+	return dofile(vim.fn.expand("~/development/nvim/atlas/atlas.dev/atlas-dev.lua"))
 end
 
 return {
@@ -75,19 +75,19 @@ return {
 						name = "My PRs",
 						key = "1",
 						layout = "compact",
-						search = "is:pr is:open author:@me sort:updated-desc",
+						search = "is:pr is:open author:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 					{
 						name = "Contributions",
 						key = "2",
 						layout = "compact",
-						search = "is:pr is:open user:emrearmagan -author:@me sort:updated-desc",
+						search = "is:pr is:open user:emrearmagan -author:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 					{
 						name = "My Repos",
 						key = "3",
 						layout = "grouped",
-						search = "is:pr is:open user:emrearmagan sort:updated-desc",
+						search = "is:pr is:open user:emrearmagan -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 				},
 				bookmarks = {
@@ -98,8 +98,8 @@ return {
 							layout = "grouped",
 							search = "is:pr repo:neovim/neovim is:open sort:updated-desc",
 						},
-						["My merged PRs"] = "is:pr is:merged author:@me sort:updated-desc",
-						["My declined PRs"] = "is:pr is:closed -is:merged author:@me sort:updated-desc",
+						["My merged PRs"] = "is:pr is:merged author:@me -repo:emrearmagan/atlas.test sort:updated-desc",
+						["My declined PRs"] = "is:pr is:closed -is:merged author:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 				},
 			},
@@ -246,19 +246,19 @@ return {
 						name = "Assigned",
 						key = "1",
 						layout = "compact",
-						search = "is:issue is:open assignee:@me sort:updated-desc",
+						search = "is:issue is:open assignee:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 					{
 						name = "Created",
 						key = "2",
 						layout = "compact",
-						search = "is:issue is:open author:@me sort:updated-desc",
+						search = "is:issue is:open author:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 					{
 						name = "My Repos",
 						key = "3",
 						layout = "compact",
-						search = "is:issue is:open user:emrearmagan sort:updated-desc",
+						search = "is:issue is:open user:emrearmagan -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 				},
 				bookmarks = {
@@ -267,7 +267,7 @@ return {
 					items = {
 						["Neovim"] = "is:issue is:open repo:neovim/neovim sort:updated-desc",
 						["Neovim bugs"] = "is:issue is:open repo:neovim/neovim label:bug sort:reactions-desc",
-						["Mentioned"] = "is:issue is:open mentions:@me sort:updated-desc",
+						["Mentioned"] = "is:issue is:open mentions:@me -repo:emrearmagan/atlas.test sort:updated-desc",
 					},
 				},
 			},

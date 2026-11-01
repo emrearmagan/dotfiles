@@ -119,6 +119,11 @@ return {
 						bg = colors.surface1,
 					},
 
+					-- Atlas
+					AtlasCodeBackground = { bg = colors.surface0 },
+					AtlasLogInfo = { fg = colors.blue },
+					AtlasFooterInfo = { fg = colors.blue, bg = colors.mantle, bold = true },
+
 					-- Solid background for completion popup (overrides transparent_background)
 					-- Pmenu = { bg = colors.mantle, fg = colors.text },
 					-- PmenuSel = { bg = colors.surface0, fg = colors.text, bold = true },

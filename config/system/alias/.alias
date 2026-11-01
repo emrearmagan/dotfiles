@@ -108,6 +108,7 @@ alias gb='git branch'
 alias gbranches='git branch --all --sort=-committerdate'
 alias gba='git branch --all'
 alias gbd='git branch --delete'
+alias gbdelete='git branch --format="%(refname:short)" | fzf --multi --height 40% --layout=reverse --prompt="delete branches> " --preview="git log --oneline --decorate --graph --color=always {} | head -80" | xargs -r git branch -D'
 
 # Add / commit
 alias ga='git add'

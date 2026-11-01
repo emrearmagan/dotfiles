@@ -132,14 +132,12 @@ brew "mole"                    # mac cleaner
 cask "iterm2"               # terminal emulator
 cask "wezterm@nightly"      # gpu terminal
 cask "kitty"                # gpu terminal
-cask "ghostty"              # gpu terminal
 cask "docker-desktop"       # container platform
 cask "mitmproxy"            # http proxy
 cask "fork"                 # git gui
 cask "tailscale-app"        # vpn mesh network
 
 cask "postman"              # api client
-cask "sublime-text"         # text editor
 cask "xcodes-app"           # xcode version manager
 cask "swiftformat-for-xcode" # xcode swift formatter
 

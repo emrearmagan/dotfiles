@@ -66,7 +66,7 @@ return {
 		end
 
 		local tools = {
-			selene = { command = "selene", roots = { "selene.toml", ".git" } },
+			selene = { command = "selene", roots = { "selene.toml" }, config_required = true },
 			swiftlint = { command = "swiftlint", roots = { ".swiftlint.yml", "Package.swift", ".git" } },
 			swiftformat = { command = "swiftformat", roots = { ".swiftformat", "Package.swift", ".git" } },
 			golangcilint = { command = "golangci-lint", roots = { "go.mod", "go.work", ".git" } },
@@ -82,10 +82,11 @@ return {
 				vim.api.nvim_buf_call(event.buf, function()
 					for _, name in ipairs(linters) do
 						local tool = tools[name]
-						if not tool or vim.fn.executable(tool.command) == 1 then
-							local cwd = tool and (vim.fs.root(file, tool.roots) or vim.fs.dirname(file))
+						local root = tool and vim.fs.root(file, tool.roots)
+						local skip = tool and tool.config_required and not root
+						if not skip and (not tool or vim.fn.executable(tool.command) == 1) then
 							lint.try_lint(name, {
-								cwd = cwd,
+								cwd = tool and (root or vim.fs.dirname(file)),
 								filter = event.event == "InsertLeave" and "stdin" or nil,
 							})
 						end
