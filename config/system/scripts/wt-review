@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Review one branch across repositories in tmux.
-# Every repo gets a pi review on the left and an Atlas diff on the right.
+# Every repo gets a pi review on the left and an Atlas review on the right.
 #
 # Usage:
 #   wt review <branch> [<repo-path...>] [--base=<branch>] [--target=<pull-request-url>] [--attach]
@@ -13,9 +13,9 @@
 #   - Uses tmux session: reviews
 #   - Running the same review again reuses its window and keeps the agents
 #   - Without repo paths, the current directory is used
-#   - --base is the branch to compare against (default: main)
-#   - --target opens Atlas diff for the pull request URL
-#   - Without --target, Atlas diff opens origin/<base>...HEAD
+#   - --base is the branch to compare against for the pi prompt (default: main)
+#   - --target opens Atlas review for the pull request URL
+#   - Without --target, Atlas review opens the current branch's pull request
 #   - --attach attaches after review commands are sent
 #
 # Examples:
@@ -28,7 +28,7 @@
 set -euo pipefail
 
 session=reviews
-model=openai/gpt-5.6-astra
+model=openai/gpt-6-astra
 
 usage() {
 	printf 'Usage: wt review <branch> [<repo-path...>] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n'
@@ -86,7 +86,8 @@ if [[ -n "$target" ]]; then
 fi
 # The leading space keeps the pi command out of shell history.
 printf -v pi_command ' pi --no-session --model %q %q' "$model" "$prompt"
-printf -v atlas_command 'nvim -c %q' "Atlas diff ${target:-$comparison...HEAD}"
+atlas_arg="${target:-.}"
+printf -v atlas_command 'nvim -c %q' "autocmd VimEnter * ++once lua vim.schedule(function() vim.cmd([[Atlas review ${atlas_arg}]]) end)"
 
 label="$(basename "${worktrees[0]}")"
 key="$(printf '%s\0' "${worktrees[@]}" | cksum | cut -d ' ' -f 1)"

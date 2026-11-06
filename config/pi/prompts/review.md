@@ -13,7 +13,7 @@ User review request:
 $ARGUMENTS
 ```
 
-Orchestrate the review only. The main session must not inspect the code, gather git context, read Atlas notes, fetch tickets, or write notes. The specialist agents must gather their own context and use their own available tools.
+Orchestrate the review only. The main session must not inspect the code, gather git context, read Atlas notes, fetch tickets, or write notes, except for the overview note in step 3. The specialist agents must gather their own context and use their own available tools.
 
 Do not edit files. Do not commit. Do not change scripts/config unless the user explicitly asks.
 
@@ -62,7 +62,16 @@ Pass only the user's review request and any context already present in the conve
 
 If the user explicitly requests only one reviewer, dispatch only that agent.
 
-### 3. Relay results
+### 3. Leave an overview note
+
+When the target is a known PR and notes are not disabled, keep one Atlas file note that gives an overview of the PR:
+
+- Use the PR URL from the request, and the head commit and overview file from the code-review output. If any of them is missing, skip the note and say why.
+- Run `atlas_notes_list` for the PR. If a note whose body starts with `Overview` exists, replace its body with `atlas_notes_update`. Otherwise add one with `atlas_notes_add` on the overview file, without lines, with type `note`.
+- Body: `Overview` on the first line, then 3–6 short lines: what the PR is for (spec summary), what changed and how it behaves now (change summary), and each reviewer's verdict with finding counts.
+- Use only the agents' outputs. Do not inspect code or add findings.
+
+### 4. Relay results
 
 Do not merge, deduplicate, or rerank the agents' findings.
 
@@ -86,4 +95,5 @@ After both sections, add a combined summary containing each reviewer's verdict a
 - **Code Review:** <verdict and concise conclusion>
 - **Spec Review:** <verdict and concise conclusion, or "Skipped">
 - **Atlas notes:** <total> added (<code-review count> code review, <spec-review count> spec review)
+- **Overview note:** <added, updated, or skipped (reason)>
 ```

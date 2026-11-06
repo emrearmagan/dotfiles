@@ -1,9 +1,10 @@
 /**
  * Atlas Notes Extension
  *
- * Provides tools that let the LLM list and add private Atlas review notes on
- * pull request diffs through the `atlas-notes` CLI. A note can be an issue,
- * suggestion, note or praise and is shown next to its lines in Atlas.
+ * Provides tools that let the LLM list, add, update and delete private Atlas
+ * review notes on pull request diffs through the `atlas-notes` CLI. A note can
+ * be an issue, suggestion, note or praise and is shown on its file, or next to
+ * its lines, in Atlas.
  *
  * Usage:
  *   Ask the LLM: "review this PR and leave Atlas notes on anything risky"
@@ -128,16 +129,19 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
       }),
       commit: Type.String({
         minLength: 1,
-        description: "Pull request head commit SHA the line numbers refer to.",
+        description: "Pull request head commit SHA the note refers to.",
       }),
       file: Type.String({
         minLength: 1,
         description: "Repository-relative file path.",
       }),
-      start_line: Type.Integer({
-        minimum: 1,
-        description: "First line of the note, 1-based, in that commit.",
-      }),
+      start_line: Type.Optional(
+        Type.Integer({
+          minimum: 1,
+          description:
+            "First line of the note, 1-based, in that commit. Omit for a file note.",
+        }),
+      ),
       end_line: Type.Optional(
         Type.Integer({
           minimum: 1,
@@ -152,7 +156,7 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
       context: Type.Optional(
         Type.String({
           description:
-            "Source lines of the note, separated by newlines. Shown with the note in Atlas.",
+            "Source lines of the note, separated by newlines. Shown with the note in Atlas. Needs start_line.",
         }),
       ),
       type: Type.Optional(NOTE_TYPE),
@@ -162,7 +166,7 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
         target: string;
         commit: string;
         file: string;
-        start_line: number;
+        start_line?: number;
         end_line?: number;
         body: string;
         context?: string;
@@ -176,16 +180,75 @@ export default function atlasNotesExtension(pi: ExtensionAPI): void {
         note.commit,
         "--file",
         note.file,
-        "--start-line",
-        String(note.start_line),
         "--body",
         note.body,
       ];
+      if (note.start_line !== undefined)
+        args.push("--start-line", String(note.start_line));
       if (note.end_line !== undefined)
         args.push("--end-line", String(note.end_line));
       if (note.context !== undefined) args.push("--context", note.context);
       if (note.type) args.push("--type", note.type);
       return execute(args, signal);
+    },
+  });
+
+  pi.registerTool({
+    name: "atlas_notes_update",
+    label: "Atlas Notes Update",
+    description:
+      "Change the body, type, or resolved state of an Atlas note. Its file and lines cannot change.",
+    parameters: Type.Object({
+      target: Type.String({
+        minLength: 1,
+        description: "Pull request URL or canonical Atlas target.",
+      }),
+      id: Type.String({
+        minLength: 1,
+        description: "Note id from atlas_notes_list.",
+      }),
+      body: Type.Optional(
+        Type.String({ minLength: 1, description: "New note body." }),
+      ),
+      type: Type.Optional(NOTE_TYPE),
+      resolved: Type.Optional(
+        Type.Boolean({ description: "Mark the note resolved or open." }),
+      ),
+    }),
+    async execute(_toolCallId, params, signal) {
+      const note = params as {
+        target: string;
+        id: string;
+        body?: string;
+        type?: string;
+        resolved?: boolean;
+      };
+      const args = ["update", "--target", note.target, "--id", note.id];
+      if (note.body !== undefined) args.push("--body", note.body);
+      if (note.type) args.push("--type", note.type);
+      if (note.resolved !== undefined)
+        args.push("--resolved", String(note.resolved));
+      return execute(args, signal);
+    },
+  });
+
+  pi.registerTool({
+    name: "atlas_notes_delete",
+    label: "Atlas Notes Delete",
+    description: "Delete an Atlas note.",
+    parameters: Type.Object({
+      target: Type.String({
+        minLength: 1,
+        description: "Pull request URL or canonical Atlas target.",
+      }),
+      id: Type.String({
+        minLength: 1,
+        description: "Note id from atlas_notes_list.",
+      }),
+    }),
+    async execute(_toolCallId, params, signal) {
+      const { target, id } = params as { target: string; id: string };
+      return execute(["delete", "--target", target, "--id", id], signal);
     },
   });
 }

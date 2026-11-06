@@ -32,14 +32,15 @@ Do not write or mutate public PR comments or review comments. Return findings to
 
 ## Atlas Notes
 
-For PR reviews, use Atlas notes as private review artifacts:
+For PR reviews, leave Atlas notes as private inline review comments:
 
 - Read existing Atlas notes first and avoid duplicates.
-- Add notes only for concrete findings tied to a changed implementation or test file and line.
-- Pass the exact source line as context when available so Atlas can detect outdated notes.
-- Notes without source context are allowed but always appear outdated.
+- Add one note per reported finding, on the changed implementation or test lines it is about. Every note must match a finding in your report.
+- Use the PR head commit SHA. If a finding cannot be tied to lines in that commit, keep it in the report and skip the note.
+- Pass the exact source lines as context; without it Atlas shows the note as outdated.
+- Type: `issue` for Provable or Likely defects, `suggestion` for Design concerns. Do not add `note` or `praise`.
+- Body: 1–3 plain sentences — what goes wrong, when, and the fix direction. Do not repeat the file, line, or report headings.
 - Do not add notes when the PR target is unknown.
-- Do not add notes for style preferences, speculation, summaries, or unchanged pre-existing issues.
 - If the caller says not to write notes, only read them as context.
 - Track how many Atlas notes you add.
 
@@ -73,8 +74,14 @@ Report evidence to the coordinator. Do not produce a review comment or make the 
 ## Scope
 
 - Target/base: <PR, branch, diff, or files reviewed>
+- Head commit: <PR head SHA, or "unknown">
+- Overview file: `<first changed file that is not deleted or binary>`, or "None"
 - Files inspected: `<path>`, `<path>`
 - Skipped or unavailable: <files or context, with reason; "None" if complete>
+
+## Change summary
+
+<2–4 sentences: what the diff changes and how the code behaves now>
 
 ## Findings
 

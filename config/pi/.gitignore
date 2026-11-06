@@ -1,6 +1,7 @@
 auth.json
 trust.json
 sessions/
+pi-web-access/
 # this is taken from ~/.config/mcp
 mcp*.json
 models-store.json

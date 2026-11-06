@@ -2,7 +2,7 @@
  * Status Bar Extension
  *
  * Replaces pi's footer with one full-width line: the context tokens, the
- * session cost and a context bar on the left, and the git branch, the model
+ * session cost and a context bar on the left, and the session name, the model
  * with its thinking level and the status texts other extensions set (such as
  * "yolo" from the permission system) on the right. The context bar turns
  * yellow from 50% and red from 80%.
@@ -26,14 +26,14 @@ function fmtTokens(n: number): string {
 export default function (pi: ExtensionAPI) {
   let redraw = () => {};
   pi.on("thinking_level_select", async () => redraw());
+  pi.on("session_info_changed", async () => redraw());
 
   pi.on("session_start", async (_event, ctx) => {
     ctx.ui.setFooter((tui, theme, footerData) => {
       redraw = () => tui.requestRender();
-      const unsub = footerData.onBranchChange(() => tui.requestRender());
 
       return {
-        dispose: unsub,
+        dispose() {},
         invalidate() {},
         render(width: number): string[] {
           let cost = 0;
@@ -61,7 +61,7 @@ export default function (pi: ExtensionAPI) {
             theme.fg(barColor, "━".repeat(filled)) +
             theme.fg("dim", "─".repeat(BAR_WIDTH - filled));
 
-          const branch = footerData.getGitBranch();
+          const sessionName = pi.getSessionName();
           // The thinking level only means something for models that can think
           const level = pi.getThinkingLevel();
           const thinking = ctx.model?.reasoning ? ` (${level})` : "";
@@ -79,11 +79,11 @@ export default function (pi: ExtensionAPI) {
           const context = `${bar} ${theme.fg(barColor, `${pct.toFixed(0)}%`)}`;
           const model = modelColor(`${ctx.model?.id ?? "no model"}${thinking}`);
           const left = `${tokens}  ${theme.fg("dim", `$${cost.toFixed(2)}`)}  ${context}`;
-          const branchAndModel = branch
-            ? theme.fg("dim", `⎇ ${branch} - `) + model
+          const nameAndModel = sessionName
+            ? theme.fg("dim", `${sessionName} - `) + model
             : model;
           const right = [
-            branchAndModel,
+            nameAndModel,
             ...statuses.map((status) => theme.fg("warning", status)),
           ].join(" ");
 

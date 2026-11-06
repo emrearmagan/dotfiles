@@ -155,7 +155,17 @@ const STYLES: Record<string, ToolStyle> = {
   },
   atlas_notes_add: {
     describe: (args) =>
-      `${args.file}:${args.start_line}${args.end_line ? `-${args.end_line}` : ""}`,
+      args.start_line === undefined
+        ? args.file
+        : `${args.file}:${args.start_line}${args.end_line ? `-${args.end_line}` : ""}`,
+    body: (output, theme) => lineCount(output, theme),
+  },
+  atlas_notes_update: {
+    describe: (args) => args.id,
+    body: (output, theme) => lineCount(output, theme),
+  },
+  atlas_notes_delete: {
+    describe: (args) => args.id,
     body: (output, theme) => lineCount(output, theme),
   },
   codemode: {

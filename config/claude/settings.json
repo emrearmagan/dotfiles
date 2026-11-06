@@ -3,6 +3,18 @@
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1"
   },
   "permissions": {
+    "deny": [
+      "Bash(env *)",
+      "Bash(printenv *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Edit(**/.dev.vars)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Read(**/.dev.vars)",
+      "Read(**/.env)",
+      "Read(**/.env.*)"
+    ],
     "ask": [
       "Bash(gh issue comment *)",
       "Bash(gh issue create *)",
@@ -18,18 +30,6 @@
       "Bash(git reset --hard *)",
       "Bash(git stash *)",
       "Bash(git switch *)"
-    ],
-    "deny": [
-      "Bash(env *)",
-      "Bash(printenv *)",
-      "Bash(rm -rf *)",
-      "Bash(sudo *)",
-      "Edit(**/.dev.vars)",
-      "Edit(**/.env)",
-      "Edit(**/.env.*)",
-      "Read(**/.dev.vars)",
-      "Read(**/.env)",
-      "Read(**/.env.*)"
     ]
   },
   "model": "opus",

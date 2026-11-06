@@ -7,7 +7,7 @@
 #   popup <name>
 #
 # Notes:
-#   - Popups: mail, shell, pass, tasks
+#   - Popups: mail, shell, pass, tasks, notes
 #   - Each name is its own kitty instance, so every popup keeps its own state
 #   - The shared look (border, rounding, opacity) lives in ~/.config/kitty/popup.conf
 #   - Popups start in $HOME; default size is 120x40 and a popup can override it
@@ -19,7 +19,7 @@
 set -euo pipefail
 
 usage() {
-	printf 'Usage: popup <mail|shell|pass|tasks>\n'
+	printf 'Usage: popup <mail|shell|pass|tasks|notes>\n'
 }
 
 if [[ "${1:-}" == -h || "${1:-}" == --help ]]; then
@@ -47,6 +47,11 @@ pass)
 	;;
 tasks)
 	cmd="tb"
+	;;
+notes)
+	cmd='cd "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents" && exec nvim -c "Obsidian quick_switch"'
+	columns=180
+	lines=50
 	;;
 *)
 	usage >&2

@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+
+# Look up who owns an IP address, domain or URL and whether it is reported for abuse.
+#
+# Usage:
+#   ipcheck [--no-cache] <ip|domain|url>
+#
+# Notes:
+#   - proxycheck.io: owner, location, VPN/proxy/Tor detection and a risk score
+#   - CrowdSec CTI: reputation and attack behaviors; needs CROWDSEC_API_KEY
+#   - blocklist.de: reported attacks
+#   - Shodan InternetDB: open ports, services and potential vulnerabilities
+#   - Answers are cached for one hour in ${TMPDIR:-/tmp}/ipcheck; --no-cache refreshes them
+#   - Requires curl, jq and dig (for domain resolution)
+#
+# Examples:
+#   ipcheck 1.1.1.1
+#   ipcheck https://example.com
+#   ipcheck --no-cache example.com
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils/colors.sh"
+
+cache="${TMPDIR:-/tmp}/ipcheck"
+
+usage() {
+	printf 'Usage: ipcheck [--no-cache] <ip|domain|url>\n'
+}
+
+no_cache=0
+target=""
+for arg in "$@"; do
+	case "$arg" in
+	-h | --help)
+		usage
+		exit 0
+		;;
+	--no-cache) no_cache=1 ;;
+	-*)
+		printf 'Unknown option: %s\n' "$arg" >&2
+		usage >&2
+		exit 1
+		;;
+	*)
+		if [[ -n "$target" ]]; then
+			usage >&2
+			exit 1
+		fi
+		target="$arg"
+		;;
+	esac
+done
+if [[ -z "$target" ]]; then
+	usage >&2
+	exit 1
+fi
+
+host="${target#*://}" # strip scheme://
+host="${host%%/*}"    # strip path
+if [[ "$host" != *:*:* ]]; then
+	host="${host%%:*}" # strip :port (IPv6 has more colons)
+fi
+
+if [[ "$host" =~ ^[0-9.]+$ || "$host" == *:* ]]; then
+	ip="$host"
+else
+	ip="$(dig +short "$host" A | awk '/^[0-9.]+$/ { print; exit }')"
+	if [[ -z "$ip" ]]; then
+		printf '%s\n' "$(colorize red "could not resolve $host")" >&2
+		exit 1
+	fi
+	printf '%s\n' "$(colorize overlay1 "resolved $host → $ip")"
+fi
+
+mkdir -p "$cache"
+if ((no_cache)); then
+	rm -f "$cache/$ip-"*.json
+fi
+
+cached() {
+	[[ -n "$(find "$1" -mmin -60 2>/dev/null)" ]]
+}
+
+# A 404 means the API has nothing on this IP. That is an answer, so it gets cached too.
+fetch() {
+	local file="$cache/$ip-$1.json" code
+	shift
+	if cached "$file"; then
+		cat "$file"
+		return
+	fi
+
+	code="$(curl -s --connect-timeout 5 --max-time 20 -o "$file" -w '%{http_code}' "$@")" || true
+	if [[ "$code" == 404 ]]; then
+		printf '{"not_found":true}\n' >"$file"
+	elif [[ "$code" != 2?? ]] || ! jq -e . "$file" >/dev/null 2>&1; then
+		rm -f "$file"
+		printf '{"error":"request failed (HTTP %s)"}\n' "$code"
+		return
+	fi
+	cat "$file"
+}
+
+helpers='
+	def list: if length > 0 then join(", ") else "-" end;
+	def row($key; $value; $color): "\($key)\t\($value)\t\($color)";
+	def red_if(condition): if condition then "red" else "" end;
+'
+
+# section <title> <cache name> <jq rows> <curl args...>
+# The values come from third parties, so tr keeps them from sending escape codes to the terminal.
+section() {
+	local title=$1 name=$2 rows=$3 badge=""
+	shift 3
+	cached "$cache/$ip-$name.json" && badge=" $(colorize overlay1 "(cached)")"
+	printf '%s%s\n' "$(colorize mauve "── $title ──")" "$badge"
+	fetch "$name" "$@" |
+		jq -r "$helpers"'
+			if .error then row("error"; .error; "red")
+			elif .not_found then row("status"; "nothing found"; "")
+			else '"$rows"' end' |
+		tr -d '\033' |
+		while IFS=$'\t' read -r key value color; do
+			printf -- '- %s %s\n' "$(colorize teal "$(printf '%-12s' "$key")")" "$(colorize "${color:-green}" "$value")"
+		done || true
+	echo
+}
+
+section "proxycheck.io" proxycheck '
+	(first(.[] | objects) // null) as $r |
+	if $r then
+		row("owner"; "\($r.asn // "-") \($r.provider // "")"; ""),
+		row("location"; [$r.city, $r.country] | map(values) | list; ""),
+		row("proxy"; "\($r.proxy // "-") (\($r.type // "-"))"; if $r.proxy == "yes" then "yellow" else "" end),
+		row("risk"; $r.risk // "-"; red_if(($r.risk // 0) >= 67))
+	else
+		row("status"; .message // .status; "yellow")
+	end' \
+	"https://proxycheck.io/v2/$ip?vpn=1&risk=1&asn=1"
+
+if [[ -n "${CROWDSEC_API_KEY:-}" ]]; then
+	section "crowdsec" crowdsec '
+		row("reputation"; .reputation; {malicious: "red", suspicious: "yellow"}[.reputation // ""] // ""),
+		row("confidence"; .confidence // "-"; ""),
+		row("noise"; "\(.background_noise_score // 0)/10"; red_if((.background_noise_score // 0) >= 8)),
+		row("proxy/vpn"; .proxy_or_vpn; if .proxy_or_vpn then "yellow" else "" end),
+		row("classes"; [.classifications.classifications[]?.label] | list; ""),
+		row("behaviors"; [.behaviors[]?.label] | list; ""),
+		row("attacks"; .attack_details | length; red_if((.attack_details | length) > 0)),
+		row("last seen"; .history.last_seen // "-"; "")' \
+		"https://cti.api.crowdsec.net/v2/smoke/$ip" -H "x-api-key: $CROWDSEC_API_KEY"
+else
+	printf '%s\n\n' "$(colorize overlay1 "crowdsec skipped, set CROWDSEC_API_KEY (https://app.crowdsec.net/settings/cti-api-key)")"
+fi
+
+section "blocklist.de" blocklist '
+	row("attacks"; .attacks; red_if((.attacks | tonumber) > 0)),
+	row("reports"; .reports; red_if((.reports | tonumber) > 0))' \
+	"https://api.blocklist.de/api.php?ip=$ip&format=json"
+
+section "shodan" shodan '
+	row("ports"; .ports | map(tostring) | list; ""),
+	row("services"; .cpes | list; ""),
+	row("hostnames"; .hostnames | list; ""),
+	row("tags"; .tags | list; ""),
+	row("vulns"; .vulns | list; red_if(.vulns != []))' \
+	"https://internetdb.shodan.io/$ip"

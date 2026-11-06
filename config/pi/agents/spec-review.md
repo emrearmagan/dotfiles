@@ -81,6 +81,10 @@ Report evidence to the coordinator. Do not produce a ticket comment or make the 
 - Files/artifacts inspected: `<path or URL>`, `<path or URL>`
 - Missing or unavailable: <artifacts or context, with reason; "None" if complete>
 
+## Spec summary
+
+<1–3 sentences: what the ticket or spec asks for, or "No spec">
+
 ## Findings
 
 ### [Severity] Short gap title
