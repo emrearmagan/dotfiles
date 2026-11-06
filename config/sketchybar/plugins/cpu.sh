@@ -11,12 +11,25 @@ top_memory_process() {
 	ps -A -m -o %mem=,comm= 2>/dev/null | head -1
 }
 
+used_memory_percent() {
+	vm_stat | awk -v total="$(sysctl -n hw.memsize)" '
+		/page size of/ { page_size = $8 }
+		/Anonymous pages:/ { anonymous = $3 }
+		/Pages purgeable:/ { purgeable = $3 }
+		/Pages wired down:/ { wired = $4 }
+		/Pages occupied by compressor:/ { compressed = $5 }
+		END {
+			if (total <= 0 || page_size <= 0 || anonymous == "" || purgeable == "" || wired == "" || compressed == "") exit 1
+			# Exclude reclaimable memory; count compressed pages by their physical size.
+			printf "%.0f", (anonymous - purgeable + wired + compressed) * page_size / total * 100
+		}'
+}
+
 update_summary() {
 	read -r user sys <<<"$(top -l 1 -n 0 2>/dev/null | awk '/CPU usage/{u=$3;s=$5} END{gsub(/%/,"",u);gsub(/%/,"",s);print u, s}')"
 	cpu=$(awk "BEGIN{printf \"%.0f\", ${user:-0}+${sys:-0}}")
 
-	free=$(memory_pressure 2>/dev/null | awk '/free percentage/{gsub(/%/,"",$NF);print $NF}')
-	mem=$((100 - ${free:-0}))
+	mem=$(used_memory_percent) || return
 
 	if [ "$cpu" -ge 80 ]; then col=$RED; elif [ "$cpu" -ge 50 ]; then col=$YELLOW; else col=$GREEN; fi
 

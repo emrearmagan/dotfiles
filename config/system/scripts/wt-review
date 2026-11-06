@@ -28,7 +28,7 @@
 set -euo pipefail
 
 session=reviews
-model=openai-codex/gpt-5.6-sol
+model=openai/gpt-5.6-astra
 
 usage() {
 	printf 'Usage: wt review <branch> [<repo-path...>] [--base=<branch>] [--target=<pull-request-url>] [--attach]\n'

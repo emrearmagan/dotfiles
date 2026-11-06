@@ -13,5 +13,10 @@ return {
 			snacks = true,
 		},
 		diff_viewer = "codediff",
+		mappings = {
+			commit_editor = {
+				["q"] = "Abort",
+			},
+		},
 	},
 }

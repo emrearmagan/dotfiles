@@ -5,6 +5,11 @@
 # Usage:
 #   ./setup --tag macos
 
+# Show three recent apps in the Dock; restart it to apply the limit.
+defaults write com.apple.dock show-recents -bool true
+defaults write com.apple.dock show-recent-count -int 3
+killall Dock
+
 # Enable key repeat in WezTerm. Fully quit and reopen it afterward.
 defaults write com.github.wez.wezterm ApplePressAndHoldEnabled -bool false
 

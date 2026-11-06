@@ -90,10 +90,7 @@ brew "selene"               # lua linter
 brew "tree-sitter-cli"      # tree-sitter cli for nvim
 brew "tree-sitter"
 brew "libomp"               # used by codediff.nvim
-brew "httpstat"             # http request stats
-brew "cloudflared"          # cloudflare cli
 brew "ansible"              # server provisioning
-brew "ollama"               # local llms
 
 # all those below are required by xcodebuild.nvim. Some might have been listed above already.
 brew "xcode-build-server"   # xcode lsp server
@@ -129,7 +126,6 @@ brew "mole"                    # mac cleaner
 # ───────────────────────────────
 # Applications (Casks)
 # ───────────────────────────────
-cask "iterm2"               # terminal emulator
 cask "wezterm@nightly"      # gpu terminal
 cask "kitty"                # gpu terminal
 cask "docker-desktop"       # container platform
@@ -137,7 +133,6 @@ cask "mitmproxy"            # http proxy
 cask "fork"                 # git gui
 cask "tailscale-app"        # vpn mesh network
 
-cask "postman"              # api client
 cask "xcodes-app"           # xcode version manager
 cask "swiftformat-for-xcode" # xcode swift formatter
 
@@ -157,7 +152,6 @@ cask "claude-code"          # ai assistant
 cask "codex"                # ai code cli
 cask "chatgpt"              # ai assistant desktop app
 cask "momenbasel/tap/puremac"
-cask "josejuanqm/tap/docky"
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font" # terminal font

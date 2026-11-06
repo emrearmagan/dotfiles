@@ -9,7 +9,10 @@ return {
 	---@type AtlasConfig
 	opts = {
 		ui = {
-			statusline = { atlas = true, diff = true },
+			statusline = {
+				enabled = true,
+				show_hints = true,
+			},
 			picker = "auto",
 			listed_buffer = false,
 		},
@@ -51,7 +54,9 @@ return {
 				explorer = {
 					grouped = true, -- Group changed files by directory.
 					hidden = false,
-					show_commits = false,
+					commits = {
+						hidden = false,
+					},
 					width = 40,
 					initial_focus = "explorer",
 					preview = true,
